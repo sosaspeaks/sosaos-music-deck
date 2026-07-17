@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SosaOS Music Deck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>SosaOS - Rockbox & iTunes Music Manager</title>
+  
+  <!-- PWA Support Metadata Lines for Mobile Integration -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SosaOS" />
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/192/3880c8/ffffff?text=SosaOS" />
+  
   <style>
     :root {
       --iclassic-header: linear-gradient(180deg, #9bb0c1 0%, #5a7385 100%);
@@ -14,6 +21,37 @@
       --progress-bg: #9ab0c4;
       --progress-fill: linear-gradient(180deg, #3270b0 0%, #183860 100%);
       --bg-dimming: rgba(0, 0, 0, 0.75);
+      
+      /* Hardware Bezel Dynamic Shell Scaffolding */
+      --ipod-bezel-bg: linear-gradient(135deg, #e6e6e6 0%, #aeaeae 25%, #f5f5f5 50%, #999999 75%, #d8d8d8 100%);
+      --ipod-bezel-border: #666;
+      --ipod-backlight-glow: rgba(56, 128, 200, 0.35);
+    }
+
+    /* U2 Special Edition Hardware Variant Definitions */
+    body.theme-u2 {
+      --ipod-bezel-bg: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 40%, #000000 100%);
+      --ipod-bezel-border: #222;
+      --iclassic-select: linear-gradient(180deg, #ff1a1a 0%, #990000 100%);
+    }
+
+    /* Atomic Transparent Hardware Variant Definitions */
+    body.theme-atomic {
+      --ipod-bezel-bg: rgba(240, 240, 245, 0.2);
+      --ipod-bezel-border: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(20px);
+    }
+
+    /* Cyberpunk / Game Boy Variant Definitions */
+    body.theme-cyberpunk {
+      --ipod-bezel-bg: linear-gradient(135deg, #1b281f 0%, #0f1711 100%);
+      --ipod-bezel-border: #00ff66;
+      --iclassic-bg: #051a0c;
+      --iclassic-text: #00ff66;
+      --iclassic-header: linear-gradient(180deg, #113a1e 0%, #081f10 100%);
+      --iclassic-select: #00ff66;
+      --progress-bg: #113a1e;
+      --progress-fill: #00ff66;
     }
 
     * {
@@ -58,6 +96,7 @@
       background-position: center center !important;
       background-repeat: no-repeat !important;
       background-attachment: fixed !important;
+      transition: background 0.6s ease;
     }
 
     body::before {
@@ -68,12 +107,17 @@
       z-index: -1;
     }
 
-    /* Fixed Corner Badges */
-    .corner-bg-upload {
+    /* Fixed Corner Badges Container */
+    .corner-controls-right {
       position: fixed;
       top: 15px;
       right: 15px;
       z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+
+    .corner-badge {
       background: rgba(30, 30, 35, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(8px);
@@ -90,13 +134,26 @@
       transition: all 0.2s ease;
     }
 
-    .corner-bg-upload:hover {
+    .corner-badge:hover {
       background: rgba(45, 45, 55, 0.9);
       color: #fff;
       border-color: rgba(255, 255, 255, 0.4);
     }
 
-    .corner-bg-upload input[type="file"] {
+    .corner-badge select {
+      background: transparent !important;
+      border: none !important;
+      color: #ccc !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      padding: 0 !important;
+      outline: none !important;
+      box-shadow: none !important;
+      cursor: pointer;
+    }
+    .corner-badge select:hover { color: #fff !important; }
+
+    .corner-badge input[type="file"] {
       position: absolute;
       top: 0; left: 0; opacity: 0;
       width: 100%; height: 100%;
@@ -124,15 +181,31 @@
     .ipod-silver-bezel {
       width: 100%;
       max-width: 560px;
-      background: linear-gradient(135deg, #e6e6e6 0%, #aeaeae 25%, #f5f5f5 50%, #999999 75%, #d8d8d8 100%);
+      background: var(--ipod-bezel-bg);
       padding: 10px;
       border-radius: 14px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.5);
-      border: 1px solid #666;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.5), 0 0 45px var(--ipod-backlight-glow);
+      border: 1px solid var(--ipod-bezel-border);
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
+      transition: all 0.4s ease;
     }
+
+    /* Motherboard Matrix Mesh backing for Atomic Theme */
+    .ipod-silver-bezel::before {
+      content: "";
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(rgba(0,180,50,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,180,50,0.04) 1px, transparent 1px);
+      background-size: 10px 10px;
+      border-radius: 14px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 0;
+    }
+    body.theme-atomic .ipod-silver-bezel::before { opacity: 1; }
 
     .skeuo-btn {
       background: linear-gradient(180deg, #748393 0%, #3d4a57 50%, #2b3540 51%, #455463 100%);
@@ -450,6 +523,7 @@
       color: #0d1b2a;
       text-shadow: 0 1px 0 rgba(255,255,255,0.3);
     }
+    body.theme-cyberpunk .status-bar { color: #00ff66; text-shadow:none; }
 
     .ios-battery {
       width: 22px;
@@ -474,6 +548,7 @@
       background: #1f3322;
       border-radius: 0 1px 1px 0;
     }
+    body.theme-cyberpunk .ios-battery::after { background: #00ff66; }
 
     .ios-battery-fill {
       width: 100%;
@@ -482,6 +557,7 @@
       border-radius: 1px;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
     }
+    body.theme-cyberpunk .ios-battery-fill { background: #00ff66; box-shadow: none; }
 
     .screen-body {
       flex: 1;
@@ -519,6 +595,7 @@
       background: var(--iclassic-select);
       color: #ffffff;
     }
+    body.theme-cyberpunk .list-item-wrapper.active .list-item-main { color: #000; }
 
     .item-drawer {
       max-height: 0;
@@ -548,10 +625,12 @@
       padding-right: 4px;
       flex-shrink: 0;
     }
+    body.theme-cyberpunk .item-num-col { color: rgba(0,255,102,0.5); }
 
     .list-item-wrapper.active .item-num-col {
       color: rgba(255, 255, 255, 0.85);
     }
+    body.theme-cyberpunk .list-item-wrapper.active .item-num-col { color: #000; }
 
     .item-left {
       display: flex;
@@ -653,6 +732,7 @@
     .list-item-wrapper.active .duration-badge {
       color: #f1f5f9;
     }
+    body.theme-cyberpunk .list-item-wrapper.active .duration-badge { color: #000; }
 
     .year-badge {
       font-size: 8.5px;
@@ -772,6 +852,7 @@
       padding: 10px 14px;
       background: linear-gradient(180deg, #f0f4f8 0%, #d5e0ea 100%);
     }
+    body.theme-cyberpunk .now-playing-container { background: #051a0c; }
 
     .np-top {
       display: flex;
@@ -798,7 +879,9 @@
     }
 
     .np-track { font-size: 15px; font-weight: 600; color: #111; line-height: 1.2; }
+    body.theme-cyberpunk .np-track { color: #00ff66; }
     .np-artist { font-size: 12px; color: #444; font-weight: 500; }
+    body.theme-cyberpunk .np-artist { color: #00ff66; opacity:0.8; }
 
     .np-progress-zone {
       width: 100%;
@@ -826,6 +909,7 @@
       font-weight: 600;
       color: #4a5d6e;
     }
+    body.theme-cyberpunk .progress-time { color: #00ff66; }
 
     .rockbox-stats-bar {
       height: 22px;
@@ -839,6 +923,7 @@
       font-weight: 600;
       color: #334455;
     }
+    body.theme-cyberpunk .rockbox-stats-bar { background:#051a0c; color:#00ff66; border-color:#00ff66; }
 
     .rockbox-controls {
       width: 100%;
@@ -914,13 +999,61 @@
       background: #3880c8;
       border-color: #60a5fa;
     }
+
+    /* ---------------------------------------------------------------- */
+    /* RESPONSIVE MOBILE ADJUSTMENTS OVERRIDES                          */
+    /* ---------------------------------------------------------------- */
+    @media (max-width: 480px) {
+      .corner-controls-right {
+        position: relative;
+        top: 0; right: 0;
+        margin-bottom: 10px;
+        width: 100%;
+        justify-content: center;
+      }
+      .sosa-corner-logo {
+        display: none; /* Hide fixed logo on tight viewports to save space */
+      }
+      .itunes-card {
+        width: 95%;
+      }
+      
+      /* Re-stack the row item framework into two clean lines to avoid squishing metadata */
+      .list-item-main {
+        height: auto;
+        padding: 8px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .item-left {
+        width: 100%;
+      }
+      .item-right-default {
+        width: 100%;
+        justify-content: flex-end;
+        padding-left: 26px; /* Align items nicely under text start */
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="corner-bg-upload">
-    <span>Wallpaper</span>
-    <input type="file" id="bgFileInput" accept="image/*" onchange="handleBgFileUpload(event)" />
+  <!-- Floating Fixed Corner Controls Assembly Group -->
+  <div class="corner-controls-right">
+    <div class="corner-badge">
+      🎨 Theme: 
+      <select id="hardwareThemeSelect" onchange="applyHardwareProfileTheme(this.value)">
+        <option value="classic">Classic Silver</option>
+        <option value="u2">U2 Special Edition</option>
+        <option value="atomic">Atomic Transparent</option>
+        <option value="cyberpunk">Game Boy / Cyberpunk</option>
+      </select>
+    </div>
+    <div class="corner-badge">
+      🖼️ Wallpaper
+      <input type="file" id="bgFileInput" accept="image/*" onchange="handleBgFileUpload(event)" />
+    </div>
   </div>
 
   <div class="sosa-corner-logo">
@@ -1189,11 +1322,20 @@
 
   <!-- Backup Modal -->
   <div id="backupModal" class="modal-overlay">
-    <div class="modal-card" style="background:#222; border:1px solid #555; padding:16px; border-radius:8px; text-align:center; width:340px;">
-      <h4 style="margin:0 0 8px 0; color:#fff;">Backup / Import Data</h4>
-      <textarea id="jsonBox" style="width:100%; height:90px; background:#111; border:1px solid #444; color:#00ff66; font-size:10px; padding:6px; border-radius:4px;"></textarea>
+    <div class="itunes-card" style="background:#222; border:1px solid #555; padding:16px; border-radius:8px; text-align:center; width:340px;">
+      <h4 style="margin:0 0 8px 0; color:#fff;">Backup / Import System</h4>
+      
+      <button class="skeuo-btn skeuo-btn-primary" style="width:100%; margin-bottom:12px; padding:8px 0;" onclick="triggerFileBackupDownload()">
+        📥 Download Backup (.json)
+      </button>
+
+      <div style="border-top:1px solid #444; padding-top:8px;">
+        <label style="font-size:10px; color:#aaa; display:block; margin-bottom:4px; text-align:left;">Paste JSON to Import Data:</label>
+        <textarea id="jsonBox" style="width:100%; height:75px; background:#111; border:1px solid #444; color:#00ff66; font-size:10px; padding:6px; border-radius:4px;" placeholder="Paste structure data here..."></textarea>
+      </div>
+
       <div style="display:flex; gap:8px; justify-content:center; margin-top:8px;">
-        <button class="skeuo-btn skeuo-btn-primary" onclick="importJson()">Import Data</button>
+        <button class="skeuo-btn" onclick="importJson()">Import</button>
         <button class="skeuo-btn" onclick="closeBackupModal()">Close</button>
       </div>
     </div>
@@ -1278,6 +1420,87 @@
 
     if (customBg) {
       document.body.style.backgroundImage = `url('${customBg}')`;
+    }
+
+    function applyHardwareProfileTheme(profile) {
+      document.body.className = ''; 
+      if (profile !== 'classic') {
+        document.body.classList.add(`theme-${profile}`);
+      }
+      if (profile === 'u2') {
+        applyBacklightGradientTint(180, 0, 0);
+      } else if (profile === 'cyberpunk') {
+        applyBacklightGradientTint(0, 255, 102);
+      } else {
+        triggerColorThiefSampling();
+      }
+    }
+
+    function triggerColorThiefSampling() {
+      if (document.body.className.includes('theme-u2') || document.body.className.includes('theme-cyberpunk')) return;
+      let activeList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) activeList = activeList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) activeList = activeList.filter(a => a.scene === filterSceneVal);
+      
+      if (!activeList || activeList.length === 0 || !activeList[selectedIndex]) {
+        applyBacklightGradientTint(56, 128, 200);
+        return;
+      }
+      
+      const targetArt = activeList[selectedIndex].art;
+      if (!targetArt || targetArt.includes('placeholder')) {
+        applyBacklightGradientTint(56, 128, 200);
+        return;
+      }
+
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = targetArt;
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1; canvas.height = 1;
+        ctx.drawImage(img, 0, 0, 1, 1);
+        const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+        applyBacklightGradientTint(pixelData[0], pixelData[1], pixelData[2]);
+      };
+      img.onerror = function() {
+        applyBacklightGradientTint(56, 128, 200);
+      };
+    }
+
+    function applyBacklightGradientTint(r, g, b) {
+      document.documentElement.style.setProperty('--ipod-backlight-glow', `rgba(${r}, ${g}, ${b}, 0.5)`);
+      if (!document.body.className) {
+        document.body.style.background = `radial-gradient(circle at center, rgba(${r}, ${g}, ${b}, 0.25) 0%, #0d0d11 100%)`;
+      } else {
+        document.body.style.background = '';
+      }
+    }
+
+    function triggerFileBackupDownload() {
+      const dataPayload = {
+        queue: albums,
+        archive: archive,
+        genres: GENRE_DATA,
+        scenes: SCENE_DATA,
+        descriptors: DESCRIPTOR_POOL
+      };
+      
+      const jsonString = JSON.stringify(dataPayload, null, 2);
+      const dataBlob = new Blob([jsonString], { type: 'application/json' });
+      
+      const currentToday = new Date();
+      const isoDateString = currentToday.toISOString().split('T')[0];
+      const filename = `sosaos-backup-${isoDateString}.json`;
+      
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.href = URL.createObjectURL(dataBlob);
+      downloadAnchor.download = filename;
+      
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      document.body.removeChild(downloadAnchor);
     }
 
     function handleBgFileUpload(event) {
@@ -1988,6 +2211,8 @@
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
+      triggerColorThiefSampling();
+
       if (currentView === 'queue') {
         titleEl.innerText = "iClassic Queue";
         countEl.innerText = `${sourceList.length} albums`;
@@ -2101,7 +2326,12 @@
       if (event) event.stopPropagation();
       pendingFinishIndex = index;
       editingArchiveIndex = null;
-      const album = albums[index];
+      
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      
+      const album = sourceList[index];
       document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
       document.getElementById('finishTitle').innerText = album.title;
       document.getElementById('finishComments').value = '';
@@ -2120,7 +2350,11 @@
       editingArchiveIndex = index;
       pendingFinishIndex = null;
 
-      const album = archive[index];
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+
+      const album = sourceList[index];
       document.getElementById('finishModalHeaderTitle').innerText = "Edit Archive Entry";
       document.getElementById('finishTitle').innerText = album.title;
       document.getElementById('finishComments').value = album.comments || '';
@@ -2151,8 +2385,15 @@
       });
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+
       if (pendingFinishIndex !== null) {
-        const completed = albums.splice(pendingFinishIndex, 1)[0];
+        const completedTarget = sourceList[pendingFinishIndex];
+        const globalIdx = albums.findIndex(a => a.title === completedTarget.title);
+        const completed = albums.splice(globalIdx, 1)[0];
+        
         completed.rating = currentSelectedRating;
         completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
         completed.descriptors = descriptors;
@@ -2164,13 +2405,16 @@
         archive.unshift(completed);
         pendingFinishIndex = null;
       } else if (editingArchiveIndex !== null) {
-        archive[editingArchiveIndex].rating = currentSelectedRating;
-        archive[editingArchiveIndex].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        archive[editingArchiveIndex].descriptors = descriptors;
-        archive[editingArchiveIndex].dateFinished = formattedDate;
-        archive[editingArchiveIndex].dateFinishedISO = dateISO;
-        archive[editingArchiveIndex].listeningFormat = formatStr;
-        archive[editingArchiveIndex].favoriteTrack = favTrack;
+        const editedTarget = sourceList[editingArchiveIndex];
+        const globalIdx = archive.findIndex(a => a.title === editedTarget.title);
+        
+        archive[globalIdx].rating = currentSelectedRating;
+        archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
+        archive[globalIdx].descriptors = descriptors;
+        archive[globalIdx].dateFinished = formattedDate;
+        archive[globalIdx].dateFinishedISO = dateISO;
+        archive[globalIdx].listeningFormat = formatStr;
+        archive[globalIdx].favoriteTrack = favTrack;
         editingArchiveIndex = null;
       }
 
@@ -2180,7 +2424,11 @@
     }
 
     function openiTunesModal(idx) {
-      const item = archive[idx];
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+
+      const item = sourceList[idx];
       let parts = item.title.split('-');
       let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
       let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
@@ -2417,12 +2665,15 @@
     }
 
     function spinAndPick() {
-      if (albums.length === 0) return;
-      if (currentView !== 'queue') toggleView();
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      
+      if (sourceList.length === 0) return;
 
       let spins = 0, maxSpins = 12;
       let interval = setInterval(() => {
-        selectedIndex = Math.floor(Math.random() * albums.length);
+        selectedIndex = Math.floor(Math.random() * sourceList.length);
         renderList();
         spins++;
         if (spins >= maxSpins) {
@@ -2449,9 +2700,13 @@
     }
 
     function pickRandomAlbum(targetIndex = null) {
-      if (albums.length === 0) return;
-      const randomIndex = targetIndex !== null ? targetIndex : Math.floor(Math.random() * albums.length);
-      const selected = albums[randomIndex];
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+
+      if (sourceList.length === 0) return;
+      const randomIndex = targetIndex !== null ? targetIndex : Math.floor(Math.random() * sourceList.length);
+      const selected = sourceList[randomIndex];
 
       const bodyEl = document.getElementById('screenBody');
       document.getElementById('screenTitle').innerText = "Now Playing";
@@ -2519,8 +2774,14 @@
 
     function editEntry(idx, event) {
       if (event) event.stopPropagation();
-      editingIndex = idx;
-      const item = currentView === 'queue' ? albums[idx] : archive[idx];
+      
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      
+      const item = sourceList[idx];
+      const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
+      editingIndex = realIndex;
 
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
@@ -2546,8 +2807,18 @@
 
     function deleteEntry(idx, event) {
       if (event) event.stopPropagation();
-      if (currentView === 'queue') albums.splice(idx, 1);
-      else archive.splice(idx, 1);
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      
+      const item = sourceList[idx];
+      if (currentView === 'queue') {
+        const globalIdx = albums.findIndex(a => a.title === item.title);
+        albums.splice(globalIdx, 1);
+      } else {
+        const globalIdx = archive.findIndex(a => a.title === item.title);
+        archive.splice(globalIdx, 1);
+      }
       saveAndRender();
     }
 
@@ -2574,7 +2845,7 @@
     }
 
     function openBackupModal() {
-      document.getElementById('jsonBox').value = JSON.stringify({ queue: albums, archive }, null, 2);
+      document.getElementById('jsonBox').value = "";
       document.getElementById('backupModal').style.display = 'flex';
     }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
@@ -2584,7 +2855,12 @@
         const parsed = JSON.parse(document.getElementById('jsonBox').value);
         if (parsed.queue && parsed.archive) {
           albums = parsed.queue; archive = parsed.archive;
-        } else if (Array.isArray(parsed)) { albums = parsed; }
+          if (parsed.genres) GENRE_DATA = parsed.genres;
+          if (parsed.scenes) SCENE_DATA = parsed.scenes;
+          if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
+        } else if (Array.isArray(parsed)) { 
+          albums = parsed; 
+        }
         saveAndRender();
         closeBackupModal();
       } catch (e) { alert('Invalid JSON format.'); }
