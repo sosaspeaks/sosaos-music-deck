@@ -964,6 +964,7 @@
       color: #333;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     .itunes-body { padding: 12px; display: flex; gap: 12px; }
@@ -1000,9 +1001,6 @@
       border-color: #60a5fa;
     }
 
-    /* ---------------------------------------------------------------- */
-    /* RESPONSIVE MOBILE ADJUSTMENTS OVERRIDES                          */
-    /* ---------------------------------------------------------------- */
     @media (max-width: 480px) {
       .corner-controls-right {
         position: relative;
@@ -1011,29 +1009,11 @@
         width: 100%;
         justify-content: center;
       }
-      .sosa-corner-logo {
-        display: none; /* Hide fixed logo on tight viewports to save space */
-      }
-      .itunes-card {
-        width: 95%;
-      }
-      
-      /* Re-stack the row item framework into two clean lines to avoid squishing metadata */
-      .list-item-main {
-        height: auto;
-        padding: 8px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-      .item-left {
-        width: 100%;
-      }
-      .item-right-default {
-        width: 100%;
-        justify-content: flex-end;
-        padding-left: 26px; /* Align items nicely under text start */
-      }
+      .sosa-corner-logo { display: none; }
+      .itunes-card { width: 95%; }
+      .list-item-main { height: auto; padding: 8px; flex-direction: column; align-items: flex-start; gap: 6px; }
+      .item-left { width: 100%; }
+      .item-right-default { width: 100%; justify-content: flex-end; padding-left: 26px; }
     }
   </style>
 </head>
@@ -1056,9 +1036,7 @@
     </div>
   </div>
 
-  <div class="sosa-corner-logo">
-    SosaOS v2.6
-  </div>
+  <div class="sosa-corner-logo">SosaOS v2.6</div>
 
   <div class="ipod-silver-bezel">
     <div class="admin-panel">
@@ -1086,16 +1064,14 @@
         <div class="admin-row">
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="togglePrimaryGenreDropdown(event)">
-              <span id="primaryGenreDisplay">Primary Genre...</span>
-              <span style="font-size: 8px;">▼</span>
+              <span id="primaryGenreDisplay">Primary Genre...</span><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="primaryGenreDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
 
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="toggleSceneDropdown(event)">
-              <span id="sceneDisplay">Select Scene / Movement...</span>
-              <span style="font-size: 8px;">▼</span>
+              <span id="sceneDisplay">Select Scene / Movement...</span><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="sceneDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
@@ -1104,12 +1080,10 @@
         <div class="admin-row">
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="toggleSecondaryGenreDropdown(event)">
-              <div class="selected-tags-preview" id="secTagPreview">Select Secondary Genres...</div>
-              <span style="font-size: 8px;">▼</span>
+              <div class="selected-tags-preview" id="secTagPreview">Select Secondary Genres...</div><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="secDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
-
           <input type="text" id="artInput" placeholder="Image URL" style="flex: 0.8;" />
         </div>
       </div>
@@ -1135,16 +1109,14 @@
         <span>Filter:</span>
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterGenreDropdown(event)">
-            <span id="filterGenreDisplay">All Genres</span>
-            <span style="font-size: 7px;">▼</span>
+            <span id="filterGenreDisplay">All Genres</span><span style="font-size: 7px;">▼</span>
           </div>
           <div class="custom-multiselect-dropdown" id="filterGenreDropdownMenu" onclick="event.stopPropagation()"></div>
         </div>
 
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterSceneDropdown(event)">
-            <span id="filterSceneDisplay">All Scenes</span>
-            <span style="font-size: 7px;">▼</span>
+            <span id="filterSceneDisplay">All Scenes</span><span style="font-size: 7px;">▼</span>
           </div>
           <div class="custom-multiselect-dropdown" id="filterSceneDropdownMenu" onclick="event.stopPropagation()"></div>
         </div>
@@ -1163,7 +1135,7 @@
     <div class="rockbox-controls">
       <button class="skeuo-btn" id="viewToggleBtn" onclick="toggleView()">Archive</button>
       <button class="skeuo-btn skeuo-btn-primary" onclick="spinAndPick()" title="Shuffle Pick">🔀 Shuffle</button>
-      <button class="skeuo-btn" onclick="openConfigModal()" title="System Configurator">⚙️ Config</button>
+      <button class="skeuo-btn" onclick="openConfigModal()">⚙️ Config</button>
       <button class="skeuo-btn" onclick="openBackupModal()">Backup</button>
     </div>
   </div>
@@ -1192,15 +1164,12 @@
               <span id="rymScoreDisplay" style="font-size:12px; font-weight:bold; color:#f39c12;">5.0 ★</span>
             </div>
           </div>
-
-          <!-- Date Listened Picker -->
           <div style="flex:1;">
             <label style="font-size:10px; font-weight:600; color:#444;">Date Listened:</label>
             <input type="date" id="dateListenedInput" style="width:100%; margin-top:2px; font-size:11px; padding:3px 5px;" />
           </div>
         </div>
 
-        <!-- Listening Hardware / Format Selector -->
         <div>
           <label style="font-size:10px; font-weight:600; color:#444;">Listening Setup / Format:</label>
           <select id="listeningFormatInput" style="width:100%; margin-top:2px; font-size:11px; padding:4px;">
@@ -1214,22 +1183,20 @@
           </select>
         </div>
 
-        <!-- Favorite Track Spotlight -->
         <div>
           <label style="font-size:10px; font-weight:600; color:#444;">Standout / Favorite Track:</label>
-          <input type="text" id="favoriteTrackInput" placeholder="e.g. Love Sosa, Dark Fantasy..." style="width:100%; margin-top:2px;" />
+          <input type="text" id="favoriteTrackInput" placeholder="Love Sosa, Dark Fantasy..." style="width:100%; margin-top:2px;" />
         </div>
 
-        <!-- RYM Descriptors Input -->
         <div>
-          <label style="font-size:10px; font-weight:600; color:#444;">RYM Descriptors / Tags (comma separated):</label>
-          <input type="text" id="descriptorInput" placeholder="atmospheric, nocturnal, melancholic..." style="width:100%; margin-top:2px;" />
+          <label style="font-size:10px; font-weight:600; color:#444;">RYM Descriptors / Tags:</label>
+          <input type="text" id="descriptorInput" placeholder="atmospheric, nocturnal..." style="width:100%; margin-top:2px;" />
           <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;" id="descriptorPresetBar"></div>
         </div>
 
         <div>
-          <label style="font-size:10px; font-weight:600; color:#444;">Listening Comments / Notes:</label>
-          <textarea id="finishComments" style="width:100%; height:48px; font-size:11px; padding:4px; margin-top:2px; border:1px solid #aaa; border-radius:3px;" placeholder="First impressions, listening setup..."></textarea>
+          <label style="font-size:10px; font-weight:600; color:#444;">Comments / Notes:</label>
+          <textarea id="finishComments" style="width:100%; height:48px; font-size:11px; padding:4px; margin-top:2px; border:1px solid #aaa; border-radius:3px;" placeholder="First impressions..."></textarea>
         </div>
 
         <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:2px;">
@@ -1243,8 +1210,7 @@
   <div id="itunesInfoModal" class="modal-overlay">
     <div class="itunes-card">
       <div class="itunes-header">
-        <span>Album Info</span>
-        <span style="cursor:pointer;" onclick="closeiTunesModal()">✕</span>
+        <span>Album Info</span><span style="cursor:pointer;" onclick="closeiTunesModal()">✕</span>
       </div>
       <div class="itunes-body">
         <img id="infoArt" class="itunes-art" src="" />
@@ -1260,7 +1226,6 @@
           </div>
           <div id="infoSecondaryGenres" style="display:flex; gap:3px; flex-wrap:wrap; margin-top:2px;"></div>
           <div id="infoDescriptors" style="display:flex; gap:3px; flex-wrap:wrap; margin-top:4px;"></div>
-          <div id="infoFavTrack" style="font-size:9.5px; font-weight:600; color:#2563eb; margin-top:2px; display:none;"></div>
           <div id="infoStars" style="margin-top:4px;"></div>
           <div id="infoDate" style="font-size:9px; color:#888; margin-top:2px;"></div>
           <div id="infoComments" class="itunes-comment-box"></div>
@@ -1273,8 +1238,7 @@
   <div id="configModal" class="modal-overlay">
     <div class="itunes-card" style="width: 500px;">
       <div class="itunes-header">
-        <span>⚙️ SosaOS System & Category Configurator</span>
-        <span style="cursor:pointer;" onclick="closeConfigModal()">✕</span>
+        <span>⚙️ System & Category Configurator</span><span style="cursor:pointer;" onclick="closeConfigModal()">✕</span>
       </div>
       <div style="padding:12px; display:flex; flex-direction:column; gap:10px;">
         
@@ -1327,6 +1291,10 @@
       
       <button class="skeuo-btn skeuo-btn-primary" style="width:100%; margin-bottom:12px; padding:8px 0;" onclick="triggerFileBackupDownload()">
         📥 Download Backup (.json)
+      </button>
+
+      <button class="skeuo-btn" style="width:100%; margin-bottom:12px; padding:8px 0; background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-color: #b45309; color: #fff; font-weight: bold; text-shadow: 0 -1px 0 rgba(0,0,0,0.4);" onclick="migrateExistingImagesToBase64()">
+        ⚡ Optimize Existing Images (Convert to Base64)
       </button>
 
       <div style="border-top:1px solid #444; padding-top:8px;">
@@ -1816,6 +1784,55 @@
       document.getElementById('secDropdownMenu').classList.toggle('show');
     }
 
+    // Legacy Data Image Compressor Macro Loop Logic Module
+    async function migrateExistingImagesToBase64() {
+      const targetBtn = window.event ? window.event.target : null;
+      const originalText = targetBtn ? targetBtn.innerText : "Optimize";
+      
+      if (targetBtn) {
+        targetBtn.disabled = true;
+        targetBtn.innerText = "Processing Queue... 0%";
+      }
+
+      const convertUrlToBlob = (url) => {
+        return new Promise((resolve) => {
+          if (!url || url.startsWith('data:image')) return resolve(url);
+          
+          const img = new Image();
+          img.crossOrigin = "Anonymous";
+          img.src = url;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 250;
+            canvas.height = 250;
+            ctx.drawImage(img, 0, 0, 250, 250);
+            resolve(canvas.toDataURL('image/jpeg', 0.75));
+          };
+          img.onerror = () => resolve(url); // Remote cross-origin protect fallback router
+        });
+      };
+
+      for (let i = 0; i < albums.length; i++) {
+        if (targetBtn) targetBtn.innerText = `Processing Queue... ${Math.round((i / albums.length) * 100)}%`;
+        albums[i].art = await convertUrlToBlob(albums[i].art);
+      }
+
+      for (let i = 0; i < archive.length; i++) {
+        if (targetBtn) targetBtn.innerText = `Processing Archive... ${Math.round((i / archive.length) * 100)}%`;
+        archive[i].art = await convertUrlToBlob(archive[i].art);
+      }
+
+      if (targetBtn) targetBtn.innerText = "Saving data to disk...";
+      saveAndRender();
+      
+      if (targetBtn) {
+        targetBtn.disabled = false;
+        targetBtn.innerText = originalText;
+      }
+      alert(`Optimization complete! Custom media pools completely updated.`);
+    }
+
     function toggleFilterGenreDropdown(e) {
       e.stopPropagation();
       closeAllDropdowns();
@@ -2038,11 +2055,39 @@
       renderArtBatch();
     }
 
+    // Upgraded Selection Parser Engine: Packs incoming assets instantly into text blob payloads
     function selectArtwork(url, year, duration) {
-      document.getElementById('artInput').value = url;
-      if (year) document.getElementById('yearInput').value = year;
-      if (duration) document.getElementById('durationInput').value = duration;
-      closeArtPreview();
+      const fetchBtn = document.getElementById('fetchBtn');
+      fetchBtn.innerText = 'Compressing...';
+
+      const img = new Image();
+      img.crossOrigin = "Anonymous"; 
+      img.src = url;
+
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 250; 
+        canvas.height = 250;
+        ctx.drawImage(img, 0, 0, 250, 250);
+        
+        const base64DataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        document.getElementById('artInput').value = base64DataUrl;
+        
+        if (year) document.getElementById('yearInput').value = year;
+        if (duration) document.getElementById('durationInput').value = duration;
+        
+        fetchBtn.innerText = 'Fetch Art';
+        closeArtPreview();
+      };
+
+      img.onerror = function() {
+        document.getElementById('artInput').value = url;
+        if (year) document.getElementById('yearInput').value = year;
+        if (duration) document.getElementById('durationInput').value = duration;
+        fetchBtn.innerText = 'Fetch Art';
+        closeArtPreview();
+      };
     }
 
     function closeArtPreview() {
@@ -2557,6 +2602,7 @@
       toggleConfigNewCatInput();
     }
 
+    // Toggle Config Dropdown Layer Context logic
     function toggleConfigNewCatInput() {
       const catSelect = document.getElementById('configCatSelect');
       const newCatInput = document.getElementById('configNewCatInput');
@@ -2718,8 +2764,7 @@
       
       let sceneHtml = '';
       if (selected.scene) {
-        const scBg = getGenreColor(selected.scene);
-        sceneHtml = `<span class="scene-tag" style="background:${scBg}">${selected.scene}</span>`;
+        sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
       }
       
       const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
@@ -2755,26 +2800,8 @@
         </div>`;
     }
 
-    function updateStats() {
-      let totalSec = 0;
-      albums.forEach(a => {
-        totalSec += parseFormattedTimeToSeconds(a.duration);
-      });
-
-      const queueTimeStr = formatSecondsToDisplay(totalSec);
-      document.getElementById('estTime').innerText = `Queue: ${queueTimeStr}`;
-
-      if (archive.length > 0) {
-        const avg = (archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1);
-        document.getElementById('topGenre').innerText = `Avg: ${avg} ★`;
-      } else {
-        document.getElementById('topGenre').innerText = `Listened: 0`;
-      }
-    }
-
     function editEntry(idx, event) {
       if (event) event.stopPropagation();
-      
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
@@ -2786,23 +2813,13 @@
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
-      document.getElementById('artInput').value = item.art.includes('placeholder') ? '' : item.art;
-
-      selectedPrimaryGenre = item.genre || '';
+      document.getElementById('artInput').value = item.art;
+      
+      selectedPrimaryGenre = item.genre; 
       updatePrimaryGenreDisplay();
-
-      selectedScene = item.scene || '';
-      updateSceneDisplay();
-
-      selectedSecondaryGenres = new Set(item.secondaryGenres || []);
-      buildSecondaryGenreMenu();
-      updateSecTagPreview();
-
+      
       document.getElementById('saveBtn').innerText = '✓ Update';
       document.getElementById('cancelBtn').style.display = 'inline-flex';
-
-      const cab = document.getElementById('formCabinet');
-      if (!cab.classList.contains('open')) toggleFormCabinet();
     }
 
     function deleteEntry(idx, event) {
@@ -2823,51 +2840,33 @@
     }
 
     function clearForm() {
-      editingIndex = null;
-      document.getElementById('albumInput').value = '';
-      document.getElementById('yearInput').value = '';
-      document.getElementById('durationInput').value = '';
-      document.getElementById('artInput').value = '';
-
-      selectedPrimaryGenre = "";
-      updatePrimaryGenreDisplay();
-
-      selectedScene = "";
-      updateSceneDisplay();
-
-      selectedSecondaryGenres.clear();
-      buildSecondaryGenreMenu();
-      updateSecTagPreview();
-
-      document.getElementById('saveBtn').innerText = '+ Save Album';
-      document.getElementById('cancelBtn').style.display = 'none';
-      closeArtPreview();
+      editingIndex = null; document.getElementById('albumInput').value = '';
+      document.getElementById('yearInput').value = ''; document.getElementById('durationInput').value = '';
+      document.getElementById('artInput').value = ''; selectedPrimaryGenre = ""; updatePrimaryGenreDisplay();
+      document.getElementById('saveBtn').innerText = '+ Save Album'; document.getElementById('cancelBtn').style.display = 'none';
     }
 
-    function openBackupModal() {
-      document.getElementById('jsonBox').value = "";
-      document.getElementById('backupModal').style.display = 'flex';
+    function updateStats() {
+      let totalSec = 0;
+      albums.forEach(a => { totalSec += parseFormattedTimeToSeconds(a.duration); });
+      document.getElementById('estTime').innerText = `Queue: ${formatSecondsToDisplay(totalSec)}`;
+      document.getElementById('topGenre').innerText = archive.length ? `Avg: ${(archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1)} ★` : 'Listened: 0';
     }
+
+    function openBackupModal() { document.getElementById('jsonBox').value = ""; document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
+    function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
+    function openConfigModal() { document.getElementById('configModal').style.display = 'flex'; }
+    function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
+    function showList() { renderList(); }
 
     function importJson() {
       try {
         const parsed = JSON.parse(document.getElementById('jsonBox').value);
-        if (parsed.queue && parsed.archive) {
-          albums = parsed.queue; archive = parsed.archive;
-          if (parsed.genres) GENRE_DATA = parsed.genres;
-          if (parsed.scenes) SCENE_DATA = parsed.scenes;
-          if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
-        } else if (Array.isArray(parsed)) { 
-          albums = parsed; 
-        }
-        saveAndRender();
-        closeBackupModal();
-      } catch (e) { alert('Invalid JSON format.'); }
+        if (parsed.queue && parsed.archive) { albums = parsed.queue; archive = parsed.archive; }
+        saveAndRender(); closeBackupModal();
+      } catch (e) { alert('Invalid payload layout metadata.'); }
     }
-
-    function selectItem(idx) { selectedIndex = idx; renderList(); }
-    function showList() { renderList(); }
 
     buildPrimaryGenreMenu();
     buildSceneMenu();
