@@ -1340,9 +1340,6 @@
       <button class="skeuo-btn skeuo-btn-primary" style="width:100%; margin-bottom:12px; padding:8px 0;" onclick="triggerFileBackupDownload()">
         📥 Download Backup (.json)
       </button>
-      <button class="skeuo-btn" style="width:100%; margin-bottom:12px; padding:8px 0; background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-color: #b45309;" onclick="migrateExistingImagesToBase64()">
-        ⚡ Optimize Existing Album Images (Convert to Base64)
-      </button>
 
       <div style="border-top:1px solid #444; padding-top:8px;">
         <label style="font-size:10px; color:#aaa; display:block; margin-bottom:4px; text-align:left;">Paste JSON to Import Data:</label>
@@ -2330,53 +2327,6 @@
             </div>
           </div>
         </div>`;
-    }
-
-      async function migrateExistingImagesToBase64() {
-    const targetBtn = event.target;
-    const originalText = targetBtn.innerText;
-    targetBtn.disabled = true;
-    targetBtn.innerText = "Processing Queue... 0%";
-  
-    // Helper function to turn a legacy URL into a compressed base64 string
-    const convertUrlToBlob = (url) => {
-      return new Promise((resolve) => {
-        if (!url || url.startsWith('data:image')) return resolve(url); // Already base64 optimized
-        
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = 250;
-          canvas.height = 250;
-          ctx.drawImage(img, 0, 0, 250, 250);
-          resolve(canvas.toDataURL('image/jpeg', 0.75));
-        };
-        img.onerror = () => resolve(url); // Fallback to raw link if remote host blocks CORS requests
-      });
-    };
-  
-    // Convert Queue items
-    for (let i = 0; i < albums.length; i++) {
-      targetBtn.innerText = `Processing Queue... ${Math.round((i / albums.length) * 100)}%`;
-      albums[i].art = await convertUrlToBlob(albums[i].art);
-    }
-  
-    // Convert Archive items
-    for (let i = 0; i < archive.length; i++) {
-      targetBtn.innerText = `Processing Archive... ${Math.round((i / archive.length) * 100)}%`;
-      archive[i].art = await convertUrlToBlob(archive[i].art);
-    }
-  
-    // Commit the updated payload blocks back to disk and network sync engine
-    targetBtn.innerText = "Saving synced records...";
-    await saveAndRender();
-    
-    targetBtn.disabled = false;
-    targetBtn.innerText = originalText;
-    alert(`Optimization complete! All existing images compressed successfully.`);
     }
 
     buildPrimaryGenreMenu();
