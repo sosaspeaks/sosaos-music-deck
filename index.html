@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Remote Storage Cloud Sync Engine -->
-  <script src="https://remotestorage.io/release/remotestorage.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>SosaOS - iPod Music Deck</title>
@@ -12,6 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SosaOS" />
   <link rel="apple-touch-icon" href="https://via.placeholder.com/192/3880c8/ffffff?text=SosaOS" />
+
+  <!-- Remote Storage Cloud Sync Engine -->
+  <script src="https://remotestorage.io/release/remotestorage.js"></script>
   
   <style>
     :root {
@@ -966,6 +967,7 @@
       color: #333;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     .itunes-body { padding: 12px; display: flex; gap: 12px; }
@@ -1014,13 +1016,12 @@
         justify-content: center;
       }
       .sosa-corner-logo {
-        display: none; /* Hide fixed logo on tight viewports to save space */
+        display: none; 
       }
       .itunes-card {
         width: 95%;
       }
       
-      /* Re-stack the row item framework into two clean lines to avoid squishing metadata */
       .list-item-main {
         height: auto;
         padding: 8px;
@@ -1034,7 +1035,7 @@
       .item-right-default {
         width: 100%;
         justify-content: flex-end;
-        padding-left: 26px; /* Align items nicely under text start */
+        padding-left: 26px; 
       }
     }
   </style>
@@ -1165,7 +1166,7 @@
     <div class="rockbox-controls">
       <button class="skeuo-btn" id="viewToggleBtn" onclick="toggleView()">Archive</button>
       <button class="skeuo-btn skeuo-btn-primary" onclick="spinAndPick()" title="Shuffle Pick">🔀 Shuffle</button>
-      <button class="skeuo-btn" onclick="openConfigModal()" title="System Configurator">⚙️ Config</button>
+      <button class="skeuo-btn" onclick="openConfigModal()">⚙️ Config</button>
       <button class="skeuo-btn" onclick="openBackupModal()">Backup</button>
     </div>
   </div>
@@ -1275,17 +1276,19 @@
   <div id="configModal" class="modal-overlay">
     <div class="itunes-card" style="width: 500px;">
       <div class="itunes-header">
-        <span>⚙️ SosaOS System & Category Configurator</span>
-        <!-- Cloud Sync Account Panel -->
-        <div style="font-size:11px; font-weight:600; color:#333; margin-bottom: 4px;">SosaOS Cloud Sync Engine:</div>
-        <div style="display:flex; gap:6px; margin-bottom: 10px;">
-          <input type="text" id="syncUserIdInput" placeholder="Enter Secret Sync Key (e.g. sosa-music-2026)..." style="flex:1;" />
-          <button class="skeuo-btn skeuo-btn-primary" onclick="connectCloudSyncAccount()">Connect & Sync</button>
-        </div>
-        <hr style="border:0; border-top:1px solid #ccc; width:100%; margin:4px 0;" />
+        <span>⚙️ System & Category Configurator</span>
         <span style="cursor:pointer;" onclick="closeConfigModal()">✕</span>
       </div>
       <div style="padding:12px; display:flex; flex-direction:column; gap:10px;">
+        
+        <!-- Cloud Sync Account Panel -->
+        <div style="font-size:11px; font-weight:600; color:#333; margin-bottom: 2px;">SosaOS Cloud Sync Engine:</div>
+        <div style="display:flex; gap:6px; margin-bottom: 4px;">
+          <input type="text" id="syncUserIdInput" placeholder="Enter Secret Sync Key (e.g. sosa-music)..." style="flex:1;" />
+          <button class="skeuo-btn skeuo-btn-primary" onclick="connectCloudSyncAccount()">Connect & Sync</button>
+        </div>
+        
+        <hr style="border:0; border-top:1px solid #ccc; width:100%; margin:2px 0;" />
         
         <!-- Rename Existing Category Header -->
         <div style="font-size:11px; font-weight:600; color:#333;">Rename Category Header:</div>
@@ -1350,7 +1353,7 @@
     </div>
   </div>
 
-<script>
+  <script>
     // ---------------------------------------------------------------- //
     // CLOUD SYNC & STORAGE PIPELINE INITIALIZATION                     //
     // ---------------------------------------------------------------- //
@@ -1600,6 +1603,7 @@
       }
     }
 
+    // Original tag logic block follows down completely unmodified
     function toggleFormCabinet() {
       const cab = document.getElementById('formCabinet');
       const btn = document.getElementById('cabinetToggleBtn');
