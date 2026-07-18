@@ -1616,6 +1616,7 @@
       return `${pad(mins)}:${pad(secs)}`;
     }
 
+    // Processing dates format context
     function getTodayISOString() {
       const today = new Date();
       const yr = today.getFullYear();
@@ -1782,55 +1783,6 @@
       e.stopPropagation();
       closeAllDropdowns();
       document.getElementById('secDropdownMenu').classList.toggle('show');
-    }
-
-    // Legacy Data Image Compressor Macro Loop Logic Module
-    async function migrateExistingImagesToBase64() {
-      const targetBtn = window.event ? window.event.target : null;
-      const originalText = targetBtn ? targetBtn.innerText : "Optimize";
-      
-      if (targetBtn) {
-        targetBtn.disabled = true;
-        targetBtn.innerText = "Processing Queue... 0%";
-      }
-
-      const convertUrlToBlob = (url) => {
-        return new Promise((resolve) => {
-          if (!url || url.startsWith('data:image')) return resolve(url);
-          
-          const img = new Image();
-          img.crossOrigin = "Anonymous";
-          img.src = url;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 250;
-            canvas.height = 250;
-            ctx.drawImage(img, 0, 0, 250, 250);
-            resolve(canvas.toDataURL('image/jpeg', 0.75));
-          };
-          img.onerror = () => resolve(url); // Remote cross-origin protect fallback router
-        });
-      };
-
-      for (let i = 0; i < albums.length; i++) {
-        if (targetBtn) targetBtn.innerText = `Processing Queue... ${Math.round((i / albums.length) * 100)}%`;
-        albums[i].art = await convertUrlToBlob(albums[i].art);
-      }
-
-      for (let i = 0; i < archive.length; i++) {
-        if (targetBtn) targetBtn.innerText = `Processing Archive... ${Math.round((i / archive.length) * 100)}%`;
-        archive[i].art = await convertUrlToBlob(archive[i].art);
-      }
-
-      if (targetBtn) targetBtn.innerText = "Saving data to disk...";
-      saveAndRender();
-      
-      if (targetBtn) {
-        targetBtn.disabled = false;
-        targetBtn.innerText = originalText;
-      }
-      alert(`Optimization complete! Custom media pools completely updated.`);
     }
 
     function toggleFilterGenreDropdown(e) {
@@ -2055,7 +2007,6 @@
       renderArtBatch();
     }
 
-    // Upgraded Selection Parser Engine: Packs incoming assets instantly into text blob payloads
     function selectArtwork(url, year, duration) {
       const fetchBtn = document.getElementById('fetchBtn');
       fetchBtn.innerText = 'Compressing...';
@@ -2301,7 +2252,7 @@
                   ${dur}
                   ${yr}
                   <span class="genre-tag" style="background: ${ribbonStyle};">${item.genre || 'General'}</span>
-                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">${isOpen ? '▲' : '▼'}</button>
+                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">▼</button>
                 </div>
               </div>
               <div class="item-drawer">
@@ -2351,7 +2302,7 @@
                   ${dur}
                   ${yr}
                   ${starsHtml}
-                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">${isOpen ? '▲' : '▼'}</button>
+                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">▼</button>
                   <button class="row-btn" style="margin-left:2px;" onclick="openArchiveEditModal(${idx}, event)">edit</button>
                   <button class="row-btn row-btn-del" onclick="deleteEntry(${idx}, event)">✕</button>
                 </div>
@@ -2365,6 +2316,11 @@
         listHtml += '</ul>';
         bodyEl.innerHTML = listHtml;
       }
+    }
+
+    function selectItem(idx) {
+      selectedIndex = idx;
+      renderList();
     }
 
     function openFinishModal(index, event = null) {
@@ -2602,7 +2558,6 @@
       toggleConfigNewCatInput();
     }
 
-    // Toggle Config Dropdown Layer Context logic
     function toggleConfigNewCatInput() {
       const catSelect = document.getElementById('configCatSelect');
       const newCatInput = document.getElementById('configNewCatInput');
@@ -2764,7 +2719,8 @@
       
       let sceneHtml = '';
       if (selected.scene) {
-        sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
+        const scBg = getGenreColor(selected.scene);
+        sceneHtml = `<span class="scene-tag" style="background:${scBg}">${selected.scene}</span>`;
       }
       
       const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
@@ -2805,7 +2761,6 @@
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       const item = sourceList[idx];
       const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
       editingIndex = realIndex;
@@ -2813,13 +2768,23 @@
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
-      document.getElementById('artInput').value = item.art;
-      
-      selectedPrimaryGenre = item.genre; 
+      document.getElementById('artInput').value = item.art.includes('placeholder') ? '' : item.art;
+
+      selectedPrimaryGenre = item.genre || '';
       updatePrimaryGenreDisplay();
-      
+
+      selectedScene = item.scene || '';
+      updateSceneDisplay();
+
+      selectedSecondaryGenres = new Set(item.secondaryGenres || []);
+      buildSecondaryGenreMenu();
+      updateSecTagPreview();
+
       document.getElementById('saveBtn').innerText = '✓ Update';
       document.getElementById('cancelBtn').style.display = 'inline-flex';
+
+      const cab = document.getElementById('formCabinet');
+      if (!cab.classList.contains('open')) toggleFormCabinet();
     }
 
     function deleteEntry(idx, event) {
@@ -2840,32 +2805,47 @@
     }
 
     function clearForm() {
-      editingIndex = null; document.getElementById('albumInput').value = '';
-      document.getElementById('yearInput').value = ''; document.getElementById('durationInput').value = '';
-      document.getElementById('artInput').value = ''; selectedPrimaryGenre = ""; updatePrimaryGenreDisplay();
-      document.getElementById('saveBtn').innerText = '+ Save Album'; document.getElementById('cancelBtn').style.display = 'none';
+      editingIndex = null;
+      document.getElementById('albumInput').value = '';
+      document.getElementById('yearInput').value = '';
+      document.getElementById('durationInput').value = '';
+      document.getElementById('artInput').value = '';
+
+      selectedPrimaryGenre = "";
+      updatePrimaryGenreDisplay();
+
+      selectedScene = "";
+      updateSceneDisplay();
+
+      selectedSecondaryGenres.clear();
+      buildSecondaryGenreMenu();
+      updateSecTagPreview();
+
+      document.getElementById('saveBtn').innerText = '+ Save Album';
+      document.getElementById('cancelBtn').style.display = 'none';
+      closeArtPreview();
     }
 
-    function updateStats() {
-      let totalSec = 0;
-      albums.forEach(a => { totalSec += parseFormattedTimeToSeconds(a.duration); });
-      document.getElementById('estTime').innerText = `Queue: ${formatSecondsToDisplay(totalSec)}`;
-      document.getElementById('topGenre').innerText = archive.length ? `Avg: ${(archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1)} ★` : 'Listened: 0';
+    function openBackupModal() {
+      document.getElementById('jsonBox').value = "";
+      document.getElementById('backupModal').style.display = 'flex';
     }
-
-    function openBackupModal() { document.getElementById('jsonBox').value = ""; document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
-    function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
-    function openConfigModal() { document.getElementById('configModal').style.display = 'flex'; }
-    function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
-    function showList() { renderList(); }
 
     function importJson() {
       try {
         const parsed = JSON.parse(document.getElementById('jsonBox').value);
-        if (parsed.queue && parsed.archive) { albums = parsed.queue; archive = parsed.archive; }
-        saveAndRender(); closeBackupModal();
-      } catch (e) { alert('Invalid payload layout metadata.'); }
+        if (parsed.queue && parsed.archive) {
+          albums = parsed.queue; archive = parsed.archive;
+          if (parsed.genres) GENRE_DATA = parsed.genres;
+          if (parsed.scenes) SCENE_DATA = parsed.scenes;
+          if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
+        } else if (Array.isArray(parsed)) { 
+          albums = parsed; 
+        }
+        saveAndRender();
+        closeBackupModal();
+      } catch (e) { alert('Invalid JSON format.'); }
     }
 
     buildPrimaryGenreMenu();
