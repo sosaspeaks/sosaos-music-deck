@@ -1371,7 +1371,6 @@
     let editingArchiveIndex = null;
     let currentSelectedRating = 5.0;
     let hoveredRating = 5.0;
-    let isBlindMode = false;
 
     let selectedPrimaryGenre = "";
     let selectedScene = "";
@@ -1383,6 +1382,7 @@
     let artBatchIndex = 0;
     let openDrawers = new Set();
 
+    // RemoteStorage Configuration Handles
     let remoteStorage = null;
     let musicCategoryStore = null;
 
@@ -1850,7 +1850,6 @@
       });
     }
 
-    // Upgraded Selection Parser Engine: Compresses and processes strings instantly to Base64 blobs
     function selectArtwork(url, year, duration) {
       const fetchBtn = document.getElementById('fetchBtn');
       fetchBtn.innerText = 'Compressing...';
@@ -2264,20 +2263,23 @@
       document.getElementById('itunesInfoModal').style.display = 'flex';
     }
 
-    function toggleBlindMode() {
-      const coverEl = document.getElementById('npCoverImg');
-      const trackEl = document.getElementById('npTrackTitle');
-      const artistEl = document.getElementById('npArtistName');
-      isBlindMode = !isBlindMode;
+    // Interactive Queue-Next Staging System Function
+    function stageRandomAlbumAsNext(targetIndex) {
+      let sourceList = currentView === 'queue' ? albums : archive;
+      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
+      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
-      if (isBlindMode) {
-        coverEl.style.filter = 'blur(12px) brightness(0.3)';
-        trackEl.innerText = '??? Blind Listen ???';
-        artistEl.innerText = 'Artist Hidden';
-      } else {
-        coverEl.style.filter = 'none';
-        renderList();
-      }
+      if (sourceList.length <= 1) return;
+      
+      const chosenItem = sourceList[targetIndex];
+      const globalCurrentIdx = albums.findIndex(a => a.title === chosenItem.title);
+      
+      // Cut from stack array and reinject cleanly at position index 1
+      const pulledItem = albums.splice(globalCurrentIdx, 1)[0];
+      albums.splice(1, 0, pulledItem);
+      
+      saveAndRender();
+      alert(`Up Next Staged: "${chosenItem.title.split('-')[1] || chosenItem.title}" has been shifted directly behind your active record.`);
     }
 
     function pickRandomAlbum(targetIndex = null) {
@@ -2326,65 +2328,15 @@
             <div style="display:flex; gap:6px; width:100%;">
               <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${randomIndex})">Finished</button>
               <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
-              <button class="skeuo-btn" style="flex:0.8;" onclick="toggleBlindMode()">🙈 Blind</button>
+              <button class="skeuo-btn" style="flex:1;" onclick="stageRandomAlbumAsNext(${randomIndex})">➡️ Queue Next</button>
             </div>
           </div>
         </div>`;
     }
 
-      async function migrateExistingImagesToBase64() {
-    const targetBtn = event.target;
-    const originalText = targetBtn.innerText;
-    targetBtn.disabled = true;
-    targetBtn.innerText = "Processing Queue... 0%";
-  
-    // Helper function to turn a legacy URL into a compressed base64 string
-    const convertUrlToBlob = (url) => {
-      return new Promise((resolve) => {
-        if (!url || url.startsWith('data:image')) return resolve(url); // Already base64 optimized
-        
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = 250;
-          canvas.height = 250;
-          ctx.drawImage(img, 0, 0, 250, 250);
-          resolve(canvas.toDataURL('image/jpeg', 0.75));
-        };
-        img.onerror = () => resolve(url); // Fallback to raw link if remote host blocks CORS requests
-      });
-    };
-  
-    // Convert Queue items
-    for (let i = 0; i < albums.length; i++) {
-      targetBtn.innerText = `Processing Queue... ${Math.round((i / albums.length) * 100)}%`;
-      albums[i].art = await convertUrlToBlob(albums[i].art);
-    }
-  
-    // Convert Archive items
-    for (let i = 0; i < archive.length; i++) {
-      targetBtn.innerText = `Processing Archive... ${Math.round((i / archive.length) * 100)}%`;
-      archive[i].art = await convertUrlToBlob(archive[i].art);
-    }
-  
-    // Commit the updated payload blocks back to disk and network sync engine
-    targetBtn.innerText = "Saving synced records...";
-    await saveAndRender();
-    
-    targetBtn.disabled = false;
-    targetBtn.innerText = originalText;
-    alert(`Optimization complete! All existing images compressed successfully.`);
-    }
-
     buildPrimaryGenreMenu();
     buildSceneMenu();
     buildSecondaryGenreMenu();
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-    }
     initStoragePipeline();
   </script>
 </body>
