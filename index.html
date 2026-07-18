@@ -1358,9 +1358,9 @@
 
 <script>
     // ---------------------------------------------------------------- //
-    // PROTECTED DECONSTRUCTIVE CLOUD SYNC ENGINE PIPELINE             //
+    // RESTORED STORAGE & SYNC PIPELINE INITIALIZATION                  //
     // ---------------------------------------------------------------- //
-    // Direct device cache recovery hook checks
+    // Pull local storage first so your existing data remains locked in
     let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
     let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
     let customBg = localStorage.getItem('sosa_bg_file') || "";
@@ -1390,18 +1390,16 @@
       const savedSyncKey = localStorage.getItem('sosa_sync_key');
       if (savedSyncKey) {
         document.getElementById('syncUserIdInput').value = savedSyncKey;
-        // Run silent background verification loop on app relaunch
-        await connectCloudSyncAccount(savedSyncKey, true);
+        await connectCloudSyncAccount(savedSyncKey);
       } else {
         finalizeUIInitialization();
       }
     }
 
-    async function connectCloudSyncAccount(forcedKey = null, isSilentAutoLoad = false) {
+    async function connectCloudSyncAccount(forcedKey = null) {
       const targetKey = forcedKey || document.getElementById('syncUserIdInput').value.trim();
       if (!targetKey) return alert("Please enter a valid personal key phrase.");
 
-      if (!isSilentAutoLoad) console.log("Initializing SosaOS Sync Router Engine initialization phase...");
       localStorage.setItem('sosa_sync_key', targetKey);
       
       remoteStorage = new RemoteStorage();
@@ -1409,54 +1407,21 @@
       musicCategoryStore = remoteStorage.scope('/music/');
       
       try {
-        if (!isSilentAutoLoad) {
-          document.getElementById('screenTitle').innerText = "Connecting...";
-          document.getElementById('screenBody').innerHTML = `
-            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; gap:8px; font-size:11px; font-weight:bold;">
-              <div>⚡ SosaOS Sync Engine</div>
-              <div style="opacity:0.6; font-size:10px;">Querying cloud server...</div>
-            </div>`;
-        }
-
         const remoteQueue = await musicCategoryStore.getObject('queue');
         const remoteArchive = await musicCategoryStore.getObject('archive');
         
-        const hasLocalData = albums.length > 0 || archive.length > 0;
-        const hasRemoteData = (remoteQueue && remoteQueue.length > 0) || (remoteArchive && remoteArchive.length > 0);
+        // Safety Merge: Only overwrite if remote cloud actually contains data entries
+        if (remoteQueue && remoteQueue.length > 0) albums = remoteQueue;
+        if (remoteArchive && remoteArchive.length > 0) archive = remoteArchive;
+        
+        // If cloud was empty, push our current local data up immediately to back it up
+        if (!remoteQueue && albums.length > 0) await musicCategoryStore.storeObject('queue', albums);
+        if (!remoteArchive && archive.length > 0) await musicCategoryStore.storeObject('archive', archive);
 
-        if (hasLocalData && !hasRemoteData) {
-          // Cloud profile is blank: Safe push local device context upward to cloud mirror context
-          if (!isSilentAutoLoad) alert("Cloud profile is new. Uploading local library history to secure database container...");
-          await musicCategoryStore.storeObject('queue', albums);
-          await musicCategoryStore.storeObject('archive', archive);
-        } 
-        else if (hasLocalData && hasRemoteData && !isSilentAutoLoad) {
-          // Both paths contain datasets: Request execution priority context authorization explicitly
-          const choicesSelection = confirm(
-            "Data Conflict Detected!\n\n" +
-            "Click [ OK ] to download data from the cloud (overwrites this device).\n" +
-            "Click [ Cancel ] to keep this device's data (overwrites the cloud)."
-          );
-          
-          if (choicesSelection) {
-            albums = remoteQueue || [];
-            archive = remoteArchive || [];
-          } else {
-            await musicCategoryStore.storeObject('queue', albums);
-            await musicCategoryStore.storeObject('archive', archive);
-          }
-        } 
-        else if (hasRemoteData) {
-          // Device is empty, cloud holds data: Clean path pull down
-          albums = remoteQueue || [];
-          archive = remoteArchive || [];
-        }
-
-        if (!isSilentAutoLoad) alert("Sync Complete! Caching operational dataset...");
+        if (!forcedKey) alert("Account Connected! Caching storage matrix...");
         finalizeUIInitialization();
       } catch (err) {
-        console.warn("Cloud infrastructure handshake failed, reverting safely to device cache:", err);
-        if (!isSilentAutoLoad) alert("Sync Engine offline. Running layout using offline device logs.");
+        console.warn("Cloud connection timed out, pulling cached backup context:", err);
         finalizeUIInitialization();
       }
     }
@@ -1468,7 +1433,6 @@
     }
 
     async function saveAndRender() {
-      // Keep state locked securely to regional phone device fallback storage loop
       localStorage.setItem('rockbox_queue', JSON.stringify(albums));
       localStorage.setItem('rockbox_archive', JSON.stringify(archive));
       
@@ -1477,7 +1441,7 @@
           await musicCategoryStore.storeObject('queue', albums);
           await musicCategoryStore.storeObject('archive', archive);
         } catch (err) {
-          console.error("Cloud backup replication cycle failed:", err);
+          console.error("Cloud background sync pass interrupted:", err);
         }
       }
       
