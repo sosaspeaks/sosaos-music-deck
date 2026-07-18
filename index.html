@@ -1380,7 +1380,6 @@
     let artBatchIndex = 0;
     let openDrawers = new Set();
 
-    // RemoteStorage Configuration Handles
     let remoteStorage = null;
     let musicCategoryStore = null;
 
@@ -1551,9 +1550,6 @@
         ctx.drawImage(img, 0, 0, 1, 1);
         const pixelData = ctx.getImageData(0, 0, 1, 1).data;
         applyBacklightGradientTint(pixelData[0], pixelData[1], pixelData[2]);
-      };
-      img.onerror = function() {
-        applyBacklightGradientTint(56, 128, 200);
       };
     }
 
@@ -1828,6 +1824,78 @@
       else { alert('No matches resolved.'); }
     }
 
+    function renderArtBatch() {
+      const gridEl = document.getElementById('artResultsGrid');
+      gridEl.innerHTML = '';
+      const startIndex = artBatchIndex * 3;
+      const currentBatch = allArtCandidates.slice(startIndex, startIndex + 3);
+      const indicatorEl = document.getElementById('artPageIndicator');
+      indicatorEl.innerText = `Select Artwork Match (${startIndex + 1}-${Math.min(startIndex + 3, allArtCandidates.length)} of ${allArtCandidates.length}):`;
+
+      currentBatch.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'art-card';
+        card.innerHTML = `
+          <img src="${item.artUrl}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/555/fff?text=No+Art'">
+          <div class="art-card-title">${item.albumName}</div>
+          <div class="art-card-artist">${item.artistName}</div>
+          <div class="art-card-meta">${item.year ? `Year: ${item.year}` : ''} • ${item.duration}</div>
+          <span class="provider-badge">${item.provider}</span>
+          <button class="skeuo-btn skeuo-btn-primary" style="font-size: 9px; padding: 2px 8px; margin-top: 4px;" onclick="selectArtwork('${item.artUrl}', '${item.year}', '${item.duration}')">Select All</button>
+        `;
+        gridEl.appendChild(card);
+      });
+    }
+
+    // Upgraded Selection Parser Engine: Compresses and processes strings instantly to Base64 blobs
+    function selectArtwork(url, year, duration) {
+      const fetchBtn = document.getElementById('fetchBtn');
+      fetchBtn.innerText = 'Compressing...';
+
+      const img = new Image();
+      img.crossOrigin = "Anonymous"; 
+      img.src = url;
+
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 250; 
+        canvas.height = 250;
+        ctx.drawImage(img, 0, 0, 250, 250);
+        
+        const base64DataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        document.getElementById('artInput').value = base64DataUrl;
+        
+        if (year) document.getElementById('yearInput').value = year;
+        if (duration) document.getElementById('durationInput').value = duration;
+        
+        fetchBtn.innerText = 'Fetch Art';
+        closeArtPreview();
+      };
+
+      img.onerror = function() {
+        document.getElementById('artInput').value = url;
+        if (year) document.getElementById('yearInput').value = year;
+        if (duration) document.getElementById('durationInput').value = duration;
+        fetchBtn.innerText = 'Fetch Art';
+        closeArtPreview();
+      };
+    }
+
+    function nextArtBatch() {
+      if ((artBatchIndex + 1) * 3 < allArtCandidates.length) artBatchIndex++;
+      else artBatchIndex = 0;
+      renderArtBatch();
+    }
+
+    function prevArtBatch() {
+      if (artBatchIndex > 0) artBatchIndex--;
+      else artBatchIndex = Math.max(0, Math.ceil(allArtCandidates.length / 3) - 1);
+      renderArtBatch();
+    }
+
+    function closeArtPreview() { document.getElementById('artPreviewBox').style.display = 'none'; }
+
     // ---------------------------------------------------------------- //
     // BASIC REPERTOIRE ENGINE LOGIC WORKSPACE                          //
     // ---------------------------------------------------------------- //
@@ -1895,11 +1963,8 @@
 
     function toggleDrawer(idx, event) {
       if (event) event.stopPropagation();
-      if (openDrawers.has(idx)) {
-        openDrawers.delete(idx);
-      } else {
-        openDrawers.add(idx);
-      }
+      if (openDrawers.has(idx)) { openDrawers.delete(idx); } 
+      else { openDrawers.add(idx); }
       renderList();
     }
 
@@ -2031,9 +2096,7 @@
       const favTrack = document.getElementById('favoriteTrackInput').value.trim();
 
       descriptors.forEach(d => {
-        if (!DESCRIPTOR_POOL.includes(d)) {
-          DESCRIPTOR_POOL.push(d);
-        }
+        if (!DESCRIPTOR_POOL.includes(d)) { DESCRIPTOR_POOL.push(d); }
       });
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
@@ -2116,7 +2179,7 @@
       document.getElementById('topGenre').innerText = `Archive: ${archive.length}`;
     }
 
-    function openBackupModal() { document.getElementById('backupModal').style.display = 'flex'; }
+    function openBackupModal() { document.getElementById('jsonBox').value = ""; document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
     function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
     function openConfigModal() { document.getElementById('configModal').style.display = 'flex'; }
@@ -2199,10 +2262,10 @@
     }
 
     function toggleBlindMode() {
-      isBlindMode = !isBlindMode;
       const coverEl = document.getElementById('npCoverImg');
       const trackEl = document.getElementById('npTrackTitle');
       const artistEl = document.getElementById('npArtistName');
+      isBlindMode = !isBlindMode;
 
       if (isBlindMode) {
         coverEl.style.filter = 'blur(12px) brightness(0.3)';
@@ -2235,7 +2298,6 @@
       if (selected.scene) {
         sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
       }
-      
       const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
 
       bodyEl.innerHTML = `
@@ -2253,12 +2315,10 @@
               </div>
             </div>
           </div>
-
           <div class="np-progress-zone">
             <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
             <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration || '45:00'}</span></div>
           </div>
-
           <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
             <div style="display:flex; gap:6px; width:100%;">
               <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${randomIndex})">Finished</button>
@@ -2274,5 +2334,3 @@
     buildSecondaryGenreMenu();
     initStoragePipeline();
   </script>
-</body>
-</html>
