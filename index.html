@@ -1358,11 +1358,10 @@
 
 <script>
     // ---------------------------------------------------------------- //
-    // RESTORED STORAGE & SYNC PIPELINE INITIALIZATION                  //
+    // CLOUD SYNC & STORAGE PIPELINE INITIALIZATION                     //
     // ---------------------------------------------------------------- //
-    // Pull local storage first so your existing data remains locked in
-    let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
-    let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
+    let albums = [];
+    let archive = [];
     let customBg = localStorage.getItem('sosa_bg_file') || "";
     
     let currentView = 'queue';
@@ -1383,6 +1382,7 @@
     let artBatchIndex = 0;
     let openDrawers = new Set();
 
+    // RemoteStorage Configuration Handles
     let remoteStorage = null;
     let musicCategoryStore = null;
 
@@ -1392,6 +1392,8 @@
         document.getElementById('syncUserIdInput').value = savedSyncKey;
         await connectCloudSyncAccount(savedSyncKey);
       } else {
+        albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+        archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         finalizeUIInitialization();
       }
     }
@@ -1410,18 +1412,15 @@
         const remoteQueue = await musicCategoryStore.getObject('queue');
         const remoteArchive = await musicCategoryStore.getObject('archive');
         
-        // Safety Merge: Only overwrite if remote cloud actually contains data entries
-        if (remoteQueue && remoteQueue.length > 0) albums = remoteQueue;
-        if (remoteArchive && remoteArchive.length > 0) archive = remoteArchive;
+        albums = remoteQueue || JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+        archive = remoteArchive || JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         
-        // If cloud was empty, push our current local data up immediately to back it up
-        if (!remoteQueue && albums.length > 0) await musicCategoryStore.storeObject('queue', albums);
-        if (!remoteArchive && archive.length > 0) await musicCategoryStore.storeObject('archive', archive);
-
         if (!forcedKey) alert("Account Connected! Caching storage matrix...");
         finalizeUIInitialization();
       } catch (err) {
         console.warn("Cloud connection timed out, pulling cached backup context:", err);
+        albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+        archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         finalizeUIInitialization();
       }
     }
@@ -1897,8 +1896,6 @@
       renderArtBatch();
     }
 
-    document.getElementById('configCatSelect').onchange = toggleConfigNewCatInput;
-
     function closeArtPreview() { document.getElementById('artPreviewBox').style.display = 'none'; }
 
     // ---------------------------------------------------------------- //
@@ -2266,6 +2263,7 @@
       document.getElementById('itunesInfoModal').style.display = 'flex';
     }
 
+    // Interactive Queue-Next Staging System Function
     function stageRandomAlbumAsNext(targetIndex) {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
@@ -2276,11 +2274,12 @@
       const chosenItem = sourceList[targetIndex];
       const globalCurrentIdx = albums.findIndex(a => a.title === chosenItem.title);
       
+      // Cut from stack array and reinject cleanly at position index 1
       const pulledItem = albums.splice(globalCurrentIdx, 1)[0];
       albums.splice(1, 0, pulledItem);
       
       saveAndRender();
-      alert(`Up Next Staged: "${chosenItem.title.split('-')[1] || chosenItem.title}" shifted cleanly behind active placement context.`);
+      alert(`Up Next Staged: "${chosenItem.title.split('-')[1] || chosenItem.title}" has been shifted directly behind your active record.`);
     }
 
     function pickRandomAlbum(targetIndex = null) {
@@ -2335,125 +2334,9 @@
         </div>`;
     }
 
-    function populateRenameCatSelect() {
-      const target = document.getElementById('renameTargetType').value;
-      const select = document.getElementById('renameCatSelect');
-      select.innerHTML = '';
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach((c, idx) => {
-        select.innerHTML += `<option value="${idx}">${c.category}</option>`;
-      });
-    }
-
-    function renameCategoryHeader() {
-      const target = document.getElementById('renameTargetType').value;
-      const catIdx = document.getElementById('renameCatSelect').value;
-      const newName = document.getElementById('renameCatInput').value.trim();
-      if (!newName || catIdx === "") return;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset[catIdx].category = newName;
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-      document.getElementById('renameCatInput').value = '';
-      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
-    }
-
-    function handleConfigTargetChange() {
-      const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      catSelect.innerHTML = '';
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach(c => { catSelect.innerHTML += `<option value="${c.category}">${c.category}</option>`; });
-      catSelect.innerHTML += `<option value="__new__">+ New Category Header...</option>`;
-      toggleConfigNewCatInput();
-    }
-
-    function toggleConfigNewCatInput() {
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      if (catSelect.value === '__new__') { newCatInput.style.display = 'block'; newCatInput.focus(); } 
-      else { newCatInput.style.display = 'none'; }
-    }
-
-    function addConfigItem() {
-      const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      const itemInput = document.getElementById('configItemInput');
-      let categoryName = catSelect.value;
-      if (categoryName === '__new__') { categoryName = newCatInput.value.trim(); }
-      const itemName = itemInput.value.trim();
-      if (!categoryName || !itemName) return;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      let targetCat = dataset.find(c => c.category === categoryName);
-      if (!targetCat) {
-        targetCat = { category: categoryName, [target === 'genre' ? 'genres' : 'scenes']: [] };
-        dataset.push(targetCat);
-      }
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-      if (!targetCat[listKey].includes(itemName)) { targetCat[listKey].push(itemName); }
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-      itemInput.value = ''; newCatInput.value = '';
-      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
-    }
-
-    function renderConfigTree() {
-      const display = document.getElementById('configTreeDisplay');
-      const target = document.getElementById('configTargetType').value;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-      let html = '';
-      dataset.forEach((cat, cIdx) => {
-        html += `<div style="color:#38bdf8; font-weight:bold; margin-top:4px;">${cat.category}</div>`;
-        cat[listKey].forEach((item, iIdx) => {
-          html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 0 2px 8px;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="color-chip" style="background:${getGenreColor(item)}"></span>
-                <span style="color:#e2e8f0">${item}</span>
-              </div>
-              <button class="skeuo-btn" style="font-size:8px; padding:1px 4px;" onclick="deleteConfigItem('${target}', ${cIdx}, ${iIdx})">✕</button>
-            </div>`;
-        });
-      });
-      display.innerHTML = html;
-    }
-
-    function deleteConfigItem(target, cIdx, iIdx) {
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-      dataset[cIdx][listKey].splice(iIdx, 1);
-      if (dataset[cIdx][listKey].length === 0) { dataset.splice(cIdx, 1); }
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
-    }
-
     buildPrimaryGenreMenu();
     buildSceneMenu();
     buildSecondaryGenreMenu();
-    
-    // Service Worker App Sandbox Asset Cache Router
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-    }
-
     initStoragePipeline();
   </script>
 </body>
