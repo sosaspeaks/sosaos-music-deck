@@ -1284,7 +1284,7 @@
     </div>
   </div>
 
-<!-- Backup Modal -->
+  <!-- Backup Modal -->
   <div id="backupModal" class="modal-overlay">
     <div class="itunes-card" style="background:#222; border:1px solid #555; padding:16px; border-radius:8px; text-align:center; width:340px;">
       <h4 style="margin:0 0 8px 0; color:#fff;">Backup / Import System</h4>
@@ -1298,7 +1298,6 @@
       </button>
 
       <div style="border-top:1px solid #444; padding-top:12px; margin-top:4px; position:relative;">
-        <!-- Clean Semantic File Upload Target Badge -->
         <button class="skeuo-btn" style="width:100%; padding:8px 0; position:relative; overflow:hidden;">
           📂 Upload Backup File (.json)
           <input type="file" id="jsonFileInput" accept=".json" onchange="importJsonFile(event)" style="position:absolute; top:0; left:0; opacity:0; width:100%; height:100%; cursor:pointer;" />
@@ -1552,10 +1551,8 @@
       renderInteractiveStars(hoveredRating);
     }
 
-    function resetStarHover() {
-      renderInteractiveStars(currentSelectedRating);
-    }
-
+    // Star interaction system
+    function resetStarHover() { renderInteractiveStars(currentSelectedRating); }
     function handleStarClick(event, starIndex) {
       const rect = event.target.getBoundingClientRect();
       const isLeftHalf = (event.clientX - rect.left) < (rect.width / 2);
@@ -1572,10 +1569,7 @@
     function addDescriptorPreset(tag) {
       const input = document.getElementById('descriptorInput');
       let curr = input.value.split(',').map(s => s.trim()).filter(Boolean);
-      if (!curr.includes(tag)) {
-        curr.push(tag);
-        input.value = curr.join(', ');
-      }
+      if (!curr.includes(tag)) { curr.push(tag); input.value = curr.join(', '); }
     }
 
     function formatTimeMS(ms) {
@@ -1584,25 +1578,17 @@
       const hrs = Math.floor(totalSec / 3600);
       const mins = Math.floor((totalSec % 3600) / 60);
       const secs = totalSec % 60;
-
       const pad = (num) => String(num).padStart(2, '0');
-
-      if (hrs > 0) {
-        return `${hrs}:${pad(mins)}:${pad(secs)}`;
-      }
+      if (hrs > 0) { return `${hrs}:${pad(mins)}:${pad(secs)}`; }
       return `${pad(mins)}:${pad(secs)}`;
     }
 
     function parseFormattedTimeToSeconds(timeStr) {
       if (!timeStr) return 2700;
       const parts = timeStr.trim().split(':').map(p => parseInt(p, 10) || 0);
-      if (parts.length === 3) {
-        return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
-      } else if (parts.length === 2) {
-        return (parts[0] * 60) + parts[1];
-      } else if (parts.length === 1 && !isNaN(parts[0])) {
-        return parts[0] * 60;
-      }
+      if (parts.length === 3) { return (parts[0] * 3600) + (parts[1] * 60) + parts[2]; } 
+      else if (parts.length === 2) { return (parts[0] * 60) + parts[1]; } 
+      else if (parts.length === 1 && !isNaN(parts[0])) { return parts[0] * 60; }
       return 2700;
     }
 
@@ -1611,207 +1597,108 @@
       const mins = Math.floor((sec % 3600) / 60);
       const secs = sec % 60;
       const pad = (num) => String(num).padStart(2, '0');
-
-      if (hrs > 0) {
-        return `${hrs}:${pad(mins)}:${pad(secs)}`;
-      }
+      if (hrs > 0) { return `${hrs}:${pad(mins)}:${pad(secs)}`; }
       return `${pad(mins)}:${pad(secs)}`;
     }
 
     function getTodayISOString() {
       const today = new Date();
-      const yr = today.getFullYear();
-      const mo = String(today.getMonth() + 1).padStart(2, '0');
-      const da = String(today.getDate()).padStart(2, '0');
-      return `${yr}-${mo}-${da}`;
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     }
 
     function buildPrimaryGenreMenu() {
       const menu = document.getElementById('primaryGenreDropdownMenu');
       menu.innerHTML = '';
-
       GENRE_DATA.forEach(cat => {
         const catHeader = document.createElement('div');
         catHeader.style.cssText = 'font-size:9px; font-weight:bold; color:#8899aa; padding:4px 2px 2px 2px; text-transform:uppercase;';
         catHeader.innerText = cat.category;
         menu.appendChild(catHeader);
-
         cat.genres.forEach(val => {
-          const row = document.createElement('div');
-          row.className = 'multiselect-option';
-          
-          const chip = document.createElement('span');
-          chip.className = 'color-chip';
-          chip.style.background = getGenreColor(val);
-
-          const lbl = document.createElement('span');
-          lbl.innerText = val;
-
-          row.appendChild(chip);
-          row.appendChild(lbl);
-
-          row.onclick = (e) => {
-            e.stopPropagation();
-            selectedPrimaryGenre = val;
-            updatePrimaryGenreDisplay();
-            menu.classList.remove('show');
-          };
-
+          const row = document.createElement('div'); row.className = 'multiselect-option';
+          const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
+          const lbl = document.createElement('span'); lbl.innerText = val;
+          row.appendChild(chip); row.appendChild(lbl);
+          row.onclick = (e) => { e.stopPropagation(); selectedPrimaryGenre = val; updatePrimaryGenreDisplay(); menu.classList.remove('show'); };
           menu.appendChild(row);
         });
       });
     }
 
-    function togglePrimaryGenreDropdown(e) {
-      e.stopPropagation();
-      closeAllDropdowns();
-      document.getElementById('primaryGenreDropdownMenu').classList.toggle('show');
-    }
-
+    function togglePrimaryGenreDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('primaryGenreDropdownMenu').classList.toggle('show'); }
     function updatePrimaryGenreDisplay() {
       const display = document.getElementById('primaryGenreDisplay');
-      if (!selectedPrimaryGenre) {
-        display.innerHTML = 'Primary Genre...';
-      } else {
-        const bg = getGenreColor(selectedPrimaryGenre);
-        display.innerHTML = `<span class="genre-tag" style="background:${bg}">${selectedPrimaryGenre}</span>`;
-      }
+      display.innerHTML = selectedPrimaryGenre ? `<span class="genre-tag" style="background:${getGenreColor(selectedPrimaryGenre)}">${selectedPrimaryGenre}</span>` : 'Primary Genre...';
     }
 
     function buildSceneMenu() {
       const menu = document.getElementById('sceneDropdownMenu');
       menu.innerHTML = '';
-
-      const noneRow = document.createElement('div');
-      noneRow.className = 'multiselect-option';
-      noneRow.innerText = 'No Scene Tag';
-      noneRow.onclick = (e) => {
-        e.stopPropagation();
-        selectedScene = "";
-        updateSceneDisplay();
-        menu.classList.remove('show');
-      };
+      const noneRow = document.createElement('div'); noneRow.className = 'multiselect-option'; noneRow.innerText = 'No Scene Tag';
+      noneRow.onclick = (e) => { e.stopPropagation(); selectedScene = ""; updateSceneDisplay(); menu.classList.remove('show'); };
       menu.appendChild(noneRow);
-
       SCENE_DATA.forEach(cat => {
         const catHeader = document.createElement('div');
         catHeader.style.cssText = 'font-size:9px; font-weight:bold; color:#8899aa; padding:4px 2px 2px 2px; text-transform:uppercase;';
         catHeader.innerText = cat.category;
         menu.appendChild(catHeader);
-
         cat.scenes.forEach(val => {
-          const row = document.createElement('div');
-          row.className = 'multiselect-option';
-          
-          const chip = document.createElement('span');
-          chip.className = 'color-chip';
-          chip.style.background = getGenreColor(val);
-
-          const lbl = document.createElement('span');
-          lbl.innerText = val;
-
-          row.appendChild(chip);
-          row.appendChild(lbl);
-
-          row.onclick = (e) => {
-            e.stopPropagation();
-            selectedScene = val;
-            updateSceneDisplay();
-            menu.classList.remove('show');
-          };
-
+          const row = document.createElement('div'); row.className = 'multiselect-option';
+          const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
+          const lbl = document.createElement('span'); lbl.innerText = val;
+          row.appendChild(chip); row.appendChild(lbl);
+          row.onclick = (e) => { e.stopPropagation(); selectedScene = val; updateSceneDisplay(); menu.classList.remove('show'); };
           menu.appendChild(row);
         });
       });
     }
 
-    function toggleSceneDropdown(e) {
-      e.stopPropagation();
-      closeAllDropdowns();
-      document.getElementById('sceneDropdownMenu').classList.toggle('show');
-    }
-
+    function toggleSceneDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('sceneDropdownMenu').classList.toggle('show'); }
     function updateSceneDisplay() {
       const display = document.getElementById('sceneDisplay');
-      if (!selectedScene) {
-        display.innerHTML = 'Select Scene / Movement...';
-      } else {
-        const bg = getGenreColor(selectedScene);
-        display.innerHTML = `<span class="scene-tag" style="background:${bg}">${selectedScene}</span>`;
-      }
+      display.innerHTML = selectedScene ? `<span class="scene-tag" style="background:${getGenreColor(selectedScene)}">${selectedScene}</span>` : 'Select Scene / Movement...';
     }
 
     function buildSecondaryGenreMenu() {
       const menu = document.getElementById('secDropdownMenu');
       menu.innerHTML = '';
-
       GENRE_DATA.forEach(cat => {
         const catHeader = document.createElement('div');
         catHeader.style.cssText = 'font-size:9px; font-weight:bold; color:#8899aa; padding:4px 2px 2px 2px; text-transform:uppercase;';
         catHeader.innerText = cat.category;
         menu.appendChild(catHeader);
-
         cat.genres.forEach(val => {
-          const row = document.createElement('label');
-          row.className = 'multiselect-option';
-
-          const chip = document.createElement('span');
-          chip.className = 'color-chip';
-          chip.style.background = getGenreColor(val);
-
-          const chk = document.createElement('input');
-          chk.type = 'checkbox';
-          chk.value = val;
-          chk.checked = selectedSecondaryGenres.has(val);
+          const row = document.createElement('label'); row.className = 'multiselect-option';
+          const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
+          const chk = document.createElement('input'); chk.type = 'checkbox'; chk.value = val; chk.checked = selectedSecondaryGenres.has(val);
           chk.onchange = (e) => {
-            if (e.target.checked) selectedSecondaryGenres.add(val);
-            else selectedSecondaryGenres.delete(val);
+            if (e.target.checked) selectedSecondaryGenres.add(val); else selectedSecondaryGenres.delete(val);
             updateSecTagPreview();
           };
-
-          const lbl = document.createElement('span');
-          lbl.innerText = val;
-
-          row.appendChild(chk);
-          row.appendChild(chip);
-          row.appendChild(lbl);
+          const lbl = document.createElement('span'); lbl.innerText = val;
+          row.appendChild(chk); row.appendChild(chip); row.appendChild(lbl);
           menu.appendChild(row);
         });
       });
     }
 
-    function toggleSecondaryGenreDropdown(e) {
-      e.stopPropagation();
-      closeAllDropdowns();
-      document.getElementById('secDropdownMenu').classList.toggle('show');
-    }
+    function toggleSecondaryGenreDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('secDropdownMenu').classList.toggle('show'); }
 
-    // Legacy Data Image Compressor Macro Loop Logic Module
     async function migrateExistingImagesToBase64() {
       const targetBtn = window.event ? window.event.target : null;
       const originalText = targetBtn ? targetBtn.innerText : "Optimize";
-      
-      if (targetBtn) {
-        targetBtn.disabled = true;
-        targetBtn.innerText = "Processing Queue... 0%";
-      }
+      if (targetBtn) { targetBtn.disabled = true; targetBtn.innerText = "Processing Queue... 0%"; }
 
       const convertUrlToBlob = (url) => {
         return new Promise((resolve) => {
           if (!url || url.startsWith('data:image')) return resolve(url);
-          
-          const img = new Image();
-          img.crossOrigin = "Anonymous";
-          img.src = url;
+          const img = new Image(); img.crossOrigin = "Anonymous"; img.src = url;
           img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 250;
-            canvas.height = 250;
-            ctx.drawImage(img, 0, 0, 250, 250);
+            const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+            canvas.width = 250; canvas.height = 250; ctx.drawImage(img, 0, 0, 250, 250);
             resolve(canvas.toDataURL('image/jpeg', 0.75));
           };
-          img.onerror = () => resolve(url); // Remote cross-origin protect fallback router
+          img.onerror = () => resolve(url);
         });
       };
 
@@ -1819,71 +1706,32 @@
         if (targetBtn) targetBtn.innerText = `Processing Queue... ${Math.round((i / albums.length) * 100)}%`;
         albums[i].art = await convertUrlToBlob(albums[i].art);
       }
-
       for (let i = 0; i < archive.length; i++) {
         if (targetBtn) targetBtn.innerText = `Processing Archive... ${Math.round((i / archive.length) * 100)}%`;
         archive[i].art = await convertUrlToBlob(archive[i].art);
       }
-
       if (targetBtn) targetBtn.innerText = "Saving data to disk...";
       saveAndRender();
-      
-      if (targetBtn) {
-        targetBtn.disabled = false;
-        targetBtn.innerText = originalText;
-      }
+      if (targetBtn) { targetBtn.disabled = false; targetBtn.innerText = originalText; }
       alert(`Optimization complete! Custom media pools completely updated.`);
     }
 
-    function toggleFilterGenreDropdown(e) {
-      e.stopPropagation();
-      closeAllDropdowns();
-      document.getElementById('filterGenreDropdownMenu').classList.toggle('show');
-    }
-
-    function toggleFilterSceneDropdown(e) {
-      e.stopPropagation();
-      closeAllDropdowns();
-      document.getElementById('filterSceneDropdownMenu').classList.toggle('show');
-    }
-
-    function closeAllDropdowns() {
-      const menus = document.querySelectorAll('.custom-multiselect-dropdown');
-      menus.forEach(m => m.classList.remove('show'));
-    }
-
+    function toggleFilterGenreDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('filterGenreDropdownMenu').classList.toggle('show'); }
+    function toggleFilterSceneDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('filterSceneDropdownMenu').classList.toggle('show'); }
+    function closeAllDropdowns() { document.querySelectorAll('.custom-multiselect-dropdown').forEach(m => m.classList.remove('show')); }
     document.addEventListener('click', closeAllDropdowns);
 
     function updateSecTagPreview() {
       const preview = document.getElementById('secTagPreview');
-      if (selectedSecondaryGenres.size === 0) {
-        preview.innerText = 'Select Secondary Genres...';
-        return;
-      }
-
-      preview.innerHTML = Array.from(selectedSecondaryGenres).map(g => {
-        const bg = getGenreColor(g);
-        return `<span class="secondary-tag" style="background: ${bg}; color:#111827;">${g}</span>`;
-      }).join('');
+      if (selectedSecondaryGenres.size === 0) { preview.innerText = 'Select Secondary Genres...'; return; }
+      preview.innerHTML = Array.from(selectedSecondaryGenres).map(g => `<span class="secondary-tag" style="background:${getGenreColor(g)}; color:#111827;">${g}</span>`).join('');
     }
 
-    function normalizeStr(str) {
-      return str
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/&/g, 'and')
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '')
-        .trim();
-    }
-
+    function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, 'and').toLowerCase().replace(/[^a-z0-9\s]/g, '').trim(); }
     function getAlbumScore(itemTitle, targetTitle) {
-      const normItem = normalizeStr(itemTitle);
-      const normTarget = normalizeStr(targetTitle);
-
+      const normItem = normalizeStr(itemTitle); const normTarget = normalizeStr(targetTitle);
       if (normItem === normTarget) return 100;
-      if (normItem.includes('beats') || normItem.includes('instrumentals') || normItem.includes('deluxe')) {
-        return 10;
-      }
+      if (normItem.includes('beats') || normItem.includes('instrumentals') || normItem.includes('deluxe')) return 10;
       if (normItem.includes(normTarget)) return 70;
       return 20;
     }
@@ -1891,14 +1739,10 @@
     async function fetchiTunesAlbumDuration(collectionId) {
       if (!collectionId) return '45:00';
       try {
-        const url = `https://itunes.apple.com/lookup?id=${collectionId}&entity=song`;
-        const res = await fetch(url);
-        const data = await res.json();
-
+        const res = await fetch(`https://itunes.apple.com/lookup?id=${collectionId}&entity=song`); const data = await res.json();
         if (data.results && data.results.length > 1) {
           const tracks = data.results.filter(item => item.wrapperType === 'track');
-          const totalMs = tracks.reduce((sum, t) => sum + (t.trackTimeMillis || 0), 0);
-          return formatTimeMS(totalMs);
+          return formatTimeMS(tracks.reduce((sum, t) => sum + (t.trackTimeMillis || 0), 0));
         }
       } catch (e) {}
       return '45:00';
@@ -1907,20 +1751,10 @@
     async function fetchMusicBrainzAlbumDuration(releaseId) {
       if (!releaseId) return '45:00';
       try {
-        const url = `https://musicbrainz.org/ws/2/release/${releaseId}?inc=recordings&fmt=json`;
-        const res = await fetch(url);
-        const data = await res.json();
-
+        const res = await fetch(`https://musicbrainz.org/ws/2/release/${releaseId}?inc=recordings&fmt=json`); const data = await res.json();
         if (data.media && data.media.length > 0) {
           let totalMs = 0;
-          data.media.forEach(m => {
-            if (m.tracks) {
-              m.tracks.forEach(tr => {
-                if (tr.length) totalMs += tr.length;
-                else if (tr.recording && tr.recording.length) totalMs += tr.recording.length;
-              });
-            }
-          });
+          data.media.forEach(m => { if (m.tracks) m.tracks.forEach(tr => totalMs += tr.length || (tr.recording ? tr.recording.length || 0 : 0)); });
           if (totalMs > 0) return formatTimeMS(totalMs);
         }
       } catch (e) {}
@@ -1928,111 +1762,41 @@
     }
 
     async function fetchArtwork() {
-      const inputVal = document.getElementById('albumInput').value.trim();
-      if (!inputVal) return;
-
-      let artist = "";
-      let album = inputVal;
-
-      if (inputVal.includes('-')) {
-        const parts = inputVal.split('-');
-        artist = parts[0].trim();
-        album = parts.slice(1).join('-').trim();
-      }
-
-      const cleanAlbum = album.replace(/\(.*\)|\[.*\]/g, '').trim();
-      allArtCandidates = [];
-      artBatchIndex = 0;
-
-      const fetchBtn = document.getElementById('fetchBtn');
-      fetchBtn.innerText = 'Searching...';
-
-      const itunesQuery = artist ? `${artist} ${cleanAlbum}` : cleanAlbum;
-      const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(itunesQuery)}&entity=album&limit=25`;
-      
-      const mbQuery = artist ? `artist:"${artist}" AND release:"${cleanAlbum}"` : `release:"${cleanAlbum}"`;
-      const mbUrl = `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(mbQuery)}&fmt=json&limit=6`;
+      const inputVal = document.getElementById('albumInput').value.trim(); if (!inputVal) return;
+      let artist = ""; let album = inputVal;
+      if (inputVal.includes('-')) { const parts = inputVal.split('-'); artist = parts[0].trim(); album = parts.slice(1).join('-').trim(); }
+      const cleanAlbum = album.replace(/\(.*\)|\[.*\]/g, '').trim(); allArtCandidates = []; artBatchIndex = 0;
+      const fetchBtn = document.getElementById('fetchBtn'); fetchBtn.innerText = 'Searching...';
 
       try {
         const [itunesRes, mbRes] = await Promise.allSettled([
-          fetch(itunesUrl).then(res => res.json()),
-          fetch(mbUrl).then(res => res.json())
+          fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist ? `${artist} ${cleanAlbum}` : cleanAlbum)}&entity=album&limit=25`).then(res => res.json()),
+          fetch(`https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist ? `artist:"${artist}" AND release:"${cleanAlbum}"` : `release:"${cleanAlbum}"`)}&fmt=json&limit=6`).then(res => res.json())
         ]);
-
         let seenUrls = new Set();
-
         if (itunesRes.status === 'fulfilled' && itunesRes.value.results) {
-          const sortedResults = itunesRes.value.results.sort((a, b) => {
-            return getAlbumScore(b.collectionName, cleanAlbum) - getAlbumScore(a.collectionName, cleanAlbum);
-          });
-
-          for (let item of sortedResults) {
+          for (let item of itunesRes.value.results.sort((a, b) => getAlbumScore(b.collectionName, cleanAlbum) - getAlbumScore(a.collectionName, cleanAlbum))) {
             const highResUrl = item.artworkUrl100.replace('100x100bb', '600x600bb');
-            const releaseYear = item.releaseDate ? item.releaseDate.substring(0, 4) : '';
-
             if (!seenUrls.has(highResUrl)) {
-              seenUrls.add(highResUrl);
-              const duration = await fetchiTunesAlbumDuration(item.collectionId);
-
-              allArtCandidates.push({
-                artistName: item.artistName,
-                albumName: item.collectionName,
-                artUrl: highResUrl,
-                year: releaseYear,
-                duration: duration,
-                provider: 'iTunes'
-              });
+              seenUrls.add(highResUrl); const duration = await fetchiTunesAlbumDuration(item.collectionId);
+              allArtCandidates.push({ artistName: item.artistName, albumName: item.collectionName, artUrl: highResUrl, year: item.releaseDate ? item.releaseDate.substring(0, 4) : '', duration, provider: 'iTunes' });
             }
           }
         }
+      } catch (err) { console.warn("API Search Error:", err); } 
+      finally { fetchBtn.innerText = 'Fetch Art'; }
 
-        if (mbRes.status === 'fulfilled' && mbRes.value.releases) {
-          for (let rel of mbRes.value.releases) {
-            const caaUrl = `https://coverartarchive.org/release/${rel.id}/front-500`;
-            const releaseYear = rel.date ? rel.date.substring(0, 4) : '';
-
-            if (!seenUrls.has(caaUrl)) {
-              seenUrls.add(caaUrl);
-              const duration = await fetchMusicBrainzAlbumDuration(rel.id);
-
-              allArtCandidates.push({
-                artistName: rel['artist-credit'] ? rel['artist-credit'][0].name : (artist || 'Unknown Artist'),
-                albumName: rel.title,
-                artUrl: caaUrl,
-                year: releaseYear,
-                duration: duration,
-                provider: 'MusicBrainz'
-              });
-            }
-          }
-        }
-      } catch (err) {
-        console.warn("API Search Error:", err);
-      } finally {
-        fetchBtn.innerText = 'Fetch Art';
-      }
-
-      if (allArtCandidates.length > 0) {
-        renderArtBatch();
-        document.getElementById('artPreviewBox').style.display = 'flex';
-      } else {
-        alert('No artwork found across databases.');
-      }
+      if (allArtCandidates.length > 0) { renderArtBatch(); document.getElementById('artPreviewBox').style.display = 'flex'; } 
+      else { alert('No artwork found across databases.'); }
     }
 
     function renderArtBatch() {
-      const gridEl = document.getElementById('artResultsGrid');
-      gridEl.innerHTML = '';
-
-      const startIndex = artBatchIndex * 3;
-      const currentBatch = allArtCandidates.slice(startIndex, startIndex + 3);
-
-      const indicatorEl = document.getElementById('artPageIndicator');
-      indicatorEl.innerText = `Select Artwork Match (${startIndex + 1}-${Math.min(startIndex + 3, allArtCandidates.length)} of ${allArtCandidates.length}):`;
+      const gridEl = document.getElementById('artResultsGrid'); gridEl.innerHTML = '';
+      const startIndex = artBatchIndex * 3; const currentBatch = allArtCandidates.slice(startIndex, startIndex + 3);
+      document.getElementById('artPageIndicator').innerText = `Select Artwork Match (${startIndex + 1}-${Math.min(startIndex + 3, allArtCandidates.length)} of ${allArtCandidates.length}):`;
 
       currentBatch.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'art-card';
+        const card = document.createElement('div'); card.className = 'art-card';
         card.innerHTML = `
           <img src="${item.artUrl}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/555/fff?text=No+Art'">
           <div class="art-card-title">${item.albumName}</div>
@@ -2045,254 +1809,111 @@
       });
     }
 
-    function nextArtBatch() {
-      if ((artBatchIndex + 1) * 3 < allArtCandidates.length) artBatchIndex++;
-      else artBatchIndex = 0;
-      renderArtBatch();
-    }
-
-    function prevArtBatch() {
-      if (artBatchIndex > 0) artBatchIndex--;
-      else artBatchIndex = Math.max(0, Math.ceil(allArtCandidates.length / 3) - 1);
-      renderArtBatch();
-    }
-
-    // Upgraded Selection Parser Engine: Packs incoming assets instantly into text blob payloads
     function selectArtwork(url, year, duration) {
-      const fetchBtn = document.getElementById('fetchBtn');
-      fetchBtn.innerText = 'Compressing...';
-
-      const img = new Image();
-      img.crossOrigin = "Anonymous"; 
-      img.src = url;
-
+      const fetchBtn = document.getElementById('fetchBtn'); fetchBtn.innerText = 'Compressing...';
+      const img = new Image(); img.crossOrigin = "Anonymous"; img.src = url;
       img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 250; 
-        canvas.height = 250;
-        ctx.drawImage(img, 0, 0, 250, 250);
-        
-        const base64DataUrl = canvas.toDataURL('image/jpeg', 0.75);
-        document.getElementById('artInput').value = base64DataUrl;
-        
+        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+        canvas.width = 250; canvas.height = 250; ctx.drawImage(img, 0, 0, 250, 250);
+        document.getElementById('artInput').value = canvas.toDataURL('image/jpeg', 0.75);
         if (year) document.getElementById('yearInput').value = year;
         if (duration) document.getElementById('durationInput').value = duration;
-        
-        fetchBtn.innerText = 'Fetch Art';
-        closeArtPreview();
+        fetchBtn.innerText = 'Fetch Art'; closeArtPreview();
       };
-
       img.onerror = function() {
         document.getElementById('artInput').value = url;
         if (year) document.getElementById('yearInput').value = year;
         if (duration) document.getElementById('durationInput').value = duration;
-        fetchBtn.innerText = 'Fetch Art';
-        closeArtPreview();
+        fetchBtn.innerText = 'Fetch Art'; closeArtPreview();
       };
     }
 
-    function closeArtPreview() {
-      document.getElementById('artPreviewBox').style.display = 'none';
-    }
+    function nextArtBatch() { if ((artBatchIndex + 1) * 3 < allArtCandidates.length) artBatchIndex++; else artBatchIndex = 0; renderArtBatch(); }
+    function prevArtBatch() { if (artBatchIndex > 0) artBatchIndex--; else artBatchIndex = Math.max(0, Math.ceil(allArtCandidates.length / 3) - 1); renderArtBatch(); }
+    function closeArtPreview() { document.getElementById('artPreviewBox').style.display = 'none'; }
 
     function populateFilterDropdowns() {
-      const gMenu = document.getElementById('filterGenreDropdownMenu');
-      const sMenu = document.getElementById('filterSceneDropdownMenu');
+      const gMenu = document.getElementById('filterGenreDropdownMenu'); const sMenu = document.getElementById('filterSceneDropdownMenu');
+      const sourceList = currentView === 'queue' ? albums : archive; const genres = new Set(); const scenes = new Set();
+      sourceList.forEach(a => { if (a.genre) genres.add(a.genre); if (a.scene) scenes.add(a.scene); });
+      gMenu.innerHTML = ''; sMenu.innerHTML = '';
 
-      const sourceList = currentView === 'queue' ? albums : archive;
-
-      const genres = new Set();
-      const scenes = new Set();
-
-      sourceList.forEach(a => {
-        if (a.genre) genres.add(a.genre);
-        if (a.scene) scenes.add(a.scene);
-      });
-
-      gMenu.innerHTML = '';
-      sMenu.innerHTML = '';
-
-      const allGRow = document.createElement('div');
-      allGRow.className = 'multiselect-option';
-      allGRow.innerText = 'All Genres';
-      allGRow.onclick = (e) => {
-        e.stopPropagation();
-        filterGenreVal = "";
-        document.getElementById('filterGenreDisplay').innerText = 'All Genres';
-        gMenu.classList.remove('show');
-        renderList();
-      };
+      const allGRow = document.createElement('div'); allGRow.className = 'multiselect-option'; allGRow.innerText = 'All Genres';
+      allGRow.onclick = (e) => { e.stopPropagation(); filterGenreVal = ""; document.getElementById('filterGenreDisplay').innerText = 'All Genres'; gMenu.classList.remove('show'); renderList(); };
       gMenu.appendChild(allGRow);
 
       genres.forEach(g => {
-        const row = document.createElement('div');
-        row.className = 'multiselect-option';
-        
-        const chip = document.createElement('span');
-        chip.className = 'color-chip';
-        chip.style.background = getGenreColor(g);
-
-        const lbl = document.createElement('span');
-        lbl.innerText = g;
-
-        row.appendChild(chip);
-        row.appendChild(lbl);
-
-        row.onclick = (e) => {
-          e.stopPropagation();
-          filterGenreVal = g;
-          document.getElementById('filterGenreDisplay').innerText = g;
-          gMenu.classList.remove('show');
-          renderList();
-        };
-
+        const row = document.createElement('div'); row.className = 'multiselect-option';
+        const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(g);
+        const lbl = document.createElement('span'); lbl.innerText = g;
+        row.appendChild(chip); row.appendChild(lbl);
+        row.onclick = (e) => { e.stopPropagation(); filterGenreVal = g; document.getElementById('filterGenreDisplay').innerText = g; gMenu.classList.remove('show'); renderList(); };
         gMenu.appendChild(row);
       });
 
-      const allSRow = document.createElement('div');
-      allSRow.className = 'multiselect-option';
-      allSRow.innerText = 'All Scenes';
-      allSRow.onclick = (e) => {
-        e.stopPropagation();
-        filterSceneVal = "";
-        document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
-        sMenu.classList.remove('show');
-        renderList();
-      };
+      const allSRow = document.createElement('div'); allSRow.className = 'multiselect-option'; allSRow.innerText = 'All Scenes';
+      allSRow.onclick = (e) => { e.stopPropagation(); filterSceneVal = ""; document.getElementById('filterSceneDisplay').innerText = 'All Scenes'; sMenu.classList.remove('show'); renderList(); };
       sMenu.appendChild(allSRow);
 
       scenes.forEach(s => {
-        const row = document.createElement('div');
-        row.className = 'multiselect-option';
-        
-        const chip = document.createElement('span');
-        chip.className = 'color-chip';
-        chip.style.background = getGenreColor(s);
-
-        const lbl = document.createElement('span');
-        lbl.innerText = s;
-
-        row.appendChild(chip);
-        row.appendChild(lbl);
-
-        row.onclick = (e) => {
-          e.stopPropagation();
-          filterSceneVal = s;
-          document.getElementById('filterSceneDisplay').innerText = s;
-          sMenu.classList.remove('show');
-          renderList();
-        };
-
+        const row = document.createElement('div'); row.className = 'multiselect-option';
+        const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(s);
+        const lbl = document.createElement('span'); lbl.innerText = s;
+        row.appendChild(chip); row.appendChild(lbl);
+        row.onclick = (e) => { e.stopPropagation(); filterSceneVal = s; document.getElementById('filterSceneDisplay').innerText = s; sMenu.classList.remove('show'); renderList(); };
         sMenu.appendChild(row);
       });
     }
 
     function saveAndRender() {
-      localStorage.setItem('rockbox_queue', JSON.stringify(albums));
-      localStorage.setItem('rockbox_archive', JSON.stringify(archive));
-      populateFilterDropdowns();
-      renderList();
-      updateStats();
+      localStorage.setItem('rockbox_queue', JSON.stringify(albums)); localStorage.setItem('rockbox_archive', JSON.stringify(archive));
+      populateFilterDropdowns(); renderList(); updateStats();
     }
 
     function saveAlbum() {
-      const titleInput = document.getElementById('albumInput');
-      const yearInput = document.getElementById('yearInput');
-      const durationInput = document.getElementById('durationInput');
-      const artInput = document.getElementById('artInput');
-
-      const title = titleInput.value.trim();
-      const year = yearInput.value.trim();
-      const duration = durationInput.value.trim() || '45:00';
-      const genre = selectedPrimaryGenre || 'General';
-      const secondaryGenres = Array.from(selectedSecondaryGenres);
-      const scene = selectedScene || '';
-      const art = artInput.value.trim() || 'https://via.placeholder.com/150/3880c8/ffffff?text=Vinyl';
-
+      const title = document.getElementById('albumInput').value.trim(); const year = document.getElementById('yearInput').value.trim();
+      const duration = document.getElementById('durationInput').value.trim() || '45:00'; const genre = selectedPrimaryGenre || 'General';
+      const art = document.getElementById('artInput').value.trim() || 'https://via.placeholder.com/150/3880c8/ffffff?text=Vinyl';
       if (!title) return;
 
       if (editingIndex !== null) {
-        if (currentView === 'queue') {
-          albums[editingIndex] = { title, year, duration, genre, secondaryGenres, scene, art };
-        } else {
-          archive[editingIndex] = { ...archive[editingIndex], title, year, duration, genre, secondaryGenres, scene, art };
-        }
+        if (currentView === 'queue') albums[editingIndex] = { title, year, duration, genre, secondaryGenres: Array.from(selectedSecondaryGenres), scene: selectedScene, art };
+        else archive[editingIndex] = { ...archive[editingIndex], title, year, duration, genre, secondaryGenres: Array.from(selectedSecondaryGenres), scene: selectedScene, art };
       } else {
-        albums.push({ title, year, duration, genre, secondaryGenres, scene, art });
+        albums.push({ title, year, duration, genre, secondaryGenres: Array.from(selectedSecondaryGenres), scene: selectedScene, art });
       }
-
-      clearForm();
-      saveAndRender();
+      clearForm(); saveAndRender();
     }
 
     function toggleView() {
       currentView = currentView === 'queue' ? 'archive' : 'queue';
       document.getElementById('viewToggleBtn').innerText = currentView === 'queue' ? 'Archive' : 'Queue';
-      selectedIndex = 0;
-      filterGenreVal = "";
-      filterSceneVal = "";
-      document.getElementById('filterGenreDisplay').innerText = 'All Genres';
-      document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
-      populateFilterDropdowns();
-      renderList();
+      selectedIndex = 0; filterGenreVal = ""; filterSceneVal = "";
+      document.getElementById('filterGenreDisplay').innerText = 'All Genres'; document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
+      populateFilterDropdowns(); renderList();
     }
 
     function toggleDrawer(idx, event) {
       event.stopPropagation();
-      if (openDrawers.has(idx)) {
-        openDrawers.delete(idx);
-      } else {
-        openDrawers.add(idx);
-      }
+      if (openDrawers.has(idx)) openDrawers.delete(idx); else openDrawers.add(idx);
       renderList();
     }
 
     function renderList() {
-      const bodyEl = document.getElementById('screenBody');
-      const titleEl = document.getElementById('screenTitle');
-      const countEl = document.getElementById('itemCount');
-
+      const bodyEl = document.getElementById('screenBody'); const titleEl = document.getElementById('screenTitle'); const countEl = document.getElementById('itemCount');
       let sourceList = currentView === 'queue' ? albums : archive;
-
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
       triggerColorThiefSampling();
 
       if (currentView === 'queue') {
-        titleEl.innerText = "iClassic Queue";
-        countEl.innerText = `${sourceList.length} albums`;
-
-        if (sourceList.length === 0) {
-          bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">Queue is empty</div>`;
-          return;
-        }
-
+        titleEl.innerText = "iClassic Queue"; countEl.innerText = `${sourceList.length} albums`;
+        if (sourceList.length === 0) { bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">Queue is empty</div>`; return; }
         let listHtml = '<ul class="rockbox-list">';
         sourceList.forEach((item, idx) => {
-          const ribbonStyle = getGenreColor(item.genre);
-          const isActive = idx === selectedIndex ? 'active' : '';
-          const isOpen = openDrawers.has(idx) ? 'drawer-open' : '';
-          const yr = item.year ? `<span class="year-badge">${item.year}</span>` : '';
-          const dur = item.duration ? `<span class="duration-badge">${item.duration}</span>` : '<span class="duration-badge">45:00</span>';
-          
-          let sceneHtml = '';
-          if (item.scene) {
-            const scBg = getGenreColor(item.scene);
-            sceneHtml = `<span class="scene-tag" style="background: ${scBg};">${item.scene}</span>`;
-          }
-
-          let secTagsHtml = '';
-          if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-            secTagsHtml = item.secondaryGenres.map(sg => {
-              const secBg = getGenreColor(sg);
-              return `<span class="secondary-tag" style="background: ${secBg}; color:#111827;">${sg}</span>`;
-            }).join(' ');
-          }
-
           listHtml += `
-            <li class="list-item-wrapper ${isActive} ${isOpen}">
+            <li class="list-item-wrapper ${idx === selectedIndex ? 'active' : ''} ${openDrawers.has(idx) ? 'drawer-open' : ''}">
               <div class="list-item-main" onclick="selectItem(${idx})">
                 <div class="item-left">
                   <span class="item-num-col">${idx + 1}</span>
@@ -2300,49 +1921,26 @@
                   <span class="item-title">${item.title}</span>
                 </div>
                 <div class="item-right-default">
-                  ${dur}
-                  ${yr}
-                  <span class="genre-tag" style="background: ${ribbonStyle};">${item.genre || 'General'}</span>
-                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">${isOpen ? '▲' : '▼'}</button>
+                  <span class="duration-badge">${item.duration || '45:00'}</span>
+                  <span class="genre-tag" style="background:${getGenreColor(item.genre)};">${item.genre || 'General'}</span>
+                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">▼</button>
                 </div>
               </div>
               <div class="item-drawer">
-                ${sceneHtml}
-                ${secTagsHtml}
-                <button class="row-btn row-btn-finish" title="Mark Finished Manually" onclick="openFinishModal(${idx}, event)">✓</button>
+                <button class="row-btn row-btn-finish" onclick="openFinishModal(${idx}, event)">✓</button>
                 <button class="row-btn" onclick="editEntry(${idx}, event)">edit</button>
                 <button class="row-btn row-btn-del" onclick="deleteEntry(${idx}, event)">✕</button>
               </div>
             </li>`;
         });
-        listHtml += '</ul>';
-        bodyEl.innerHTML = listHtml;
+        bodyEl.innerHTML = listHtml + '</ul>';
       } else {
-        titleEl.innerText = "Listened Archive";
-        countEl.innerText = `${sourceList.length} listened`;
-
-        if (sourceList.length === 0) {
-          bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">No completed albums yet</div>`;
-          return;
-        }
-
+        titleEl.innerText = "Listened Archive"; countEl.innerText = `${sourceList.length} listened`;
+        if (sourceList.length === 0) { bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">No completed albums yet</div>`; return; }
         let listHtml = '<ul class="rockbox-list">';
         sourceList.forEach((item, idx) => {
-          const isActive = idx === selectedIndex ? 'active' : '';
-          const isOpen = openDrawers.has(idx) ? 'drawer-open' : '';
-          const starsHtml = renderRymStars(item.rating);
-          const yr = item.year ? `<span class="year-badge">${item.year}</span>` : '';
-          const dur = item.duration ? `<span class="duration-badge">${item.duration}</span>` : '';
-
-          let descriptorTags = '';
-          if (item.descriptors && item.descriptors.length > 0) {
-            descriptorTags = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-          }
-
-          let fmtTag = item.listeningFormat ? `<span class="format-badge">${item.listeningFormat}</span>` : '';
-
           listHtml += `
-            <li class="list-item-wrapper ${isActive} ${isOpen}">
+            <li class="list-item-wrapper ${idx === selectedIndex ? 'active' : ''} ${openDrawers.has(idx) ? 'drawer-open' : ''}">
               <div class="list-item-main" onclick="openiTunesModal(${idx})">
                 <div class="item-left">
                   <span class="item-num-col">${idx + 1}</span>
@@ -2350,30 +1948,25 @@
                   <span class="item-title">${item.title}</span>
                 </div>
                 <div class="item-right-default">
-                  ${dur}
-                  ${yr}
-                  ${starsHtml}
-                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">${isOpen ? '▲' : '▼'}</button>
-                  <button class="row-btn" style="margin-left:2px;" onclick="openArchiveEditModal(${idx}, event)">edit</button>
-                  <button class="row-btn row-btn-del" onclick="deleteEntry(${idx}, event)">✕</button>
+                  ${renderRymStars(item.rating)}
+                  <button class="chevron-btn" onclick="toggleDrawer(${idx}, event)">▼</button>
                 </div>
               </div>
               <div class="item-drawer">
-                ${fmtTag}
-                ${descriptorTags || '<span style="font-size:9px; color:#aaa; font-style:italic;">No descriptors tagged</span>'}
+                <span class="format-badge">${item.listeningFormat || 'Digital'}</span>
               </div>
             </li>`;
         });
-        listHtml += '</ul>';
-        bodyEl.innerHTML = listHtml;
+        bodyEl.innerHTML = listHtml + '</ul>';
       }
     }
 
+    function selectItem(idx) { selectedIndex = idx; renderList(); }
+    function showList() { renderList(); }
+
     function openFinishModal(index, event = null) {
       if (event) event.stopPropagation();
-      pendingFinishIndex = index;
-      editingArchiveIndex = null;
-      
+      pendingFinishIndex = index; editingArchiveIndex = null;
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
@@ -2381,22 +1974,15 @@
       const album = sourceList[index];
       document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
       document.getElementById('finishTitle').innerText = album.title;
-      document.getElementById('finishComments').value = '';
-      document.getElementById('descriptorInput').value = '';
-      document.getElementById('dateListenedInput').value = getTodayISOString();
-      document.getElementById('listeningFormatInput').value = '';
-      document.getElementById('favoriteTrackInput').value = '';
-      currentSelectedRating = 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
-      document.getElementById('finishModal').style.display = 'flex';
+      document.getElementById('finishComments').value = ''; document.getElementById('descriptorInput').value = '';
+      document.getElementById('dateListenedInput').value = getTodayISOString(); document.getElementById('listeningFormatInput').value = '';
+      document.getElementById('favoriteTrackInput').value = ''; currentSelectedRating = 5.0; renderInteractiveStars(currentSelectedRating);
+      shufflePresetBar(); document.getElementById('finishModal').style.display = 'flex';
     }
 
     function openArchiveEditModal(index, event = null) {
       if (event) event.stopPropagation();
-      editingArchiveIndex = index;
-      pendingFinishIndex = null;
-
+      editingArchiveIndex = index; pendingFinishIndex = null;
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
@@ -2409,27 +1995,15 @@
       document.getElementById('dateListenedInput').value = album.dateFinishedISO || getTodayISOString();
       document.getElementById('listeningFormatInput').value = album.listeningFormat || '';
       document.getElementById('favoriteTrackInput').value = album.favoriteTrack || '';
-      currentSelectedRating = parseFloat(album.rating) || 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
-
-      editEntry(index, event);
-
-      document.getElementById('finishModal').style.display = 'flex';
+      currentSelectedRating = parseFloat(album.rating) || 5.0; renderInteractiveStars(currentSelectedRating);
+      shufflePresetBar(); editEntry(index, event); document.getElementById('finishModal').style.display = 'flex';
     }
 
     function confirmFinishAlbum() {
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
       const formattedDate = new Date(dateISO + 'T00:00:00').toLocaleDateString();
-      const formatStr = document.getElementById('listeningFormatInput').value;
-      const favTrack = document.getElementById('favoriteTrackInput').value.trim();
-
-      descriptors.forEach(d => {
-        if (!DESCRIPTOR_POOL.includes(d)) {
-          DESCRIPTOR_POOL.push(d);
-        }
-      });
+      descriptors.forEach(d => { if (!DESCRIPTOR_POOL.includes(d)) DESCRIPTOR_POOL.push(d); });
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
       let sourceList = currentView === 'queue' ? albums : archive;
@@ -2437,367 +2011,156 @@
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
       if (pendingFinishIndex !== null) {
-        const completedTarget = sourceList[pendingFinishIndex];
-        const globalIdx = albums.findIndex(a => a.title === completedTarget.title);
+        const globalIdx = albums.findIndex(a => a.title === sourceList[pendingFinishIndex].title);
         const completed = albums.splice(globalIdx, 1)[0];
-        
-        completed.rating = currentSelectedRating;
-        completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        completed.descriptors = descriptors;
-        completed.dateFinished = formattedDate;
-        completed.dateFinishedISO = dateISO;
-        completed.listeningFormat = formatStr;
-        completed.favoriteTrack = favTrack;
-
-        archive.unshift(completed);
-        pendingFinishIndex = null;
+        completed.rating = currentSelectedRating; completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
+        completed.descriptors = descriptors; completed.dateFinished = formattedDate; completed.dateFinishedISO = dateISO;
+        completed.listeningFormat = document.getElementById('listeningFormatInput').value;
+        completed.favoriteTrack = document.getElementById('favoriteTrackInput').value.trim();
+        archive.unshift(completed); pendingFinishIndex = null;
       } else if (editingArchiveIndex !== null) {
-        const editedTarget = sourceList[editingArchiveIndex];
-        const globalIdx = archive.findIndex(a => a.title === editedTarget.title);
-        
-        archive[globalIdx].rating = currentSelectedRating;
-        archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        archive[globalIdx].descriptors = descriptors;
-        archive[globalIdx].dateFinished = formattedDate;
-        archive[globalIdx].dateFinishedISO = dateISO;
-        archive[globalIdx].listeningFormat = formatStr;
-        archive[globalIdx].favoriteTrack = favTrack;
+        const globalIdx = archive.findIndex(a => a.title === sourceList[editingArchiveIndex].title);
+        archive[globalIdx].rating = currentSelectedRating; archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
+        archive[globalIdx].descriptors = descriptors; archive[globalIdx].dateFinished = formattedDate; archive[globalIdx].dateFinishedISO = dateISO;
+        archive[globalIdx].listeningFormat = document.getElementById('listeningFormatInput').value;
+        archive[globalIdx].favoriteTrack = document.getElementById('favoriteTrackInput').value.trim();
         editingArchiveIndex = null;
       }
-
-      document.getElementById('finishModal').style.display = 'none';
-      saveAndRender();
-      showList();
+      document.getElementById('finishModal').style.display = 'none'; saveAndRender(); showList();
     }
 
     function openiTunesModal(idx) {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      const item = sourceList[idx];
-      let parts = item.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
+      const item = sourceList[idx]; let parts = item.title.split('-');
 
       document.getElementById('infoArt').src = item.art;
-      document.getElementById('infoTitle').innerText = albumName;
-      document.getElementById('infoArtist').innerText = artist;
+      document.getElementById('infoTitle').innerText = parts[1] ? parts[1].trim() : item.title;
+      document.getElementById('infoArtist').innerText = parts[0] ? parts[0].trim() : 'Unknown';
       document.getElementById('infoYear').innerText = item.year || 'N/A';
-
-      const primaryBg = getGenreColor(item.genre || 'General');
-      document.getElementById('infoGenre').innerHTML = `<span class="genre-tag" style="background: ${primaryBg};">${item.genre || 'General'}</span>`;
-
+      document.getElementById('infoGenre').innerHTML = `<span class="genre-tag" style="background:${getGenreColor(item.genre)}">${item.genre || 'General'}</span>`;
       document.getElementById('infoDuration').innerText = item.duration || '45:00';
 
       const fmtEl = document.getElementById('infoFormat');
-      if (item.listeningFormat) {
-        fmtEl.innerText = item.listeningFormat;
-        fmtEl.style.display = 'inline-block';
-      } else {
-        fmtEl.style.display = 'none';
-      }
+      if (item.listeningFormat) { fmtEl.innerText = item.listeningFormat; fmtEl.style.display = 'inline-block'; } else { fmtEl.style.display = 'none'; }
       
       const secEl = document.getElementById('infoSecondaryGenres');
-      if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-        secEl.innerHTML = item.secondaryGenres.map(sg => {
-          const bg = getGenreColor(sg);
-          return `<span class="secondary-tag" style="background: ${bg}; color:#111827;">${sg}</span>`;
-        }).join(' ');
-      } else {
-        secEl.innerHTML = '';
-      }
-
+      secEl.innerHTML = item.secondaryGenres ? item.secondaryGenres.map(sg => `<span class="secondary-tag" style="background:${getGenreColor(sg)}; color:#111827;">${sg}</span>`).join(' ') : '';
+      
       const descEl = document.getElementById('infoDescriptors');
-      if (item.descriptors && item.descriptors.length > 0) {
-        descEl.innerHTML = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-      } else {
-        descEl.innerHTML = '';
-      }
-
-      const favTrackEl = document.getElementById('infoFavTrack');
-      if (item.favoriteTrack) {
-        favTrackEl.innerText = `★ Standout Track: "${item.favoriteTrack}"`;
-        favTrackEl.style.display = 'block';
-      } else {
-        favTrackEl.style.display = 'none';
-      }
-
-      const sceneEl = document.getElementById('infoScene');
-      if (item.scene) {
-        const scBg = getGenreColor(item.scene);
-        sceneEl.innerText = item.scene;
-        sceneEl.style.background = scBg;
-        sceneEl.style.display = 'inline-block';
-      } else {
-        sceneEl.style.display = 'none';
-      }
+      descEl.innerHTML = item.descriptors ? item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ') : '';
 
       document.getElementById('infoStars').innerHTML = renderRymStars(item.rating);
       document.getElementById('infoDate').innerText = `Listened on: ${item.dateFinished || 'Recently'}`;
-      document.getElementById('infoComments').innerText = `"${item.comments}"`;
-
+      document.getElementById('infoComments').innerText = `"${item.comments || ''}"`;
       document.getElementById('itunesInfoModal').style.display = 'flex';
     }
 
     function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
 
-    /* System Configurator Logic */
-    function openConfigModal() {
-      populateRenameCatSelect();
-      handleConfigTargetChange();
-      renderConfigTree();
-      document.getElementById('configModal').style.display = 'flex';
-    }
-
-    function closeConfigModal() {
-      document.getElementById('configModal').style.display = 'none';
-    }
+    function openConfigModal() { populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); document.getElementById('configModal').style.display = 'flex'; }
+    function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
 
     function populateRenameCatSelect() {
-      const target = document.getElementById('renameTargetType').value;
-      const select = document.getElementById('renameCatSelect');
-      select.innerHTML = '';
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach((c, idx) => {
-        select.innerHTML += `<option value="${idx}">${c.category}</option>`;
-      });
+      const target = document.getElementById('renameTargetType').value; const select = document.getElementById('renameCatSelect'); select.innerHTML = '';
+      (target === 'genre' ? GENRE_DATA : SCENE_DATA).forEach((c, idx) => { select.innerHTML += `<option value="${idx}">${c.category}</option>`; });
     }
 
     function renameCategoryHeader() {
-      const target = document.getElementById('renameTargetType').value;
-      const catIdx = document.getElementById('renameCatSelect').value;
-      const newName = document.getElementById('renameCatInput').value.trim();
-
+      const target = document.getElementById('renameTargetType').value; const catIdx = document.getElementById('renameCatSelect').value; const newName = document.getElementById('renameCatInput').value.trim();
       if (!newName || catIdx === "") return;
-
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset[catIdx].category = newName;
-
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu();
-        buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-
-      document.getElementById('renameCatInput').value = '';
-      populateRenameCatSelect();
-      handleConfigTargetChange();
-      renderConfigTree();
-      populateFilterDropdowns();
+      if (target === 'genre') { GENRE_DATA[catIdx].category = newName; localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); } 
+      else { SCENE_DATA[catIdx].category = newName; localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
+      document.getElementById('renameCatInput').value = ''; populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
 
     function handleConfigTargetChange() {
-      const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      catSelect.innerHTML = '';
-
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach(c => {
-        catSelect.innerHTML += `<option value="${c.category}">${c.category}</option>`;
-      });
-
-      catSelect.innerHTML += `<option value="__new__">+ New Category Header...</option>`;
-      toggleConfigNewCatInput();
+      const target = document.getElementById('configTargetType').value; const catSelect = document.getElementById('configCatSelect'); catSelect.innerHTML = '';
+      (target === 'genre' ? GENRE_DATA : SCENE_DATA).forEach(c => { catSelect.innerHTML += `<option value="${c.category}">${c.category}</option>`; });
+      catSelect.innerHTML += `<option value="__new__">+ New Category Header...</option>`; toggleConfigNewCatInput();
     }
 
-    // Toggle Config Dropdown Layer Context logic
     function toggleConfigNewCatInput() {
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      if (catSelect.value === '__new__') {
-        newCatInput.style.display = 'block';
-        newCatInput.focus();
-      } else {
-        newCatInput.style.display = 'none';
-      }
+      document.getElementById('configNewCatInput').style.display = document.getElementById('configCatSelect').value === '__new__' ? 'block' : 'none';
     }
-
-    document.getElementById('configCatSelect').onchange = toggleConfigNewCatInput;
 
     function addConfigItem() {
-      const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      const itemInput = document.getElementById('configItemInput');
+      const target = document.getElementById('configTargetType').value; let categoryName = document.getElementById('configCatSelect').value;
+      if (categoryName === '__new__') categoryName = document.getElementById('configNewCatInput').value.trim();
+      const itemName = document.getElementById('configItemInput').value.trim(); if (!categoryName || !itemName) return;
 
-      let categoryName = catSelect.value;
-      if (categoryName === '__new__') {
-        categoryName = newCatInput.value.trim();
-      }
-
-      const itemName = itemInput.value.trim();
-      if (!categoryName || !itemName) return;
-
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      let targetCat = dataset.find(c => c.category === categoryName);
-
-      if (!targetCat) {
-        targetCat = { category: categoryName, [target === 'genre' ? 'genres' : 'scenes']: [] };
-        dataset.push(targetCat);
-      }
-
+      let dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA; let targetCat = dataset.find(c => c.category === categoryName);
+      if (!targetCat) { targetCat = { category: categoryName, [target === 'genre' ? 'genres' : 'scenes']: [] }; dataset.push(targetCat); }
       const listKey = target === 'genre' ? 'genres' : 'scenes';
-      if (!targetCat[listKey].includes(itemName)) {
-        targetCat[listKey].push(itemName);
-      }
+      if (!targetCat[listKey].includes(itemName)) targetCat[listKey].push(itemName);
 
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu();
-        buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-
-      itemInput.value = '';
-      newCatInput.value = '';
-      populateRenameCatSelect();
-      handleConfigTargetChange();
-      renderConfigTree();
-      populateFilterDropdowns();
+      if (target === 'genre') { localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); } 
+      else { localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
+      document.getElementById('configItemInput').value = ''; document.getElementById('configNewCatInput').value = '';
+      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
 
     function renderConfigTree() {
-      const display = document.getElementById('configTreeDisplay');
-      const target = document.getElementById('configTargetType').value;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-
-      let html = '';
-      dataset.forEach((cat, cIdx) => {
+      const target = document.getElementById('configTargetType').value; let html = '';
+      (target === 'genre' ? GENRE_DATA : SCENE_DATA).forEach((cat, cIdx) => {
         html += `<div style="color:#38bdf8; font-weight:bold; margin-top:4px;">${cat.category}</div>`;
-        cat[listKey].forEach((item, iIdx) => {
-          const bg = getGenreColor(item);
-          html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 0 2px 8px;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="color-chip" style="background:${bg}"></span>
-                <span style="color:#e2e8f0">${item}</span>
-              </div>
-              <button class="skeuo-btn" style="font-size:8px; padding:1px 4px;" onclick="deleteConfigItem('${target}', ${cIdx}, ${iIdx})">✕</button>
-            </div>`;
+        cat[target === 'genre' ? 'genres' : 'scenes'].forEach((item, iIdx) => {
+          html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:2px 8px;"><span>${item}</span><button class="skeuo-btn" style="font-size:8px; padding:1px 4px;" onclick="deleteConfigItem('${target}', ${cIdx}, ${iIdx})">✕</button></div>`;
         });
       });
-
-      display.innerHTML = html;
+      document.getElementById('configTreeDisplay').innerHTML = html;
     }
 
     function deleteConfigItem(target, cIdx, iIdx) {
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-
-      dataset[cIdx][listKey].splice(iIdx, 1);
-
-      if (dataset[cIdx][listKey].length === 0) {
-        dataset.splice(cIdx, 1);
-      }
-
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu();
-        buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-
-      populateRenameCatSelect();
-      handleConfigTargetChange();
-      renderConfigTree();
-      populateFilterDropdowns();
+      let dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA; dataset[cIdx][target === 'genre' ? 'genres' : 'scenes'].splice(iIdx, 1);
+      if (dataset[cIdx][target === 'genre' ? 'genres' : 'scenes'].length === 0) dataset.splice(cIdx, 1);
+      if (target === 'genre') { localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); } 
+      else { localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
+      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
 
     function spinAndPick() {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       if (sourceList.length === 0) return;
-
-      let spins = 0, maxSpins = 12;
+      let counter = 0;
       let interval = setInterval(() => {
-        selectedIndex = Math.floor(Math.random() * sourceList.length);
-        renderList();
-        spins++;
-        if (spins >= maxSpins) {
-          clearInterval(interval);
-          pickRandomAlbum(selectedIndex);
-        }
+        selectedIndex = Math.floor(Math.random() * sourceList.length); renderList(); counter++;
+        if (counter >= 12) { clearInterval(interval); pickRandomAlbum(selectedIndex); }
       }, 60);
     }
 
-    function toggleBlindMode() {
-      isBlindMode = !isBlindMode;
-      const coverEl = document.getElementById('npCoverImg');
-      const trackEl = document.getElementById('npTrackTitle');
-      const artistEl = document.getElementById('npArtistName');
-
-      if (isBlindMode) {
-        coverEl.style.filter = 'blur(12px) brightness(0.3)';
-        trackEl.innerText = '??? Blind Listen ???';
-        artistEl.innerText = 'Artist Hidden';
-      } else {
-        coverEl.style.filter = 'none';
-        renderList();
-      }
-    }
-
-    function pickRandomAlbum(targetIndex = null) {
+    function pickRandomAlbum(targetIndex) {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      const selected = sourceList[targetIndex];
 
-      if (sourceList.length === 0) return;
-      const randomIndex = targetIndex !== null ? targetIndex : Math.floor(Math.random() * sourceList.length);
-      const selected = sourceList[randomIndex];
-
-      const bodyEl = document.getElementById('screenBody');
-      document.getElementById('screenTitle').innerText = "Now Playing";
-      const ribbonStyle = getGenreColor(selected.genre);
-
+      const bodyEl = document.getElementById('screenBody'); titleEl = document.getElementById('screenTitle'); titleEl.innerText = "Now Playing";
       let parts = selected.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : selected.title;
-      
-      let sceneHtml = '';
-      if (selected.scene) {
-        sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
-      }
-      
-      const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
 
       bodyEl.innerHTML = `
         <div class="now-playing-container">
           <div class="np-top">
-            <img class="np-cover" id="npCoverImg" src="${selected.art}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=?'">
+            <img class="np-cover" id="npCoverImg" src="${selected.art}">
             <div class="np-info">
-              <div class="np-track" id="npTrackTitle">${albumName}</div>
-              <div class="np-artist" id="npArtistName">${artist}</div>
+              <div class="np-track">${parts[1] ? parts[1].trim() : selected.title}</div>
+              <div class="np-artist">${parts[0] ? parts[0].trim() : 'Unknown Artist'}</div>
               <div style="display:flex; gap:4px; align-items:center; margin-top:3px; flex-wrap:wrap;">
-                <span class="duration-badge">${selected.duration || '45:00'}</span>
-                ${yr}
-                <span class="genre-tag" style="background: ${ribbonStyle};">${selected.genre || 'General'}</span>
-                ${sceneHtml}
+                <span class="duration-badge">${selected.duration}</span>
+                <span class="genre-tag" style="background:${getGenreColor(selected.genre)}">${selected.genre}</span>
               </div>
             </div>
           </div>
-
           <div class="np-progress-zone">
             <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
-            <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration || '45:00'}</span></div>
+            <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration}</span></div>
           </div>
-
-          <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
-            <div style="display:flex; gap:6px; width:100%;">
-              <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${randomIndex})">Finished</button>
-              <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
-              <button class="skeuo-btn" style="flex:0.8;" onclick="toggleBlindMode()">🙈 Blind</button>
-            </div>
+          <div style="display:flex; gap:6px; width:100%;">
+            <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${targetIndex})">Finished</button>
+            <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
           </div>
         </div>`;
     }
@@ -2807,21 +2170,13 @@
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       const item = sourceList[idx];
-      const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
-      editingIndex = realIndex;
+      editingIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
 
-      document.getElementById('albumInput').value = item.title;
-      document.getElementById('yearInput').value = item.year || '';
-      document.getElementById('durationInput').value = item.duration || '';
-      document.getElementById('artInput').value = item.art;
-      
-      selectedPrimaryGenre = item.genre; 
-      updatePrimaryGenreDisplay();
-      
-      document.getElementById('saveBtn').innerText = '✓ Update';
-      document.getElementById('cancelBtn').style.display = 'inline-flex';
+      document.getElementById('albumInput').value = item.title; document.getElementById('yearInput').value = item.year || '';
+      document.getElementById('durationInput').value = item.duration || ''; document.getElementById('artInput').value = item.art;
+      selectedPrimaryGenre = item.genre; updatePrimaryGenreDisplay();
+      document.getElementById('saveBtn').innerText = '✓ Update'; document.getElementById('cancelBtn').style.display = 'inline-flex';
     }
 
     function deleteEntry(idx, event) {
@@ -2829,15 +2184,10 @@
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       const item = sourceList[idx];
-      if (currentView === 'queue') {
-        const globalIdx = albums.findIndex(a => a.title === item.title);
-        albums.splice(globalIdx, 1);
-      } else {
-        const globalIdx = archive.findIndex(a => a.title === item.title);
-        archive.splice(globalIdx, 1);
-      }
+
+      if (currentView === 'queue') albums.splice(albums.findIndex(a => a.title === item.title), 1);
+      else archive.splice(archive.findIndex(a => a.title === item.title), 1);
       saveAndRender();
     }
 
@@ -2848,63 +2198,24 @@
       document.getElementById('saveBtn').innerText = '+ Save Album'; document.getElementById('cancelBtn').style.display = 'none';
     }
 
-    function updateStats() {
-      let totalSec = 0;
-      albums.forEach(a => { totalSec += parseFormattedTimeToSeconds(a.duration); });
-      document.getElementById('estTime').innerText = `Queue: ${formatSecondsToDisplay(totalSec)}`;
-      document.getElementById('topGenre').innerText = archive.length ? `Avg: ${(archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1)} ★` : 'Listened: 0';
-    }
-
-    function openBackupModal() { document.getElementById('jsonBox').value = ""; document.getElementById('backupModal').style.display = 'flex'; }
+    function openBackupModal() { document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
-    function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
-    function openConfigModal() { document.getElementById('configModal').style.display = 'flex'; }
-    function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
-    function showList() { renderList(); }
 
     function importJsonFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
+      const file = event.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const parsed = JSON.parse(e.target.result);
-          
-          // Verify configuration block properties exist cleanly inside payload
           if (parsed.queue && parsed.archive) {
-            albums = parsed.queue;
-            archive = parsed.archive;
-            
-            // Bring back custom genre configs, dynamic scenes, and custom tag pools if they exist in backup file
-            if (parsed.genres) GENRE_DATA = parsed.genres;
-            if (parsed.scenes) SCENE_DATA = parsed.scenes;
-            if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
-            
-            // Re-sync changes out to local dynamic layout configurations
-            localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-            localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-            localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
-            
-            buildPrimaryGenreMenu();
-            buildSceneMenu();
-            buildSecondaryGenreMenu();
-          } else if (Array.isArray(parsed)) { 
-            // Fallback tracking array block parser
-            albums = parsed; 
-          } else {
-            return alert("Invalid file structure. Make sure this is a genuine SosaOS backup file.");
-          }
-
-          saveAndRender();
-          closeBackupModal();
-          alert("Backup data restored and loaded perfectly!");
-        } catch (err) {
-          alert("Error parsing file. Make sure the JSON payload is clean and uncorrupted.");
-          console.error(err);
-        }
+            albums = parsed.queue; archive = parsed.archive;
+            if (parsed.genres) GENRE_DATA = parsed.genres; if (parsed.scenes) SCENE_DATA = parsed.scenes; if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
+            localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
+            buildPrimaryGenreMenu(); buildSceneMenu(); buildSecondaryGenreMenu();
+          } else if (Array.isArray(parsed)) { albums = parsed; }
+          saveAndRender(); closeBackupModal(); alert("Backup data restored perfectly!");
+        } catch (err) { alert("Error parsing JSON backup payload."); }
       };
-      
       reader.readAsText(file);
     }
 
