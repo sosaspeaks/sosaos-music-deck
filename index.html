@@ -1004,9 +1004,6 @@
       border-color: #60a5fa;
     }
 
-    /* ---------------------------------------------------------------- */
-    /* RESPONSIVE MOBILE ADJUSTMENTS OVERRIDES                          */
-    /* ---------------------------------------------------------------- */
     @media (max-width: 480px) {
       .corner-controls-right {
         position: relative;
@@ -1015,28 +1012,11 @@
         width: 100%;
         justify-content: center;
       }
-      .sosa-corner-logo {
-        display: none; 
-      }
-      .itunes-card {
-        width: 95%;
-      }
-      
-      .list-item-main {
-        height: auto;
-        padding: 8px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-      .item-left {
-        width: 100%;
-      }
-      .item-right-default {
-        width: 100%;
-        justify-content: flex-end;
-        padding-left: 26px; 
-      }
+      .sosa-corner-logo { display: none; }
+      .itunes-card { width: 95%; }
+      .list-item-main { height: auto; padding: 8px; flex-direction: column; align-items: flex-start; gap: 6px; }
+      .item-left { width: 100%; }
+      .item-right-default { width: 100%; justify-content: flex-end; padding-left: 26px; }
     }
   </style>
 </head>
@@ -1059,9 +1039,7 @@
     </div>
   </div>
 
-  <div class="sosa-corner-logo">
-    SosaOS v2.6
-  </div>
+  <div class="sosa-corner-logo">SosaOS v2.6</div>
 
   <div class="ipod-silver-bezel">
     <div class="admin-panel">
@@ -1089,16 +1067,14 @@
         <div class="admin-row">
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="togglePrimaryGenreDropdown(event)">
-              <span id="primaryGenreDisplay">Primary Genre...</span>
-              <span style="font-size: 8px;">▼</span>
+              <span id="primaryGenreDisplay">Primary Genre...</span><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="primaryGenreDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
 
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="toggleSceneDropdown(event)">
-              <span id="sceneDisplay">Select Scene / Movement...</span>
-              <span style="font-size: 8px;">▼</span>
+              <span id="sceneDisplay">Select Scene / Movement...</span><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="sceneDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
@@ -1107,12 +1083,10 @@
         <div class="admin-row">
           <div class="custom-multiselect-container">
             <div class="custom-multiselect-trigger" onclick="toggleSecondaryGenreDropdown(event)">
-              <div class="selected-tags-preview" id="secTagPreview">Select Secondary Genres...</div>
-              <span style="font-size: 8px;">▼</span>
+              <div class="selected-tags-preview" id="secTagPreview">Select Secondary Genres...</div><span style="font-size: 8px;">▼</span>
             </div>
             <div class="custom-multiselect-dropdown" id="secDropdownMenu" onclick="event.stopPropagation()"></div>
           </div>
-
           <input type="text" id="artInput" placeholder="Image URL" style="flex: 0.8;" />
         </div>
       </div>
@@ -1138,16 +1112,14 @@
         <span>Filter:</span>
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterGenreDropdown(event)">
-            <span id="filterGenreDisplay">All Genres</span>
-            <span style="font-size: 7px;">▼</span>
+            <span id="filterGenreDisplay">All Genres</span><span style="font-size: 7px;">▼</span>
           </div>
           <div class="custom-multiselect-dropdown" id="filterGenreDropdownMenu" onclick="event.stopPropagation()"></div>
         </div>
 
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterSceneDropdown(event)">
-            <span id="filterSceneDisplay">All Scenes</span>
-            <span style="font-size: 7px;">▼</span>
+            <span id="filterSceneDisplay">All Scenes</span><span style="font-size: 7px;">▼</span>
           </div>
           <div class="custom-multiselect-dropdown" id="filterSceneDropdownMenu" onclick="event.stopPropagation()"></div>
         </div>
@@ -1195,15 +1167,12 @@
               <span id="rymScoreDisplay" style="font-size:12px; font-weight:bold; color:#f39c12;">5.0 ★</span>
             </div>
           </div>
-
-          <!-- Date Listened Picker -->
           <div style="flex:1;">
             <label style="font-size:10px; font-weight:600; color:#444;">Date Listened:</label>
             <input type="date" id="dateListenedInput" style="width:100%; margin-top:2px; font-size:11px; padding:3px 5px;" />
           </div>
         </div>
 
-        <!-- Listening Hardware / Format Selector -->
         <div>
           <label style="font-size:10px; font-weight:600; color:#444;">Listening Setup / Format:</label>
           <select id="listeningFormatInput" style="width:100%; margin-top:2px; font-size:11px; padding:4px;">
@@ -1217,22 +1186,20 @@
           </select>
         </div>
 
-        <!-- Favorite Track Spotlight -->
         <div>
           <label style="font-size:10px; font-weight:600; color:#444;">Standout / Favorite Track:</label>
-          <input type="text" id="favoriteTrackInput" placeholder="e.g. Love Sosa, Dark Fantasy..." style="width:100%; margin-top:2px;" />
+          <input type="text" id="favoriteTrackInput" placeholder="Love Sosa, Dark Fantasy..." style="width:100%; margin-top:2px;" />
         </div>
 
-        <!-- RYM Descriptors Input -->
         <div>
-          <label style="font-size:10px; font-weight:600; color:#444;">RYM Descriptors / Tags (comma separated):</label>
-          <input type="text" id="descriptorInput" placeholder="atmospheric, nocturnal, melancholic..." style="width:100%; margin-top:2px;" />
+          <label style="font-size:10px; font-weight:600; color:#444;">RYM Descriptors / Tags:</label>
+          <input type="text" id="descriptorInput" placeholder="atmospheric, nocturnal..." style="width:100%; margin-top:2px;" />
           <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;" id="descriptorPresetBar"></div>
         </div>
 
         <div>
-          <label style="font-size:10px; font-weight:600; color:#444;">Listening Comments / Notes:</label>
-          <textarea id="finishComments" style="width:100%; height:48px; font-size:11px; padding:4px; margin-top:2px; border:1px solid #aaa; border-radius:3px;" placeholder="First impressions, listening setup..."></textarea>
+          <label style="font-size:10px; font-weight:600; color:#444;">Comments / Notes:</label>
+          <textarea id="finishComments" style="width:100%; height:48px; font-size:11px; padding:4px; margin-top:2px; border:1px solid #aaa; border-radius:3px;" placeholder="First impressions..."></textarea>
         </div>
 
         <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:2px;">
@@ -1246,8 +1213,7 @@
   <div id="itunesInfoModal" class="modal-overlay">
     <div class="itunes-card">
       <div class="itunes-header">
-        <span>Album Info</span>
-        <span style="cursor:pointer;" onclick="closeiTunesModal()">✕</span>
+        <span>Album Info</span><span style="cursor:pointer;" onclick="closeiTunesModal()">✕</span>
       </div>
       <div class="itunes-body">
         <img id="infoArt" class="itunes-art" src="" />
@@ -1263,7 +1229,6 @@
           </div>
           <div id="infoSecondaryGenres" style="display:flex; gap:3px; flex-wrap:wrap; margin-top:2px;"></div>
           <div id="infoDescriptors" style="display:flex; gap:3px; flex-wrap:wrap; margin-top:4px;"></div>
-          <div id="infoFavTrack" style="font-size:9.5px; font-weight:600; color:#2563eb; margin-top:2px; display:none;"></div>
           <div id="infoStars" style="margin-top:4px;"></div>
           <div id="infoDate" style="font-size:9px; color:#888; margin-top:2px;"></div>
           <div id="infoComments" class="itunes-comment-box"></div>
@@ -1276,8 +1241,7 @@
   <div id="configModal" class="modal-overlay">
     <div class="itunes-card" style="width: 500px;">
       <div class="itunes-header">
-        <span>⚙️ System & Category Configurator</span>
-        <span style="cursor:pointer;" onclick="closeConfigModal()">✕</span>
+        <span>⚙️ System & Category Configurator</span><span style="cursor:pointer;" onclick="closeConfigModal()">✕</span>
       </div>
       <div style="padding:12px; display:flex; flex-direction:column; gap:10px;">
         
@@ -1340,8 +1304,9 @@
       <button class="skeuo-btn skeuo-btn-primary" style="width:100%; margin-bottom:12px; padding:8px 0;" onclick="triggerFileBackupDownload()">
         📥 Download Backup (.json)
       </button>
-      <button class="skeuo-btn" style="width:100%; margin-bottom:12px; padding:8px 0; background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-color: #b45309;" onclick="migrateExistingImagesToBase64()">
-        ⚡ Optimize Existing Album Images (Convert to Base64)
+
+      <button class="skeuo-btn" style="width:100%; margin-bottom:12px; padding:8px 0; background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border-color: #b45309; color: #fff; font-weight: bold; text-shadow: 0 -1px 0 rgba(0,0,0,0.4);" onclick="migrateExistingImagesToBase64()">
+        ⚡ Optimize Existing Images (Convert to Base64)
       </button>
 
       <div style="border-top:1px solid #444; padding-top:8px;">
@@ -1356,9 +1321,9 @@
     </div>
   </div>
 
-<script>
+  <script>
     // ---------------------------------------------------------------- //
-    // PROTECTED CLOUD SYNC PIPELINE & ACCOUNT PORTABILITY             //
+    // SECURE STORAGE LAYER CONTROL ROUTER PIPELINE                     //
     // ---------------------------------------------------------------- //
     let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
     let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
@@ -1371,6 +1336,7 @@
     let editingArchiveIndex = null;
     let currentSelectedRating = 5.0;
     let hoveredRating = 5.0;
+    let isBlindMode = false;
 
     let selectedPrimaryGenre = "";
     let selectedScene = "";
@@ -1422,13 +1388,14 @@
         const hasRemoteData = (remoteQueue && remoteQueue.length > 0) || (remoteArchive && remoteArchive.length > 0);
 
         if (hasLocalData && !hasRemoteData) {
-          // New Cloud Account Key: Push device local storage upward
           await musicCategoryStore.storeObject('queue', albums);
           await musicCategoryStore.storeObject('archive', archive);
           if (!isSilentAutoLoad) alert("Sync Key Connected! Created a fresh remote storage node and uploaded your current local tracks safely.");
+          finalizeUIInitialization();
+          return;
         } 
-        else if (hasLocalData && hasRemoteData) {
-          // Structural collision fallback handling
+        
+        if (hasLocalData && hasRemoteData) {
           const isQueueIdentical = JSON.stringify(albums) === JSON.stringify(remoteQueue);
           const isArchiveIdentical = JSON.stringify(archive) === JSON.stringify(remoteArchive);
 
@@ -1444,37 +1411,29 @@
             if (conflictDecision) {
               albums = remoteQueue || [];
               archive = remoteArchive || [];
-              alert("Cloud backup data downloaded into this device successfully.");
             } else {
               await musicCategoryStore.storeObject('queue', albums);
               await musicCategoryStore.storeObject('archive', archive);
-              alert("Device records prioritized. Cloud backup node has been overwritten successfully.");
             }
           }
         } 
-        else if (!hasLocalData && hasRemoteData) {
-          // Empty client framework loading down verified remote host sets
+        else if (hasRemoteData) {
           albums = remoteQueue || [];
           archive = remoteArchive || [];
           if (!isSilentAutoLoad) alert("Sync Complete! Pulled database entries from cloud profile safely.");
         }
         else {
-          // Completely empty across both endpoints
-          if (!isSilentAutoLoad) alert("Sync Account Created! Ready for new entries.");
+          if (!isSilentAutoLoad) alert("Sync Account Linked! Workspace initialized.");
         }
 
         finalizeUIInitialization();
       } catch (err) {
-        console.warn("Cloud connection error, dropping back to native storage keys:", err);
-        if (!isSilentAutoLoad) alert("Network sync failed. SosaOS has fallen back safely to your offline device logs.");
+        console.warn("Cloud connection timed out, pulling cached backup context:", err);
+        albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+        archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
+        if (!isSilentAutoLoad) alert("Sync Engine offline. Running layout using offline device logs.");
         finalizeUIInitialization();
       }
-    }
-
-    function finalizeUIInitialization() {
-      populateFilterDropdowns();
-      renderList();
-      updateStats();
     }
 
     async function saveAndRender() {
@@ -1486,10 +1445,16 @@
           await musicCategoryStore.storeObject('queue', albums);
           await musicCategoryStore.storeObject('archive', archive);
         } catch (err) {
-          console.error("Cloud pipeline backup loop failed:", err);
+          console.error("Cloud background sync pass interrupted:", err);
         }
       }
       
+      populateFilterDropdowns();
+      renderList();
+      updateStats();
+    }
+
+    function finalizeUIInitialization() {
       populateFilterDropdowns();
       renderList();
       updateStats();
@@ -1522,7 +1487,7 @@
             ctx.drawImage(img, 0, 0, 250, 250);
             resolve(canvas.toDataURL('image/jpeg', 0.75));
           };
-          img.onerror = () => resolve(url); // CORS firewall block fallback protect
+          img.onerror = () => resolve(url);
         });
       };
 
@@ -1547,7 +1512,7 @@
     }
 
     // ---------------------------------------------------------------- //
-    // SYSTEM POOLS & CATEGORIES                                       //
+    // SYSTEM DATA LABELS POOLS                                         //
     // ---------------------------------------------------------------- //
     let DESCRIPTOR_POOL = JSON.parse(localStorage.getItem('sosa_descriptor_pool')) || [
       'atmospheric', 'nocturnal', 'melancholic', 'boisterous', 'aggressive', 
@@ -1601,10 +1566,6 @@
         scenes: ["DC Post-Hardcore", "Elephant 6", "No Wave", "Dunedin Sound", "Shibuya-kei"]
       }
     ];
-
-    if (customBg) {
-      document.body.style.backgroundImage = `url('${customBg}')`;
-    }
 
     // ---------------------------------------------------------------- //
     // THEME TINTING ENGINE & DESIGN UTILITIES                         //
@@ -1662,35 +1623,14 @@
       }
     }
 
-    function triggerFileBackupDownload() {
-      const dataPayload = {
-        queue: albums,
-        archive: archive,
-        genres: GENRE_DATA,
-        scenes: SCENE_DATA,
-        descriptors: DESCRIPTOR_POOL
-      };
-      const jsonString = JSON.stringify(dataPayload, null, 2);
-      const dataBlob = new Blob([jsonString], { type: 'application/json' });
-      const currentToday = new Date();
-      const isoDateString = currentToday.toISOString().split('T')[0];
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.href = URL.createObjectURL(dataBlob);
-      downloadAnchor.download = `sosaos-backup-${isoDateString}.json`;
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      document.body.removeChild(downloadAnchor);
-    }
-
     function handleBgFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          const result = e.target.result;
-          customBg = result;
-          localStorage.setItem('sosa_bg_file', result);
-          document.body.style.backgroundImage = `url('${result}')`;
+          customBg = e.target.result;
+          localStorage.setItem('sosa_bg_file', customBg);
+          document.body.style.backgroundImage = `url('${customBg}')`;
         };
         reader.readAsDataURL(file);
       }
@@ -1711,35 +1651,29 @@
     function getGenreColor(str) {
       if (!str) return 'linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%)';
       let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
+      for (let i = 0; i < str.length; i++) { hash = str.charCodeAt(i) + ((hash << 5) - hash); }
       const h = Math.abs(hash) % 360;
-      const c1 = `hsl(${h}, 70%, 78%)`;
-      const c2 = `hsl(${h}, 60%, 65%)`;
-      return `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`;
+      return `linear-gradient(180deg, hsl(${h}, 70%, 78%) 0%, hsl(${h}, 60%, 65%) 100%)`;
     }
 
     function renderRymStars(ratingVal) {
       const score = parseFloat(ratingVal) || 0;
       let html = '<div class="rym-star-container">';
       for (let i = 1; i <= 5; i++) {
-        if (score >= i) { html += '<span class="rym-star full">★</span>'; }
-        else if (score >= i - 0.5) { html += '<span class="rym-star half">☆</span>'; }
-        else { html += '<span class="rym-star">☆</span>'; }
+        if (score >= i) html += '<span class="rym-star full">★</span>';
+        else if (score >= i - 0.5) html += '<span class="rym-star half">☆</span>';
+        else html += '<span class="rym-star">☆</span>';
       }
-      html += ` <span style="font-size:9.5px; font-weight:bold; color:#f39c12; margin-left:3px;">${score.toFixed(1)}</span></div>`;
-      return html;
+      return html + ` <span style="font-size:9.5px; font-weight:bold; color:#f39c12; margin-left:3px;">${score.toFixed(1)}</span></div>`;
     }
 
     function renderInteractiveStars(targetVal) {
       const score = parseFloat(targetVal);
       const starEls = document.querySelectorAll('#rymInteractivePicker .rym-star-step');
       starEls.forEach((el, idx) => {
-        const starNum = idx + 1;
         el.classList.remove('active-full', 'active-half');
-        if (score >= starNum) { el.classList.add('active-full'); }
-        else if (score >= starNum - 0.5) { el.classList.add('active-half'); }
+        if (score >= idx + 1) el.classList.add('active-full');
+        else if (score >= idx + 0.5) el.classList.add('active-half');
       });
       document.getElementById('rymScoreDisplay').innerText = `${score.toFixed(1)} ★`;
     }
@@ -1750,12 +1684,10 @@
       hoveredRating = isLeftHalf ? starIndex - 0.5 : starIndex;
       renderInteractiveStars(hoveredRating);
     }
-
     function resetStarHover() { renderInteractiveStars(currentSelectedRating); }
     function handleStarClick(event, starIndex) {
       const rect = event.target.getBoundingClientRect();
-      const isLeftHalf = (event.clientX - rect.left) < (rect.width / 2);
-      currentSelectedRating = isLeftHalf ? starIndex - 0.5 : starIndex;
+      currentSelectedRating = ((event.clientX - rect.left) < (rect.width / 2)) ? starIndex - 0.5 : starIndex;
       renderInteractiveStars(currentSelectedRating);
     }
 
@@ -1764,49 +1696,14 @@
       const shuffled = [...DESCRIPTOR_POOL].sort(() => 0.5 - Math.random()).slice(0, 8);
       bar.innerHTML = shuffled.map(tag => `<span class="preset-chip" onclick="addDescriptorPreset('${tag}')">+ ${tag}</span>`).join(' ');
     }
-
     function addDescriptorPreset(tag) {
       const input = document.getElementById('descriptorInput');
       let curr = input.value.split(',').map(s => s.trim()).filter(Boolean);
       if (!curr.includes(tag)) { curr.push(tag); input.value = curr.join(', '); }
     }
 
-    function formatTimeMS(ms) {
-      if (!ms || isNaN(ms) || ms <= 0) return "45:00";
-      const totalSec = Math.floor(ms / 1000);
-      const hrs = Math.floor(totalSec / 3600);
-      const mins = Math.floor((totalSec % 3600) / 60);
-      const secs = totalSec % 60;
-      const pad = (num) => String(num).padStart(2, '0');
-      if (hrs > 0) { return `${hrs}:${pad(mins)}:${pad(secs)}`; }
-      return `${pad(mins)}:${pad(secs)}`;
-    }
-
-    function parseFormattedTimeToSeconds(timeStr) {
-      if (!timeStr) return 2700;
-      const parts = timeStr.trim().split(':').map(p => parseInt(p, 10) || 0);
-      if (parts.length === 3) { return (parts[0] * 3600) + (parts[1] * 60) + parts[2]; }
-      else if (parts.length === 2) { return (parts[0] * 60) + parts[1]; }
-      else if (parts.length === 1 && !isNaN(parts[0])) { return parts[0] * 60; }
-      return 2700;
-    }
-
-    function formatSecondsToDisplay(sec) {
-      const hrs = Math.floor(sec / 3600);
-      const mins = Math.floor((sec % 3600) / 60);
-      const secs = sec % 60;
-      const pad = (num) => String(num).padStart(2, '0');
-      if (hrs > 0) { return `${hrs}:${pad(mins)}:${pad(secs)}`; }
-      return `${pad(mins)}:${pad(secs)}`;
-    }
-
-    function getTodayISOString() {
-      const today = new Date();
-      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
-
     // ---------------------------------------------------------------- //
-    // MULTISELECT DISPLAY ENGINE HANDLERS                             //
+    // MENU DROPDOWN DOM CONSTRUCTORS                                   //
     // ---------------------------------------------------------------- //
     function buildPrimaryGenreMenu() {
       const menu = document.getElementById('primaryGenreDropdownMenu');
@@ -1817,18 +1714,11 @@
         catHeader.innerText = cat.category;
         menu.appendChild(catHeader);
         cat.genres.forEach(val => {
-          const row = document.createElement('div');
-          row.className = 'multiselect-option';
-          const chip = document.createElement('span');
-          chip.className = 'color-chip';
-          chip.style.background = getGenreColor(val);
-          const lbl = document.createElement('span');
-          lbl.innerText = val;
+          const row = document.createElement('div'); row.className = 'multiselect-option';
+          const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
+          const lbl = document.createElement('span'); lbl.innerText = val;
           row.appendChild(chip); row.appendChild(lbl);
-          row.onclick = (e) => {
-            e.stopPropagation(); selectedPrimaryGenre = val;
-            updatePrimaryGenreDisplay(); menu.classList.remove('show');
-          };
+          row.onclick = (e) => { e.stopPropagation(); selectedPrimaryGenre = val; updatePrimaryGenreDisplay(); menu.classList.remove('show'); };
           menu.appendChild(row);
         });
       });
@@ -1837,21 +1727,17 @@
     function buildSceneMenu() {
       const menu = document.getElementById('sceneDropdownMenu');
       menu.innerHTML = '';
-      const noneRow = document.createElement('div');
-      noneRow.className = 'multiselect-option'; noneRow.innerText = 'No Scene Tag';
+      const noneRow = document.createElement('div'); noneRow.className = 'multiselect-option'; noneRow.innerText = 'No Scene Tag';
       noneRow.onclick = (e) => { e.stopPropagation(); selectedScene = ""; updateSceneDisplay(); menu.classList.remove('show'); };
       menu.appendChild(noneRow);
-
       SCENE_DATA.forEach(cat => {
         const catHeader = document.createElement('div');
         catHeader.style.cssText = 'font-size:9px; font-weight:bold; color:#8899aa; padding:4px 2px 2px 2px; text-transform:uppercase;';
         catHeader.innerText = cat.category;
         menu.appendChild(catHeader);
         cat.scenes.forEach(val => {
-          const row = document.createElement('div');
-          row.className = 'multiselect-option';
-          const chip = document.createElement('span');
-          chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
+          const row = document.createElement('div'); row.className = 'multiselect-option';
+          const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
           const lbl = document.createElement('span'); lbl.innerText = val;
           row.appendChild(chip); row.appendChild(lbl);
           row.onclick = (e) => { e.stopPropagation(); selectedScene = val; updateSceneDisplay(); menu.classList.remove('show'); };
@@ -1873,8 +1759,7 @@
           const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(val);
           const chk = document.createElement('input'); chk.type = 'checkbox'; chk.value = val; chk.checked = selectedSecondaryGenres.has(val);
           chk.onchange = (e) => {
-            if (e.target.checked) selectedSecondaryGenres.add(val);
-            else selectedSecondaryGenres.delete(val);
+            if (e.target.checked) selectedSecondaryGenres.add(val); else selectedSecondaryGenres.delete(val);
             updateSecTagPreview();
           };
           const lbl = document.createElement('span'); lbl.innerText = val;
@@ -1889,148 +1774,26 @@
     function toggleSecondaryGenreDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('secDropdownMenu').classList.toggle('show'); }
     function toggleFilterGenreDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('filterGenreDropdownMenu').classList.toggle('show'); }
     function toggleFilterSceneDropdown(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('filterSceneDropdownMenu').classList.toggle('show'); }
+    function closeAllDropdowns() { document.querySelectorAll('.custom-multiselect-dropdown').forEach(m => m.classList.remove('show')); }
+    document.addEventListener('click', closeAllDropdowns);
+
+    function updatePrimaryGenreDisplay() {
+      const display = document.getElementById('primaryGenreDisplay');
+      display.innerHTML = selectedPrimaryGenre ? `<span class="genre-tag" style="background:${getGenreColor(selectedPrimaryGenre)}">${selectedPrimaryGenre}</span>` : 'Primary Genre...';
+    }
+    function updateSceneDisplay() {
+      const display = document.getElementById('sceneDisplay');
+      display.innerHTML = selectedScene ? `<span class="scene-tag" style="background:${getGenreColor(selectedScene)}">${selectedScene}</span>` : 'Select Scene / Movement...';
+    }
+    function updateSecTagPreview() {
+      const preview = document.getElementById('secTagPreview');
+      if (selectedSecondaryGenres.size === 0) { preview.innerText = 'Select Secondary Genres...'; return; }
+      preview.innerHTML = Array.from(selectedSecondaryGenres).map(g => `<span class="secondary-tag" style="background:${getGenreColor(g)}; color:#111827;">${g}</span>`).join('');
+    }
 
     // ---------------------------------------------------------------- //
-    // FETCH ARTWORK INTERFACE HANDLERS                                 //
+    // CORE LAYOUT LIST CONTROL ENGINE METRIC                           //
     // ---------------------------------------------------------------- //
-    async function fetchArtwork() {
-      const inputVal = document.getElementById('albumInput').value.trim();
-      if (!inputVal) return;
-      let artist = ""; let album = inputVal;
-      if (inputVal.includes('-')) {
-        const parts = inputVal.split('-'); artist = parts[0].trim(); album = parts.slice(1).join('-').trim();
-      }
-      const cleanAlbum = album.replace(/\(.*\)|\[.*\]/g, '').trim();
-      allArtCandidates = []; artBatchIndex = 0;
-      const fetchBtn = document.getElementById('fetchBtn'); fetchBtn.innerText = 'Searching...';
-      try {
-        const [itunesRes, mbRes] = await Promise.allSettled([
-          fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist ? `${artist} ${cleanAlbum}` : cleanAlbum)}&entity=album&limit=25`).then(res => res.json()),
-          fetch(`https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist ? `artist:"${artist}" AND release:"${cleanAlbum}"` : `release:"${cleanAlbum}"`)}&fmt=json&limit=6`).then(res => res.json())
-        ]);
-        let seenUrls = new Set();
-        if (itunesRes.status === 'fulfilled' && itunesRes.value.results) {
-          itunesRes.value.results.forEach(item => {
-            const highResUrl = item.artworkUrl100.replace('100x100bb', '600x600bb');
-            if (!seenUrls.has(highResUrl)) {
-              seenUrls.add(highResUrl);
-              allArtCandidates.push({ artistName: item.artistName, albumName: item.collectionName, artUrl: highResUrl, year: item.releaseDate ? item.releaseDate.substring(0, 4) : '', duration: '45:00', provider: 'iTunes' });
-            }
-          });
-        }
-      } catch (err) { console.warn("Lookup Error:", err); }
-      finally { fetchBtn.innerText = 'Fetch Art'; }
-      if (allArtCandidates.length > 0) { renderArtBatch(); document.getElementById('artPreviewBox').style.display = 'flex'; }
-      else { alert('No matches resolved.'); }
-    }
-
-    function renderArtBatch() {
-      const gridEl = document.getElementById('artResultsGrid');
-      gridEl.innerHTML = '';
-      const startIndex = artBatchIndex * 3;
-      const currentBatch = allArtCandidates.slice(startIndex, startIndex + 3);
-      const indicatorEl = document.getElementById('artPageIndicator');
-      indicatorEl.innerText = `Select Artwork Match (${startIndex + 1}-${Math.min(startIndex + 3, allArtCandidates.length)} of ${allArtCandidates.length}):`;
-
-      currentBatch.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'art-card';
-        card.innerHTML = `
-          <img src="${item.artUrl}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/555/fff?text=No+Art'">
-          <div class="art-card-title">${item.albumName}</div>
-          <div class="art-card-artist">${item.artistName}</div>
-          <div class="art-card-meta">${item.year ? `Year: ${item.year}` : ''} • ${item.duration}</div>
-          <span class="provider-badge">${item.provider}</span>
-          <button class="skeuo-btn skeuo-btn-primary" style="font-size: 9px; padding: 2px 8px; margin-top: 4px;" onclick="selectArtwork('${item.artUrl}', '${item.year}', '${item.duration}')">Select All</button>
-        `;
-        gridEl.appendChild(card);
-      });
-    }
-
-    function selectArtwork(url, year, duration) {
-      const fetchBtn = document.getElementById('fetchBtn');
-      fetchBtn.innerText = 'Compressing...';
-
-      const img = new Image();
-      img.crossOrigin = "Anonymous"; 
-      img.src = url;
-
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 250; 
-        canvas.height = 250;
-        ctx.drawImage(img, 0, 0, 250, 250);
-        
-        const base64DataUrl = canvas.toDataURL('image/jpeg', 0.75);
-        document.getElementById('artInput').value = base64DataUrl;
-        
-        if (year) document.getElementById('yearInput').value = year;
-        if (duration) document.getElementById('durationInput').value = duration;
-        
-        fetchBtn.innerText = 'Fetch Art';
-        closeArtPreview();
-      };
-
-      img.onerror = function() {
-        document.getElementById('artInput').value = url;
-        if (year) document.getElementById('yearInput').value = year;
-        if (duration) document.getElementById('durationInput').value = duration;
-        fetchBtn.innerText = 'Fetch Art';
-        closeArtPreview();
-      };
-    }
-
-    function nextArtBatch() {
-      if ((artBatchIndex + 1) * 3 < allArtCandidates.length) artBatchIndex++;
-      else artBatchIndex = 0;
-      renderArtBatch();
-    }
-
-    function prevArtBatch() {
-      if (artBatchIndex > 0) artBatchIndex--;
-      else artBatchIndex = Math.max(0, Math.ceil(allArtCandidates.length / 3) - 1);
-      renderArtBatch();
-    }
-
-    function closeArtPreview() { document.getElementById('artPreviewBox').style.display = 'none'; }
-
-    // ---------------------------------------------------------------- //
-    // BASIC REPERTOIRE ENGINE LOGIC WORKSPACE                          //
-    // ---------------------------------------------------------------- //
-    function populateFilterDropdowns() {
-      const gMenu = document.getElementById('filterGenreDropdownMenu');
-      const sMenu = document.getElementById('filterSceneDropdownMenu');
-      const sourceList = currentView === 'queue' ? albums : archive;
-      const genres = new Set(); const scenes = new Set();
-      sourceList.forEach(a => { if (a.genre) genres.add(a.genre); if (a.scene) scenes.add(a.scene); });
-      gMenu.innerHTML = ''; sMenu.innerHTML = '';
-
-      const allGRow = document.createElement('div'); allGRow.className = 'multiselect-option'; allGRow.innerText = 'All Genres';
-      allGRow.onclick = (e) => { e.stopPropagation(); filterGenreVal = ""; document.getElementById('filterGenreDisplay').innerText = 'All Genres'; gMenu.classList.remove('show'); renderList(); };
-      gMenu.appendChild(allGRow);
-      genres.forEach(g => {
-        const row = document.createElement('div'); row.className = 'multiselect-option';
-        const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(g);
-        const lbl = document.createElement('span'); lbl.innerText = g;
-        row.appendChild(chip); row.appendChild(lbl);
-        row.onclick = (e) => { e.stopPropagation(); filterGenreVal = g; document.getElementById('filterGenreDisplay').innerText = g; gMenu.classList.remove('show'); renderList(); };
-        gMenu.appendChild(row);
-      });
-
-      const allSRow = document.createElement('div'); allSRow.className = 'multiselect-option'; allSRow.innerText = 'All Scenes';
-      allSRow.onclick = (e) => { e.stopPropagation(); filterSceneVal = ""; document.getElementById('filterSceneDisplay').innerText = 'All Scenes'; sMenu.classList.remove('show'); renderList(); };
-      sMenu.appendChild(allSRow);
-      scenes.forEach(s => {
-        const row = document.createElement('div'); row.className = 'multiselect-option';
-        const chip = document.createElement('span'); chip.className = 'color-chip'; chip.style.background = getGenreColor(s);
-        const lbl = document.createElement('span'); lbl.innerText = s;
-        row.appendChild(chip); row.appendChild(lbl);
-        row.onclick = (e) => { e.stopPropagation(); filterSceneVal = s; document.getElementById('filterSceneDisplay').innerText = s; sMenu.classList.remove('show'); renderList(); };
-        sMenu.appendChild(row);
-      });
-    }
-
     function saveAlbum() {
       const title = document.getElementById('albumInput').value.trim();
       const year = document.getElementById('yearInput').value.trim();
@@ -2046,25 +1809,6 @@
         albums.push({ title, year, duration, genre, secondaryGenres: Array.from(selectedSecondaryGenres), scene: selectedScene, art });
       }
       clearForm(); saveAndRender();
-    }
-
-    function toggleView() {
-      currentView = currentView === 'queue' ? 'archive' : 'queue';
-      document.getElementById('viewToggleBtn').innerText = currentView === 'queue' ? 'Archive' : 'Queue';
-      selectedIndex = 0;
-      filterGenreVal = "";
-      filterSceneVal = "";
-      document.getElementById('filterGenreDisplay').innerText = 'All Genres';
-      document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
-      populateFilterDropdowns();
-      renderList();
-    }
-
-    function toggleDrawer(idx, event) {
-      if (event) event.stopPropagation();
-      if (openDrawers.has(idx)) { openDrawers.delete(idx); } 
-      else { openDrawers.add(idx); }
-      renderList();
     }
 
     function renderList() {
@@ -2135,7 +1879,16 @@
     }
 
     function selectItem(idx) { selectedIndex = idx; renderList(); }
-    
+    function toggleView() {
+      currentView = currentView === 'queue' ? 'archive' : 'queue';
+      document.getElementById('viewToggleBtn').innerText = currentView === 'queue' ? 'Archive' : 'Queue';
+      selectedIndex = 0; filterGenreVal = ""; filterSceneVal = "";
+      document.getElementById('filterGenreDisplay').innerText = 'All Genres';
+      document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
+      populateFilterDropdowns(); renderList();
+    }
+    function toggleDrawer(idx, event) { if (event) event.stopPropagation(); if (openDrawers.has(idx)) openDrawers.delete(idx); else openDrawers.add(idx); renderList(); }
+
     function openFinishModal(index, event = null) {
       if (event) event.stopPropagation();
       let sourceList = currentView === 'queue' ? albums : archive;
@@ -2143,9 +1896,7 @@
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
       
       const item = sourceList[index];
-      const realIndex = albums.findIndex(a => a.title === item.title);
-      
-      pendingFinishIndex = realIndex;
+      pendingFinishIndex = albums.findIndex(a => a.title === item.title);
       editingArchiveIndex = null;
       
       document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
@@ -2155,9 +1906,7 @@
       document.getElementById('dateListenedInput').value = getTodayISOString();
       document.getElementById('listeningFormatInput').value = '';
       document.getElementById('favoriteTrackInput').value = '';
-      currentSelectedRating = 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
+      currentSelectedRating = 5.0; renderInteractiveStars(currentSelectedRating); shufflePresetBar();
       document.getElementById('finishModal').style.display = 'flex';
     }
 
@@ -2168,9 +1917,7 @@
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
       const item = sourceList[index];
-      const realIndex = archive.findIndex(a => a.title === item.title);
-      
-      editingArchiveIndex = realIndex;
+      editingArchiveIndex = archive.findIndex(a => a.title === item.title);
       pendingFinishIndex = null;
 
       document.getElementById('finishModalHeaderTitle').innerText = "Edit Archive Entry";
@@ -2180,10 +1927,7 @@
       document.getElementById('dateListenedInput').value = item.dateFinishedISO || getTodayISOString();
       document.getElementById('listeningFormatInput').value = item.listeningFormat || '';
       document.getElementById('favoriteTrackInput').value = item.favoriteTrack || '';
-      currentSelectedRating = parseFloat(item.rating) || 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
-
+      currentSelectedRating = parseFloat(item.rating) || 5.0; renderInteractiveStars(currentSelectedRating); shufflePresetBar();
       document.getElementById('finishModal').style.display = 'flex';
     }
 
@@ -2191,40 +1935,27 @@
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
       const formattedDate = new Date(dateISO + 'T00:00:00').toLocaleDateString();
-      const formatStr = document.getElementById('listeningFormatInput').value;
-      const favTrack = document.getElementById('favoriteTrackInput').value.trim();
 
-      descriptors.forEach(d => {
-        if (!DESCRIPTOR_POOL.includes(d)) { DESCRIPTOR_POOL.push(d); }
-      });
+      descriptors.forEach(d => { if (!DESCRIPTOR_POOL.includes(d)) DESCRIPTOR_POOL.push(d); });
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
       if (pendingFinishIndex !== null) {
         const completed = albums.splice(pendingFinishIndex, 1)[0];
         completed.rating = currentSelectedRating;
         completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        completed.descriptors = descriptors;
-        completed.dateFinished = formattedDate;
-        completed.dateFinishedISO = dateISO;
-        completed.listeningFormat = formatStr;
-        completed.favoriteTrack = favTrack;
-
-        archive.unshift(completed);
-        pendingFinishIndex = null;
+        completed.descriptors = descriptors; completed.dateFinished = formattedDate; completed.dateFinishedISO = dateISO;
+        completed.listeningFormat = document.getElementById('listeningFormatInput').value;
+        completed.favoriteTrack = document.getElementById('favoriteTrackInput').value.trim();
+        archive.unshift(completed); pendingFinishIndex = null;
       } else if (editingArchiveIndex !== null) {
         archive[editingArchiveIndex].rating = currentSelectedRating;
         archive[editingArchiveIndex].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        archive[editingArchiveIndex].descriptors = descriptors;
-        archive[editingArchiveIndex].dateFinished = formattedDate;
-        archive[editingArchiveIndex].dateFinishedISO = dateISO;
-        archive[editingArchiveIndex].listeningFormat = formatStr;
-        archive[editingArchiveIndex].favoriteTrack = favTrack;
+        archive[editingArchiveIndex].descriptors = descriptors; archive[editingArchiveIndex].dateFinished = formattedDate; archive[editingArchiveIndex].dateFinishedISO = dateISO;
+        archive[editingArchiveIndex].listeningFormat = document.getElementById('listeningFormatInput').value;
+        archive[editingArchiveIndex].favoriteTrack = document.getElementById('favoriteTrackInput').value.trim();
         editingArchiveIndex = null;
       }
-
-      document.getElementById('finishModal').style.display = 'none';
-      clearForm();
-      saveAndRender();
+      document.getElementById('finishModal').style.display = 'none'; clearForm(); saveAndRender();
     }
 
     function editEntry(idx, event) {
@@ -2234,17 +1965,13 @@
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
       
       const item = sourceList[idx];
-      const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
-      editingIndex = realIndex;
+      editingIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
 
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
       document.getElementById('artInput').value = item.art;
-      
-      selectedPrimaryGenre = item.genre; 
-      updatePrimaryGenreDisplay();
-      
+      selectedPrimaryGenre = item.genre; updatePrimaryGenreDisplay();
       document.getElementById('saveBtn').innerText = '✓ Update';
       document.getElementById('cancelBtn').style.display = 'inline-flex';
     }
@@ -2254,15 +1981,10 @@
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       const item = sourceList[idx];
-      if (currentView === 'queue') {
-        const globalIdx = albums.findIndex(a => a.title === item.title);
-        albums.splice(globalIdx, 1);
-      } else {
-        const globalIdx = archive.findIndex(a => a.title === item.title);
-        archive.splice(globalIdx, 1);
-      }
+      
+      if (currentView === 'queue') albums.splice(albums.findIndex(a => a.title === item.title), 1);
+      else archive.splice(archive.findIndex(a => a.title === item.title), 1);
       saveAndRender();
     }
 
@@ -2274,280 +1996,132 @@
     }
 
     function updateStats() {
-      document.getElementById('estTime').innerText = `Queue: ${albums.length} records`;
-      document.getElementById('topGenre').innerText = `Archive: ${archive.length}`;
+      let sec = 0; albums.forEach(a => { sec += parseFormattedTimeToSeconds(a.duration); });
+      document.getElementById('estTime').innerText = `Queue: ${formatSecondsToDisplay(sec)}`;
+      document.getElementById('topGenre').innerText = archive.length ? `Avg: ${(archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1)} ★` : 'Listened: 0';
     }
 
     function openBackupModal() { document.getElementById('jsonBox').value = ""; document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
     function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
-    function openConfigModal() { document.getElementById('configModal').style.display = 'flex'; }
+    function openConfigModal() { populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); document.getElementById('configModal').style.display = 'flex'; }
     function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
-    function showList() { renderList(); }
 
     function importJson() {
       try {
         const parsed = JSON.parse(document.getElementById('jsonBox').value);
         if (parsed.queue && parsed.archive) { albums = parsed.queue; archive = parsed.archive; }
         saveAndRender(); closeBackupModal();
-      } catch (e) { alert('Invalid payload schema.'); }
+      } catch (e) { alert('Invalid schema layout context.'); }
     }
 
     function spinAndPick() {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
       if (sourceList.length === 0) return;
-
-      let spins = 0, maxSpins = 12;
+      let counter = 0;
       let interval = setInterval(() => {
-        selectedIndex = Math.floor(Math.random() * sourceList.length);
-        renderList();
-        spins++;
-        if (spins >= maxSpins) {
-          clearInterval(interval);
-          pickRandomAlbum(selectedIndex);
-        }
+        selectedIndex = Math.floor(Math.random() * sourceList.length); renderList(); counter++;
+        if (counter >= 12) { clearInterval(interval); pickRandomAlbum(selectedIndex); }
       }, 60);
     }
 
-    function openiTunesModal(idx) {
+    function pickRandomAlbum(targetIndex) {
       let sourceList = currentView === 'queue' ? albums : archive;
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      const item = sourceList[idx];
-      let parts = item.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
-
-      document.getElementById('infoArt').src = item.art;
-      document.getElementById('infoTitle').innerText = albumName;
-      document.getElementById('infoArtist').innerText = artist;
-      document.getElementById('infoYear').innerText = item.year || 'N/A';
-
-      const primaryBg = getGenreColor(item.genre || 'General');
-      document.getElementById('infoGenre').innerHTML = `<span class="genre-tag" style="background: ${primaryBg};">${item.genre || 'General'}</span>`;
-      document.getElementById('infoDuration').innerText = item.duration || '45:00';
-
-      const fmtEl = document.getElementById('infoFormat');
-      if (item.listeningFormat) {
-        fmtEl.innerText = item.listeningFormat;
-        fmtEl.style.display = 'inline-block';
-      } else {
-        fmtEl.style.display = 'none';
-      }
-      
-      const secEl = document.getElementById('infoSecondaryGenres');
-      if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-        secEl.innerHTML = item.secondaryGenres.map(sg => `<span class="secondary-tag" style="background: ${getGenreColor(sg)}; color:#111827;">${sg}</span>`).join(' ');
-      } else {
-        secEl.innerHTML = '';
-      }
-
-      const descEl = document.getElementById('infoDescriptors');
-      if (item.descriptors && item.descriptors.length > 0) {
-        descEl.innerHTML = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-      } else {
-        descEl.innerHTML = '';
-      }
-
-      document.getElementById('infoStars').innerHTML = renderRymStars(item.rating);
-      document.getElementById('infoDate').innerText = `Listened on: ${item.dateFinished || 'Recently'}`;
-      document.getElementById('infoComments').innerText = `"${item.comments || 'No notes added.'}"`;
-
-      document.getElementById('itunesInfoModal').style.display = 'flex';
-    }
-
-    function stageRandomAlbumAsNext(targetIndex) {
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      if (sourceList.length <= 1) return;
-      
-      const chosenItem = sourceList[targetIndex];
-      const globalCurrentIdx = albums.findIndex(a => a.title === chosenItem.title);
-      
-      const pulledItem = albums.splice(globalCurrentIdx, 1)[0];
-      albums.splice(1, 0, pulledItem);
-      
-      saveAndRender();
-      alert(`Up Next Staged: "${chosenItem.title.split('-')[1] || chosenItem.title}" shifted cleanly behind active placement context.`);
-    }
-
-    function pickRandomAlbum(targetIndex = null) {
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      if (sourceList.length === 0) return;
-      const randomIndex = targetIndex !== null ? targetIndex : Math.floor(Math.random() * sourceList.length);
-      const selected = sourceList[randomIndex];
+      const selected = sourceList[targetIndex];
 
       const bodyEl = document.getElementById('screenBody');
       document.getElementById('screenTitle').innerText = "Now Playing";
-      const ribbonStyle = getGenreColor(selected.genre);
-
       let parts = selected.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : selected.title;
-      
-      let sceneHtml = '';
-      if (selected.scene) {
-        sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
-      }
-      const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
 
       bodyEl.innerHTML = `
         <div class="now-playing-container">
           <div class="np-top">
-            <img class="np-cover" id="npCoverImg" src="${selected.art}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=?'">
+            <img class="np-cover" id="npCoverImg" src="${selected.art}">
             <div class="np-info">
-              <div class="np-track" id="npTrackTitle">${albumName}</div>
-              <div class="np-artist" id="npArtistName">${artist}</div>
+              <div class="np-track">${parts[1] ? parts[1].trim() : selected.title}</div>
+              <div class="np-artist">${parts[0] ? parts[0].trim() : 'Unknown Artist'}</div>
               <div style="display:flex; gap:4px; align-items:center; margin-top:3px; flex-wrap:wrap;">
-                <span class="duration-badge">${selected.duration || '45:00'}</span>
-                ${yr}
-                <span class="genre-tag" style="background: ${ribbonStyle};">${selected.genre || 'General'}</span>
-                ${sceneHtml}
+                <span class="duration-badge">${selected.duration}</span>
+                <span class="genre-tag" style="background:${getGenreColor(selected.genre)}">${selected.genre}</span>
               </div>
             </div>
           </div>
           <div class="np-progress-zone">
             <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
-            <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration || '45:00'}</span></div>
+            <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration}</span></div>
           </div>
-          <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
-            <div style="display:flex; gap:6px; width:100%;">
-              <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${randomIndex})">Finished</button>
-              <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
-              <button class="skeuo-btn" style="flex:1;" onclick="stageRandomAlbumAsNext(${randomIndex})">➡️ Queue Next</button>
-            </div>
+          <div style="display:flex; gap:6px; width:100%;">
+            <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${targetIndex})">Finished</button>
+            <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
           </div>
         </div>`;
     }
 
     function populateRenameCatSelect() {
       const target = document.getElementById('renameTargetType').value;
-      const select = document.getElementById('renameCatSelect');
-      select.innerHTML = '';
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach((c, idx) => {
-        select.innerHTML += `<option value="${idx}">${c.category}</option>`;
-      });
+      const select = document.getElementById('renameCatSelect'); select.innerHTML = '';
+      (target === 'genre' ? GENRE_DATA : SCENE_DATA).forEach((c, idx) => { select.innerHTML += `<option value="${idx}">${c.category}</option>`; });
     }
-
     function renameCategoryHeader() {
       const target = document.getElementById('renameTargetType').value;
-      const catIdx = document.getElementById('renameCatSelect').value;
-      const newName = document.getElementById('renameCatInput').value.trim();
-      if (!newName || catIdx === "") return;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset[catIdx].category = newName;
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-      document.getElementById('renameCatInput').value = '';
-      populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
+      const idx = document.getElementById('renameCatSelect').value;
+      const name = document.getElementById('renameCatInput').value.trim();
+      if (!name || idx === "") return;
+      if (target === 'genre') { GENRE_DATA[idx].category = name; localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); } 
+      else { SCENE_DATA[idx].category = name; localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
+      document.getElementById('renameCatInput').value = ''; populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
-
     function handleConfigTargetChange() {
-      const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      catSelect.innerHTML = '';
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      dataset.forEach(c => { catSelect.innerHTML += `<option value="${c.category}">${c.category}</option>`; });
-      catSelect.innerHTML += `<option value="__new__">+ New Category Header...</option>`;
+      const select = document.getElementById('configCatSelect'); select.innerHTML = '';
+      (document.getElementById('configTargetType').value === 'genre' ? GENRE_DATA : SCENE_DATA).forEach(c => { select.innerHTML += `<option value="${c.category}">${c.category}</option>`; });
+      select.innerHTML += `<option value="__new__">+ New Category Header...</option>`;
       toggleConfigNewCatInput();
     }
-
     function toggleConfigNewCatInput() {
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      if (catSelect.value === '__new__') { newCatInput.style.display = 'block'; newCatInput.focus(); } 
-      else { newCatInput.style.display = 'none'; }
+      document.getElementById('configNewCatInput').style.display = document.getElementById('configCatSelect').value === '__new__' ? 'block' : 'none';
     }
-
     function addConfigItem() {
       const target = document.getElementById('configTargetType').value;
-      const catSelect = document.getElementById('configCatSelect');
-      const newCatInput = document.getElementById('configNewCatInput');
-      const itemInput = document.getElementById('configItemInput');
-      let categoryName = catSelect.value;
-      if (categoryName === '__new__') { categoryName = newCatInput.value.trim(); }
-      const itemName = itemInput.value.trim();
-      if (!categoryName || !itemName) return;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      let targetCat = dataset.find(c => c.category === categoryName);
-      if (!targetCat) {
-        targetCat = { category: categoryName, [target === 'genre' ? 'genres' : 'scenes']: [] };
-        dataset.push(targetCat);
-      }
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-      if (!targetCat[listKey].includes(itemName)) { targetCat[listKey].push(itemName); }
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
-      itemInput.value = ''; newCatInput.value = '';
+      let cat = document.getElementById('configCatSelect').value;
+      if (cat === '__new__') cat = document.getElementById('configNewCatInput').value.trim();
+      const item = document.getElementById('configItemInput').value.trim();
+      if (!cat || !item) return;
+      let set = target === 'genre' ? GENRE_DATA : SCENE_DATA;
+      let targetCat = set.find(c => c.category === cat);
+      if (!targetCat) { targetCat = { category: cat, [target === 'genre' ? 'genres' : 'scenes']: [] }; set.push(targetCat); }
+      const key = target === 'genre' ? 'genres' : 'scenes';
+      if (!targetCat[key].includes(item)) targetCat[key].push(item);
+      if (target === 'genre') { localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); }
+      else { localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
+      document.getElementById('configItemInput').value = ''; document.getElementById('configNewCatInput').value = '';
       populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
-
     function renderConfigTree() {
-      const display = document.getElementById('configTreeDisplay');
       const target = document.getElementById('configTargetType').value;
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
       let html = '';
-      dataset.forEach((cat, cIdx) => {
+      (target === 'genre' ? GENRE_DATA : SCENE_DATA).forEach((cat, cIdx) => {
         html += `<div style="color:#38bdf8; font-weight:bold; margin-top:4px;">${cat.category}</div>`;
-        cat[listKey].forEach((item, iIdx) => {
-          html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 0 2px 8px;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="color-chip" style="background:${getGenreColor(item)}"></span>
-                <span style="color:#e2e8f0">${item}</span>
-              </div>
-              <button class="skeuo-btn" style="font-size:8px; padding:1px 4px;" onclick="deleteConfigItem('${target}', ${cIdx}, ${iIdx})">✕</button>
-            </div>`;
+        cat[target === 'genre' ? 'genres' : 'scenes'].forEach((item, iIdx) => {
+          html += `<div style="display:flex; justify-content:space-between; padding:2px 8px;"><span>${item}</span><button class="skeuo-btn" style="font-size:8px; padding:1px 4px;" onclick="deleteConfigItem('${target}', ${cIdx}, ${iIdx})">✕</button></div>`;
         });
       });
-      display.innerHTML = html;
+      document.getElementById('configTreeDisplay').innerHTML = html;
     }
-
     function deleteConfigItem(target, cIdx, iIdx) {
-      const dataset = target === 'genre' ? GENRE_DATA : SCENE_DATA;
-      const listKey = target === 'genre' ? 'genres' : 'scenes';
-      dataset[cIdx][listKey].splice(iIdx, 1);
-      if (dataset[cIdx][listKey].length === 0) { dataset.splice(cIdx, 1); }
-      if (target === 'genre') {
-        localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA));
-        buildPrimaryGenreMenu(); buildSecondaryGenreMenu();
-      } else {
-        localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA));
-        buildSceneMenu();
-      }
+      let set = target === 'genre' ? GENRE_DATA : SCENE_DATA;
+      set[cIdx][target === 'genre' ? 'genres' : 'scenes'].splice(iIdx, 1);
+      if (set[cIdx][target === 'genre' ? 'genres' : 'scenes'].length === 0) set.splice(cIdx, 1);
+      if (target === 'genre') { localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); buildPrimaryGenreMenu(); buildSecondaryGenreMenu(); }
+      else { localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); buildSceneMenu(); }
       populateRenameCatSelect(); handleConfigTargetChange(); renderConfigTree(); populateFilterDropdowns();
     }
 
-    buildPrimaryGenreMenu();
-    buildSceneMenu();
-    buildSecondaryGenreMenu();
-    
-    // Service Worker App Sandbox Asset Cache Router
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-    }
-
+    buildPrimaryGenreMenu(); buildSceneMenu(); buildSecondaryGenreMenu();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
     initStoragePipeline();
   </script>
 </body>
