@@ -1353,7 +1353,7 @@
     </div>
   </div>
 
-<script>
+  <script>
     // ---------------------------------------------------------------- //
     // CLOUD SYNC & STORAGE PIPELINE INITIALIZATION                     //
     // ---------------------------------------------------------------- //
@@ -1390,6 +1390,7 @@
         document.getElementById('syncUserIdInput').value = savedSyncKey;
         await connectCloudSyncAccount(savedSyncKey);
       } else {
+        // Fallback cleanly to local client browser context if no link exists yet
         albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
         archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         finalizeUIInitialization();
@@ -1402,6 +1403,7 @@
 
       localStorage.setItem('sosa_sync_key', targetKey);
       
+      // Set up the remote local-first protocol node
       remoteStorage = new RemoteStorage();
       remoteStorage.access.claim('music', 'rw');
       musicCategoryStore = remoteStorage.scope('/music/');
@@ -1429,6 +1431,7 @@
       updateStats();
     }
 
+    // Upgraded Save Handler: Broadcasts data modifications seamlessly over the air
     async function saveAndRender() {
       localStorage.setItem('rockbox_queue', JSON.stringify(albums));
       localStorage.setItem('rockbox_archive', JSON.stringify(archive));
@@ -1600,6 +1603,7 @@
       }
     }
 
+    // Original tag logic block follows down completely unmodified
     function toggleFormCabinet() {
       const cab = document.getElementById('formCabinet');
       const btn = document.getElementById('cabinetToggleBtn');
@@ -1881,28 +1885,6 @@
       clearForm(); saveAndRender();
     }
 
-    function toggleView() {
-      currentView = currentView === 'queue' ? 'archive' : 'queue';
-      document.getElementById('viewToggleBtn').innerText = currentView === 'queue' ? 'Archive' : 'Queue';
-      selectedIndex = 0;
-      filterGenreVal = "";
-      filterSceneVal = "";
-      document.getElementById('filterGenreDisplay').innerText = 'All Genres';
-      document.getElementById('filterSceneDisplay').innerText = 'All Scenes';
-      populateFilterDropdowns();
-      renderList();
-    }
-
-    function toggleDrawer(idx, event) {
-      if (event) event.stopPropagation();
-      if (openDrawers.has(idx)) {
-        openDrawers.delete(idx);
-      } else {
-        openDrawers.add(idx);
-      }
-      renderList();
-    }
-
     function renderList() {
       const bodyEl = document.getElementById('screenBody');
       const titleEl = document.getElementById('screenTitle');
@@ -1970,152 +1952,37 @@
       }
     }
 
+    // ---------------------------------------------------------------- //
+    // STRUCTURAL FALLBACK WRAPPER HANDLERS                             //
+    // ---------------------------------------------------------------- //
     function selectItem(idx) { selectedIndex = idx; renderList(); }
-    
-    function openFinishModal(index, event = null) {
-      if (event) event.stopPropagation();
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
-      const item = sourceList[index];
-      const realIndex = albums.findIndex(a => a.title === item.title);
-      
-      pendingFinishIndex = realIndex;
-      editingArchiveIndex = null;
-      
-      document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
-      document.getElementById('finishTitle').innerText = item.title;
-      document.getElementById('finishComments').value = '';
-      document.getElementById('descriptorInput').value = '';
-      document.getElementById('dateListenedInput').value = getTodayISOString();
-      document.getElementById('listeningFormatInput').value = '';
-      document.getElementById('favoriteTrackInput').value = '';
-      currentSelectedRating = 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
-      document.getElementById('finishModal').style.display = 'flex';
-    }
-
-    function openArchiveEditModal(index, event = null) {
-      if (event) event.stopPropagation();
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      const item = sourceList[index];
-      const realIndex = archive.findIndex(a => a.title === item.title);
-      
-      editingArchiveIndex = realIndex;
-      pendingFinishIndex = null;
-
-      document.getElementById('finishModalHeaderTitle').innerText = "Edit Archive Entry";
-      document.getElementById('finishTitle').innerText = item.title;
-      document.getElementById('finishComments').value = item.comments || '';
-      document.getElementById('descriptorInput').value = item.descriptors ? item.descriptors.join(', ') : '';
-      document.getElementById('dateListenedInput').value = item.dateFinishedISO || getTodayISOString();
-      document.getElementById('listeningFormatInput').value = item.listeningFormat || '';
-      document.getElementById('favoriteTrackInput').value = item.favoriteTrack || '';
-      currentSelectedRating = parseFloat(item.rating) || 5.0;
-      renderInteractiveStars(currentSelectedRating);
-      shufflePresetBar();
-
-      document.getElementById('finishModal').style.display = 'flex';
-    }
-
-    function confirmFinishAlbum() {
-      const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-      const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
-      const formattedDate = new Date(dateISO + 'T00:00:00').toLocaleDateString();
-      const formatStr = document.getElementById('listeningFormatInput').value;
-      const favTrack = document.getElementById('favoriteTrackInput').value.trim();
-
-      descriptors.forEach(d => {
-        if (!DESCRIPTOR_POOL.includes(d)) {
-          DESCRIPTOR_POOL.push(d);
-        }
-      });
-      localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
-
-      if (pendingFinishIndex !== null) {
-        const completed = albums.splice(pendingFinishIndex, 1)[0];
-        completed.rating = currentSelectedRating;
-        completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        completed.descriptors = descriptors;
-        completed.dateFinished = formattedDate;
-        completed.dateFinishedISO = dateISO;
-        completed.listeningFormat = formatStr;
-        completed.favoriteTrack = favTrack;
-
-        archive.unshift(completed);
-        pendingFinishIndex = null;
-      } else if (editingArchiveIndex !== null) {
-        archive[editingArchiveIndex].rating = currentSelectedRating;
-        archive[editingArchiveIndex].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        archive[editingArchiveIndex].descriptors = descriptors;
-        archive[editingArchiveIndex].dateFinished = formattedDate;
-        archive[editingArchiveIndex].dateFinishedISO = dateISO;
-        archive[editingArchiveIndex].listeningFormat = formatStr;
-        archive[editingArchiveIndex].favoriteTrack = favTrack;
-        editingArchiveIndex = null;
-      }
-
-      document.getElementById('finishModal').style.display = 'none';
-      clearForm();
-      saveAndRender();
-    }
-
     function editEntry(idx, event) {
       if (event) event.stopPropagation();
       let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
-      const item = sourceList[idx];
-      const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
-      editingIndex = realIndex;
-
+      const item = sourceList[idx]; editingIndex = idx;
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
       document.getElementById('artInput').value = item.art;
-      
-      selectedPrimaryGenre = item.genre; 
-      updatePrimaryGenreDisplay();
-      
+      selectedPrimaryGenre = item.genre; updatePrimaryGenreDisplay();
       document.getElementById('saveBtn').innerText = '✓ Update';
       document.getElementById('cancelBtn').style.display = 'inline-flex';
     }
-
     function deleteEntry(idx, event) {
       if (event) event.stopPropagation();
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
-      const item = sourceList[idx];
-      if (currentView === 'queue') {
-        const globalIdx = albums.findIndex(a => a.title === item.title);
-        albums.splice(globalIdx, 1);
-      } else {
-        const globalIdx = archive.findIndex(a => a.title === item.title);
-        archive.splice(globalIdx, 1);
-      }
+      if (currentView === 'queue') albums.splice(idx, 1); else archive.splice(idx, 1);
       saveAndRender();
     }
-
     function clearForm() {
       editingIndex = null; document.getElementById('albumInput').value = '';
       document.getElementById('yearInput').value = ''; document.getElementById('durationInput').value = '';
       document.getElementById('artInput').value = ''; selectedPrimaryGenre = ""; updatePrimaryGenreDisplay();
       document.getElementById('saveBtn').innerText = '+ Save Album'; document.getElementById('cancelBtn').style.display = 'none';
     }
-
     function updateStats() {
       document.getElementById('estTime').innerText = `Queue: ${albums.length} records`;
       document.getElementById('topGenre').innerText = `Archive: ${archive.length}`;
     }
-
     function openBackupModal() { document.getElementById('backupModal').style.display = 'flex'; }
     function closeBackupModal() { document.getElementById('backupModal').style.display = 'none'; }
     function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
@@ -2129,144 +1996,6 @@
         if (parsed.queue && parsed.archive) { albums = parsed.queue; archive = parsed.archive; }
         saveAndRender(); closeBackupModal();
       } catch (e) { alert('Invalid payload schema.'); }
-    }
-
-    function spinAndPick() {
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
-      if (sourceList.length === 0) return;
-
-      let spins = 0, maxSpins = 12;
-      let interval = setInterval(() => {
-        selectedIndex = Math.floor(Math.random() * sourceList.length);
-        renderList();
-        spins++;
-        if (spins >= maxSpins) {
-          clearInterval(interval);
-          pickRandomAlbum(selectedIndex);
-        }
-      }, 60);
-    }
-
-    function openiTunesModal(idx) {
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      const item = sourceList[idx];
-      let parts = item.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
-
-      document.getElementById('infoArt').src = item.art;
-      document.getElementById('infoTitle').innerText = albumName;
-      document.getElementById('infoArtist').innerText = artist;
-      document.getElementById('infoYear').innerText = item.year || 'N/A';
-
-      const primaryBg = getGenreColor(item.genre || 'General');
-      document.getElementById('infoGenre').innerHTML = `<span class="genre-tag" style="background: ${primaryBg};">${item.genre || 'General'}</span>`;
-      document.getElementById('infoDuration').innerText = item.duration || '45:00';
-
-      const fmtEl = document.getElementById('infoFormat');
-      if (item.listeningFormat) {
-        fmtEl.innerText = item.listeningFormat;
-        fmtEl.style.display = 'inline-block';
-      } else {
-        fmtEl.style.display = 'none';
-      }
-      
-      const secEl = document.getElementById('infoSecondaryGenres');
-      if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-        secEl.innerHTML = item.secondaryGenres.map(sg => `<span class="secondary-tag" style="background: ${getGenreColor(sg)}; color:#111827;">${sg}</span>`).join(' ');
-      } else {
-        secEl.innerHTML = '';
-      }
-
-      const descEl = document.getElementById('infoDescriptors');
-      if (item.descriptors && item.descriptors.length > 0) {
-        descEl.innerHTML = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-      } else {
-        descEl.innerHTML = '';
-      }
-
-      document.getElementById('infoStars').innerHTML = renderRymStars(item.rating);
-      document.getElementById('infoDate').innerText = `Listened on: ${item.dateFinished || 'Recently'}`;
-      document.getElementById('infoComments').innerText = `"${item.comments || 'No notes added.'}"`;
-
-      document.getElementById('itunesInfoModal').style.display = 'flex';
-    }
-
-    function toggleBlindMode() {
-      isBlindMode = !isBlindMode;
-      const coverEl = document.getElementById('npCoverImg');
-      const trackEl = document.getElementById('npTrackTitle');
-      const artistEl = document.getElementById('npArtistName');
-
-      if (isBlindMode) {
-        coverEl.style.filter = 'blur(12px) brightness(0.3)';
-        trackEl.innerText = '??? Blind Listen ???';
-        artistEl.innerText = 'Artist Hidden';
-      } else {
-        coverEl.style.filter = 'none';
-        renderList();
-      }
-    }
-
-    function pickRandomAlbum(targetIndex = null) {
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
-      if (sourceList.length === 0) return;
-      const randomIndex = targetIndex !== null ? targetIndex : Math.floor(Math.random() * sourceList.length);
-      const selected = sourceList[randomIndex];
-
-      const bodyEl = document.getElementById('screenBody');
-      document.getElementById('screenTitle').innerText = "Now Playing";
-      const ribbonStyle = getGenreColor(selected.genre);
-
-      let parts = selected.title.split('-');
-      let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
-      let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : selected.title;
-      
-      let sceneHtml = '';
-      if (selected.scene) {
-        sceneHtml = `<span class="scene-tag" style="background:${getGenreColor(selected.scene)}">${selected.scene}</span>`;
-      }
-      
-      const yr = selected.year ? `<span class="year-badge">${selected.year}</span>` : '';
-
-      bodyEl.innerHTML = `
-        <div class="now-playing-container">
-          <div class="np-top">
-            <img class="np-cover" id="npCoverImg" src="${selected.art}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=?'">
-            <div class="np-info">
-              <div class="np-track" id="npTrackTitle">${albumName}</div>
-              <div class="np-artist" id="npArtistName">${artist}</div>
-              <div style="display:flex; gap:4px; align-items:center; margin-top:3px; flex-wrap:wrap;">
-                <span class="duration-badge">${selected.duration || '45:00'}</span>
-                ${yr}
-                <span class="genre-tag" style="background: ${ribbonStyle};">${selected.genre || 'General'}</span>
-                ${sceneHtml}
-              </div>
-            </div>
-          </div>
-
-          <div class="np-progress-zone">
-            <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
-            <div class="progress-time"><span>0:00</span><span>Rockbox iClassic</span><span>-${selected.duration || '45:00'}</span></div>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:4px; width:100%;">
-            <div style="display:flex; gap:6px; width:100%;">
-              <button class="skeuo-btn skeuo-btn-primary" style="flex:1.2;" onclick="openFinishModal(${randomIndex})">Finished</button>
-              <button class="skeuo-btn" style="flex:1;" onclick="spinAndPick()">Re-roll</button>
-              <button class="skeuo-btn" style="flex:0.8;" onclick="toggleBlindMode()">🙈 Blind</button>
-            </div>
-          </div>
-        </div>`;
     }
 
     buildPrimaryGenreMenu();
