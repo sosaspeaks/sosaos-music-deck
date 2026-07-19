@@ -2804,6 +2804,25 @@
       saveAndRender();
     }
 
+    function updateStats() {
+      let totalSec = 0;
+      albums.forEach(a => {
+        // Fallback to a baseline if duration is missing or unformatted
+        const timeString = a.duration && a.duration.trim() ? a.duration : '45:00';
+        totalSec += parseFormattedTimeToSeconds(timeString);
+      });
+
+      const queueTimeStr = formatSecondsToDisplay(totalSec);
+      document.getElementById('estTime').innerText = `Queue: ${queueTimeStr}`;
+
+      if (archive.length > 0) {
+        const avg = (archive.reduce((acc, curr) => acc + (parseFloat(curr.rating) || 0), 0) / archive.length).toFixed(1);
+        document.getElementById('topGenre').innerText = `Avg: ${avg} ★`;
+      } else {
+        document.getElementById('topGenre').innerText = `Listened: 0`;
+      }
+    }
+
     function clearForm() {
       editingIndex = null;
       document.getElementById('albumInput').value = '';
