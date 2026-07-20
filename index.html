@@ -1310,6 +1310,33 @@
   </div>
 
   <script>
+      function auditImageStorage() {
+    console.log("=== SOSAOS IMAGE STORAGE AUDIT ===");
+    
+    const scanList = (list, name) => {
+      let unoptimized = [];
+      list.forEach((album, idx) => {
+        // If art is missing, or doesn't start with the local base64/inline protocol prefix
+        if (!album.art || (!album.art.startsWith('data:image') && !album.art.startsWith('data:video'))) {
+          unoptimized.push({
+            index: idx + 1,
+            title: album.title,
+            currentSrc: album.art ? album.art.substring(0, 50) + "..." : "Missing completely"
+          });
+        }
+      });
+  
+      if (unoptimized.length > 0) {
+        console.warn(`⚠️ ${name} has ${unoptimized.length} unoptimized external links:`);
+        console.table(unoptimized);
+      } else {
+        console.log(`✅ All clear! ${name} is 100% optimized with local image data.`);
+      }
+    };
+  
+    scanList(albums, "iClassic Queue");
+    scanList(archive, "Listened Archive");
+  }
     let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
     let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
     let customBg = localStorage.getItem('sosa_bg_file') || "";
