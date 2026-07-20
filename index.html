@@ -1104,15 +1104,26 @@
         </div>
       </div>
 
-      <!-- Custom Filter Bar -->
+      <!-- Custom Filter Bar with Real-Time Search -->
       <div class="filter-bar">
         <span>Filter:</span>
+        <!-- Inline Inset Search Input -->
+        <input type="text" id="listSearchInput" placeholder="🔍 Search queue..." style="flex: 0.8; min-height: 22px; padding: 2px 6px; font-size: 10px !important; margin: 0 4px;" oninput="renderList()" />
+
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterGenreDropdown(event)">
             <span id="filterGenreDisplay">All Genres</span><span style="font-size: 7px;">▼</span>
           </div>
           <div class="custom-multiselect-dropdown" id="filterGenreDropdownMenu" onclick="event.stopPropagation()"></div>
         </div>
+
+        <div class="custom-multiselect-container">
+          <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterSceneDropdown(event)">
+            <span id="filterSceneDisplay">All Scenes</span><span style="font-size: 7px;">▼</span>
+          </div>
+          <div class="custom-multiselect-dropdown" id="filterSceneDropdownMenu" onclick="event.stopPropagation()"></div>
+        </div>
+      </div>
 
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterSceneDropdown(event)">
@@ -1310,33 +1321,6 @@
   </div>
 
   <script>
-      function auditImageStorage() {
-    console.log("=== SOSAOS IMAGE STORAGE AUDIT ===");
-    
-    const scanList = (list, name) => {
-      let unoptimized = [];
-      list.forEach((album, idx) => {
-        // If art is missing, or doesn't start with the local base64/inline protocol prefix
-        if (!album.art || (!album.art.startsWith('data:image') && !album.art.startsWith('data:video'))) {
-          unoptimized.push({
-            index: idx + 1,
-            title: album.title,
-            currentSrc: album.art ? album.art.substring(0, 50) + "..." : "Missing completely"
-          });
-        }
-      });
-  
-      if (unoptimized.length > 0) {
-        console.warn(`⚠️ ${name} has ${unoptimized.length} unoptimized external links:`);
-        console.table(unoptimized);
-      } else {
-        console.log(`✅ All clear! ${name} is 100% optimized with local image data.`);
-      }
-    };
-  
-    scanList(albums, "iClassic Queue");
-    scanList(archive, "Listened Archive");
-  }
     let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
     let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
     let customBg = localStorage.getItem('sosa_bg_file') || "";
@@ -2231,8 +2215,22 @@
 
       let sourceList = currentView === 'queue' ? albums : archive;
 
+      // 1. Dropdown Category Filters
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      
+      // 2. Real-Time Search Bar Intercept (Matches title, artist, or tags)
+      const searchQuery = document.getElementById('listSearchInput').value.trim().toLowerCase();
+      if (searchQuery) {
+        sourceList = sourceList.filter(a => {
+          const titleMatch = a.title ? a.title.toLowerCase().includes(searchQuery) : false;
+          const primaryGenreMatch = a.genre ? a.genre.toLowerCase().includes(searchQuery) : false;
+          const sceneMatch = a.scene ? a.scene.toLowerCase().includes(searchQuery) : false;
+          const secondaryGenreMatch = a.secondaryGenres ? a.secondaryGenres.some(sg => sg.toLowerCase().includes(searchQuery)) : false;
+          
+          return titleMatch || primaryGenreMatch || sceneMatch || secondaryGenreMatch;
+        });
+      }
 
       triggerColorThiefSampling();
 
