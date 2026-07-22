@@ -2199,18 +2199,12 @@
       renderList();
     }
 
-function renderList() {
-      const bodyEl = document.getElementById('screenBody');
-      const titleEl = document.getElementById('screenTitle');
-      const countEl = document.getElementById('itemCount');
-
+function getActiveFilteredList() {
       let sourceList = currentView === 'queue' ? albums : archive;
 
-      // 1. Dropdown Category Filters
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
-      // 2. Real-Time Search Input Filter
       const searchInput = document.getElementById('listSearchInput');
       const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
       if (searchQuery) {
@@ -2223,9 +2217,18 @@ function renderList() {
         });
       }
 
+      return sourceList;
+    }
+
+    function renderList() {
+      const bodyEl = document.getElementById('screenBody');
+      const titleEl = document.getElementById('screenTitle');
+      const countEl = document.getElementById('itemCount');
+
+      let sourceList = getActiveFilteredList();
+
       triggerColorThiefSampling();
 
-      // Inline SVG image fallback (zero external requests / TLS handshakes)
       const svgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><rect width='40' height='40' fill='%23334155'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='14' font-weight='bold'>?</text></svg>";
 
       if (currentView === 'queue') {
@@ -2245,19 +2248,10 @@ function renderList() {
           const yr = item.year ? `<span class="year-badge">${item.year}</span>` : '';
           const dur = item.duration ? `<span class="duration-badge">${item.duration}</span>` : '<span class="duration-badge">45:00</span>';
           
-          let sceneHtml = '';
-          if (item.scene) {
-            const scBg = getGenreColor(item.scene);
-            sceneHtml = `<span class="scene-tag" style="background: ${scBg};">${item.scene}</span>`;
-          }
-
-          let secTagsHtml = '';
-          if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-            secTagsHtml = item.secondaryGenres.map(sg => {
-              const secBg = getGenreColor(sg);
-              return `<span class="secondary-tag" style="background: ${secBg}; color:#111827;">${sg}</span>`;
-            }).join(' ');
-          }
+          let sceneHtml = item.scene ? `<span class="scene-tag" style="background: ${getGenreColor(item.scene)};">${item.scene}</span>` : '';
+          let secTagsHtml = item.secondaryGenres && item.secondaryGenres.length > 0 
+            ? item.secondaryGenres.map(sg => `<span class="secondary-tag" style="background: ${getGenreColor(sg)}; color:#111827;">${sg}</span>`).join(' ') 
+            : '';
 
           listHtml += `
             <li class="list-item-wrapper ${isActive} ${isOpen}">
@@ -2301,13 +2295,8 @@ function renderList() {
           const starsHtml = renderRymStars(item.rating);
           const yr = item.year ? `<span class="year-badge">${item.year}</span>` : '';
           const dur = item.duration ? `<span class="duration-badge">${item.duration}</span>` : '';
-
-          let descriptorTags = '';
-          if (item.descriptors && item.descriptors.length > 0) {
-            descriptorTags = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-          }
-
-          let fmtTag = item.listeningFormat ? `<span class="format-badge">${item.listeningFormat}</span>` : '';
+          const descriptorTags = item.descriptors && item.descriptors.length > 0 ? item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ') : '';
+          const fmtTag = item.listeningFormat ? `<span class="format-badge">${item.listeningFormat}</span>` : '';
 
           listHtml += `
             <li class="list-item-wrapper ${isActive} ${isOpen}">
@@ -2336,21 +2325,21 @@ function renderList() {
         bodyEl.innerHTML = listHtml;
       }
     }
+    
     function selectItem(idx) {
       selectedIndex = idx;
       renderList();
     }
 
-    function openFinishModal(index, event = null) {
+function openFinishModal(index, event = null) {
       if (event) event.stopPropagation();
       pendingFinishIndex = index;
       editingArchiveIndex = null;
       
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
+      const sourceList = getActiveFilteredList();
       const album = sourceList[index];
+      if (!album) return;
+
       document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
       document.getElementById('finishTitle').innerText = album.title;
       document.getElementById('finishComments').value = '';
@@ -2369,11 +2358,10 @@ function renderList() {
       editingArchiveIndex = index;
       pendingFinishIndex = null;
 
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-
+      const sourceList = getActiveFilteredList();
       const album = sourceList[index];
+      if (!album) return;
+
       document.getElementById('finishModalHeaderTitle').innerText = "Edit Archive Entry";
       document.getElementById('finishTitle').innerText = album.title;
       document.getElementById('finishComments').value = album.comments || '';
@@ -2389,7 +2377,7 @@ function renderList() {
 
       document.getElementById('finishModal').style.display = 'flex';
     }
-
+    
     function confirmFinishAlbum() {
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
@@ -2817,19 +2805,19 @@ function renderList() {
         </div>`;
     }
 
-    function editEntry(idx, event) {
+function editEntry(idx, event) {
       if (event) event.stopPropagation();
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      const sourceList = getActiveFilteredList();
       const item = sourceList[idx];
+      if (!item) return;
+
       const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
       editingIndex = realIndex;
 
       document.getElementById('albumInput').value = item.title;
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
-      document.getElementById('artInput').value = item.art.includes('placeholder') ? '' : item.art;
+      document.getElementById('artInput').value = item.art && item.art.includes('placeholder') ? '' : item.art;
 
       selectedPrimaryGenre = item.genre || '';
       updatePrimaryGenreDisplay();
@@ -2850,21 +2838,19 @@ function renderList() {
 
     function deleteEntry(idx, event) {
       if (event) event.stopPropagation();
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
-      
+      const sourceList = getActiveFilteredList();
       const item = sourceList[idx];
+      if (!item) return;
+
       if (currentView === 'queue') {
         const globalIdx = albums.findIndex(a => a.title === item.title);
-        albums.splice(globalIdx, 1);
+        if (globalIdx !== -1) albums.splice(globalIdx, 1);
       } else {
         const globalIdx = archive.findIndex(a => a.title === item.title);
-        archive.splice(globalIdx, 1);
+        if (globalIdx !== -1) archive.splice(globalIdx, 1);
       }
       saveAndRender();
     }
-
     function updateStats() {
       let totalSec = 0;
       albums.forEach(a => {
