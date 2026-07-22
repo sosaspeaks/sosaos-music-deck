@@ -2444,70 +2444,113 @@ function renderList() {
 
     function openiTunesModal(idx) {
       let sourceList = currentView === 'queue' ? albums : archive;
+
+      // 1. Sync filter logic with renderList (Genre, Scene, & Search Bar)
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
 
+      const searchInput = document.getElementById('listSearchInput');
+      const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
+      if (searchQuery) {
+        sourceList = sourceList.filter(a => {
+          const titleMatch = a.title ? a.title.toLowerCase().includes(searchQuery) : false;
+          const primaryGenreMatch = a.genre ? a.genre.toLowerCase().includes(searchQuery) : false;
+          const sceneMatch = a.scene ? a.scene.toLowerCase().includes(searchQuery) : false;
+          const secondaryGenreMatch = a.secondaryGenres ? a.secondaryGenres.some(sg => sg.toLowerCase().includes(searchQuery)) : false;
+          return titleMatch || primaryGenreMatch || sceneMatch || secondaryGenreMatch;
+        });
+      }
+
       const item = sourceList[idx];
-      let parts = item.title.split('-');
+      if (!item) return;
+
+      let parts = (item.title || '').split('-');
       let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
       let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
 
-      document.getElementById('infoArt').src = item.art;
-      document.getElementById('infoTitle').innerText = albumName;
-      document.getElementById('infoArtist').innerText = artist;
-      document.getElementById('infoYear').innerText = item.year || 'N/A';
+      // 2. Safe DOM assignments (prevents null element crashes)
+      const artEl = document.getElementById('infoArt');
+      if (artEl) artEl.src = item.art || '';
 
-      const primaryBg = getGenreColor(item.genre || 'General');
-      document.getElementById('infoGenre').innerHTML = `<span class="genre-tag" style="background: ${primaryBg};">${item.genre || 'General'}</span>`;
+      const titleEl = document.getElementById('infoTitle');
+      if (titleEl) titleEl.innerText = albumName;
 
-      document.getElementById('infoDuration').innerText = item.duration || '45:00';
+      const artistEl = document.getElementById('infoArtist');
+      if (artistEl) artistEl.innerText = artist;
+
+      const yearEl = document.getElementById('infoYear');
+      if (yearEl) yearEl.innerText = item.year || 'N/A';
+
+      const genreEl = document.getElementById('infoGenre');
+      if (genreEl) {
+        const primaryBg = getGenreColor(item.genre || 'General');
+        genreEl.innerHTML = `<span class="genre-tag" style="background: ${primaryBg};">${item.genre || 'General'}</span>`;
+      }
+
+      const durEl = document.getElementById('infoDuration');
+      if (durEl) durEl.innerText = item.duration || '45:00';
 
       const fmtEl = document.getElementById('infoFormat');
-      if (item.listeningFormat) {
-        fmtEl.innerText = item.listeningFormat;
-        fmtEl.style.display = 'inline-block';
-      } else {
-        fmtEl.style.display = 'none';
+      if (fmtEl) {
+        if (item.listeningFormat) {
+          fmtEl.innerText = item.listeningFormat;
+          fmtEl.style.display = 'inline-block';
+        } else {
+          fmtEl.style.display = 'none';
+        }
       }
-      
+
       const secEl = document.getElementById('infoSecondaryGenres');
-      if (item.secondaryGenres && item.secondaryGenres.length > 0) {
-        secEl.innerHTML = item.secondaryGenres.map(sg => {
-          const bg = getGenreColor(sg);
-          return `<span class="secondary-tag" style="background: ${bg}; color:#111827;">${sg}</span>`;
-        }).join(' ');
-      } else {
-        secEl.innerHTML = '';
+      if (secEl) {
+        if (item.secondaryGenres && item.secondaryGenres.length > 0) {
+          secEl.innerHTML = item.secondaryGenres.map(sg => {
+            const bg = getGenreColor(sg);
+            return `<span class="secondary-tag" style="background: ${bg}; color:#111827;">${sg}</span>`;
+          }).join(' ');
+        } else {
+          secEl.innerHTML = '';
+        }
       }
 
       const descEl = document.getElementById('infoDescriptors');
-      if (item.descriptors && item.descriptors.length > 0) {
-        descEl.innerHTML = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
-      } else {
-        descEl.innerHTML = '';
+      if (descEl) {
+        if (item.descriptors && item.descriptors.length > 0) {
+          descEl.innerHTML = item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ');
+        } else {
+          descEl.innerHTML = '';
+        }
       }
 
       const favTrackEl = document.getElementById('infoFavTrack');
-      if (item.favoriteTrack) {
-        favTrackEl.innerText = `★ Standout Track: "${item.favoriteTrack}"`;
-        favTrackEl.style.display = 'block';
-      } else {
-        favTrackEl.style.display = 'none';
+      if (favTrackEl) {
+        if (item.favoriteTrack) {
+          favTrackEl.innerText = `★ Standout Track: "${item.favoriteTrack}"`;
+          favTrackEl.style.display = 'block';
+        } else {
+          favTrackEl.style.display = 'none';
+        }
       }
 
       const sceneEl = document.getElementById('infoScene');
-      if (item.scene) {
-        const scBg = getGenreColor(item.scene);
-        sceneEl.innerText = item.scene;
-        sceneEl.style.background = scBg;
-        sceneEl.style.display = 'inline-block';
-      } else {
-        sceneEl.style.display = 'none';
+      if (sceneEl) {
+        if (item.scene) {
+          const scBg = getGenreColor(item.scene);
+          sceneEl.innerText = item.scene;
+          sceneEl.style.background = scBg;
+          sceneEl.style.display = 'inline-block';
+        } else {
+          sceneEl.style.display = 'none';
+        }
       }
 
-      document.getElementById('infoStars').innerHTML = renderRymStars(item.rating);
-      document.getElementById('infoDate').innerText = `Listened on: ${item.dateFinished || 'Recently'}`;
-      document.getElementById('infoComments').innerText = `"${item.comments}"`;
+      const starsEl = document.getElementById('infoStars');
+      if (starsEl) starsEl.innerHTML = renderRymStars(item.rating);
+
+      const dateEl = document.getElementById('infoDate');
+      if (dateEl) dateEl.innerText = `Listened on: ${item.dateFinished || 'Recently'}`;
+
+      const commentsEl = document.getElementById('infoComments');
+      if (commentsEl) commentsEl.innerText = `"${item.comments || 'No notes added.'}"`;
 
       document.getElementById('itunesInfoModal').style.display = 'flex';
     }
