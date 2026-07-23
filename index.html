@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- High-capacity IndexedDB storage library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>SosaOS - iPod Music Deck</title>
@@ -2353,16 +2355,81 @@
       });
     }
 
-  function saveAndRender() {
-      localStorage.setItem('rockbox_queue', JSON.stringify(albums));
-      localStorage.setItem('rockbox_relisten', JSON.stringify(relistenQueue));
-      localStorage.setItem('rockbox_archive', JSON.stringify(archive));
+let albums = [];
+    let relistenQueue = [];
+    let archive = [];
+
+    // Initialize & Load Database from IndexedDB
+    async function initDatabase() {
+      try {
+        // 1. Check IndexedDB for saved lists
+        let storedQueue = await localforage.getItem('rockbox_queue');
+        let storedRelisten = await localforage.getItem('rockbox_relisten');
+        let storedArchive = await localforage.getItem('rockbox_archive');
+
+        // 2. Automatic One-Time Migration from localStorage if IndexedDB is empty
+        if (!storedQueue && localStorage.getItem('rockbox_queue')) {
+          console.log("Migrating legacy localStorage data to IndexedDB...");
+          storedQueue = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+          storedRelisten = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
+          storedArchive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
+
+          await localforage.setItem('rockbox_queue', storedQueue);
+          await localforage.setItem('rockbox_relisten', storedRelisten);
+          await localforage.setItem('rockbox_archive', storedArchive);
+        }
+
+        // 3. Set global variables
+        albums = storedQueue || [];
+        relistenQueue = storedRelisten || [];
+        archive = storedArchive || [];
+
+        // 4. Load config pools
+        const savedGenres = await localforage.getItem('sosa_genre_config') || JSON.parse(localStorage.getItem('sosa_genre_config'));
+        if (savedGenres) GENRE_DATA = savedGenres;
+
+        const savedScenes = await localforage.getItem('sosa_scene_config') || JSON.parse(localStorage.getItem('sosa_scene_config'));
+        if (savedScenes) SCENE_DATA = savedScenes;
+
+        const savedDescriptors = await localforage.getItem('sosa_descriptor_pool') || JSON.parse(localStorage.getItem('sosa_descriptor_pool'));
+        if (savedDescriptors) DESCRIPTOR_POOL = savedDescriptors;
+
+        buildPrimaryGenreMenu();
+        buildSceneMenu();
+        buildSecondaryGenreMenu();
+        
+        // Initial Draw
+        populateFilterDropdowns();
+        renderList();
+        updateStats();
+      } catch (err) {
+        console.error("IndexedDB Initialization Error:", err);
+      }
+    }
+
+    // Run DB init when the DOM loads
+    window.addEventListener('DOMContentLoaded', initDatabase);
+
+    // High-Capacity Async Save Function
+    async function saveAndRender() {
+      if (!Array.isArray(albums)) albums = [];
+      if (!Array.isArray(relistenQueue)) relistenQueue = [];
+      if (!Array.isArray(archive)) archive = [];
+
+      try {
+        await localforage.setItem('rockbox_queue', albums);
+        await localforage.setItem('rockbox_relisten', relistenQueue);
+        await localforage.setItem('rockbox_archive', archive);
+      } catch (err) {
+        console.error("IndexedDB Save Error:", err);
+      }
+
       populateFilterDropdowns();
       renderList();
       updateStats();
     }
 
-function saveAlbum() {
+async function saveAlbum() {
       const titleInput = document.getElementById('albumInput');
       const yearInput = document.getElementById('yearInput');
       const durationInput = document.getElementById('durationInput');
@@ -2380,13 +2447,10 @@ function saveAlbum() {
 
       const updatedData = { title, year, duration, genre, secondaryGenres, scene, art };
 
-      // 1. EDITING EXISTING ENTRY
       if (editingAlbumTarget) {
         Object.assign(editingAlbumTarget, updatedData);
         editingAlbumTarget = null;
-      } 
-      // 2. ADDING NEW ENTRY
-      else {
+      } else {
         if (currentQueueTab === 'relisten') {
           relistenQueue.push(updatedData);
         } else {
@@ -2394,13 +2458,11 @@ function saveAlbum() {
         }
       }
 
-      // 3. FORCE REAL-TIME UI SYNC
-      // Ensure view is on Queue mode
+      // Reset view context
       currentView = 'queue';
       const viewBtn = document.getElementById('viewToggleBtn');
       if (viewBtn) viewBtn.innerText = 'Archive';
 
-      // Clear search & dropdown filters so the new item isn't filtered out
       const searchInput = document.getElementById('listSearchInput');
       if (searchInput) searchInput.value = '';
       filterGenreVal = "";
@@ -2412,14 +2474,8 @@ function saveAlbum() {
       const sceneDisp = document.getElementById('filterSceneDisplay');
       if (sceneDisp) sceneDisp.innerText = 'All Scenes';
 
-      // Ensure switch UI reflects the current queue tab
-      const switchEl = document.getElementById('queueToggleSwitch');
-      if (switchEl) {
-        switchEl.classList.toggle('active', currentQueueTab === 'relisten');
-      }
-
       clearForm();
-      saveAndRender();
+      await saveAndRender();
     }
     
     function toggleView() {
