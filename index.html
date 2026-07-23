@@ -2380,20 +2380,42 @@ function saveAlbum() {
 
       const updatedData = { title, year, duration, genre, secondaryGenres, scene, art };
 
-      // 1. SAFE EDIT: Update exact target object directly
+      // 1. EDITING EXISTING ENTRY
       if (editingAlbumTarget) {
         Object.assign(editingAlbumTarget, updatedData);
         editingAlbumTarget = null;
       } 
-      // 2. SAFE ADD: Push new item into currently active queue
+      // 2. ADDING NEW ENTRY
       else {
-        if (currentView === 'archive') {
-          albums.push(updatedData);
-        } else if (currentQueueTab === 'relisten') {
+        if (currentQueueTab === 'relisten') {
           relistenQueue.push(updatedData);
         } else {
           albums.push(updatedData);
         }
+      }
+
+      // 3. FORCE REAL-TIME UI SYNC
+      // Ensure view is on Queue mode
+      currentView = 'queue';
+      const viewBtn = document.getElementById('viewToggleBtn');
+      if (viewBtn) viewBtn.innerText = 'Archive';
+
+      // Clear search & dropdown filters so the new item isn't filtered out
+      const searchInput = document.getElementById('listSearchInput');
+      if (searchInput) searchInput.value = '';
+      filterGenreVal = "";
+      filterSceneVal = "";
+
+      const genreDisp = document.getElementById('filterGenreDisplay');
+      if (genreDisp) genreDisp.innerText = 'All Genres';
+
+      const sceneDisp = document.getElementById('filterSceneDisplay');
+      if (sceneDisp) sceneDisp.innerText = 'All Scenes';
+
+      // Ensure switch UI reflects the current queue tab
+      const switchEl = document.getElementById('queueToggleSwitch');
+      if (switchEl) {
+        switchEl.classList.toggle('active', currentQueueTab === 'relisten');
       }
 
       clearForm();
