@@ -130,6 +130,71 @@
       background: rgba(120, 140, 160, 0.7);
     }
 
+    /* Skeuomorphic iOS 6 Style Toggle Switch */
+    .ios-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      user-select: none;
+    }
+
+    .ios-toggle-track {
+      width: 38px;
+      height: 18px;
+      background: linear-gradient(180deg, #12161f 0%, #202736 100%);
+      border: 1px solid #000;
+      border-top-color: #07090e;
+      border-bottom-color: #475569;
+      border-radius: 10px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.15);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .ios-toggle-track.active {
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      border-color: #0f2b5c;
+    }
+
+    .ios-toggle-knob {
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #b0bec5 100%);
+      border: 1px solid #555;
+      border-radius: 50%;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 #ffffff;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ios-toggle-track.active .ios-toggle-knob {
+      transform: translateX(20px);
+    }
+
+    /* Archive Relisten Redo Badge */
+    .relisten-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #ffffff;
+      font-weight: bold;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      line-height: 1;
+    }
+
     body {
       background-color: #0d0d11;
       color: #fff;
@@ -1158,9 +1223,19 @@
       </div>
 
       <!-- Custom Filter Bar -->
+      <!-- Custom Filter Bar -->
       <div class="filter-bar">
         <span>Filter:</span>
         <input type="text" id="listSearchInput" placeholder="🔍 Search queue..." style="flex: 0.8; min-height: 22px; padding: 2px 6px; font-size: 10px !important; margin: 0 4px;" oninput="renderList()" />
+
+        <!-- Skeuomorphic iOS Queue Toggle Switch -->
+        <div class="ios-switch-container" id="queueTypeToggleGroup" title="Switch Queue Mode">
+          <span>Main</span>
+          <div class="ios-toggle-track" id="queueToggleSwitch" onclick="toggleQueueType()">
+            <div class="ios-toggle-knob"></div>
+          </div>
+          <span>Redo</span>
+        </div>
 
         <div class="custom-multiselect-container">
           <div class="custom-multiselect-trigger" style="min-height: 22px; padding: 2px 6px;" onclick="toggleFilterGenreDropdown(event)">
@@ -1366,10 +1441,12 @@
 
   <script>
     let albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+    let relistenQueue = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
     let archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
     let customBg = localStorage.getItem('sosa_bg_file') || "";
     
     let currentView = 'queue';
+    let currentQueueTab = 'main';
     let selectedIndex = 0;
     let editingIndex = null;
     let pendingFinishIndex = null;
@@ -1445,6 +1522,17 @@
       document.body.style.backgroundImage = `url('${customBg}')`;
     }
 
+    function toggleQueueType() {
+      currentQueueTab = (currentQueueTab === 'main') ? 'relisten' : 'main';
+      const switchEl = document.getElementById('queueToggleSwitch');
+      if (switchEl) {
+        switchEl.classList.toggle('active', currentQueueTab === 'relisten');
+      }
+      selectedIndex = 0;
+      renderList();
+      updateStats();
+    }
+
     function applyHardwareProfileTheme(profile) {
       document.body.className = ''; 
       if (profile !== 'classic') {
@@ -1504,6 +1592,7 @@
     function triggerFileBackupDownload() {
       const dataPayload = {
         queue: albums,
+        relisten: relistenQueue,
         archive: archive,
         genres: GENRE_DATA,
         scenes: SCENE_DATA,
@@ -1512,20 +1601,16 @@
       
       const jsonString = JSON.stringify(dataPayload, null, 2);
       const dataBlob = new Blob([jsonString], { type: 'application/json' });
-      
-      const currentToday = new Date();
-      const isoDateString = currentToday.toISOString().split('T')[0];
-      const filename = `sosaos-backup-${isoDateString}.json`;
+      const filename = `sosaos-backup-${getTodayISOString()}.json`;
       
       const downloadAnchor = document.createElement('a');
       downloadAnchor.href = URL.createObjectURL(dataBlob);
       downloadAnchor.download = filename;
-      
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       document.body.removeChild(downloadAnchor);
     }
-
+    
     function handleBgFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -2192,15 +2277,16 @@
       });
     }
 
-    function saveAndRender() {
+  function saveAndRender() {
       localStorage.setItem('rockbox_queue', JSON.stringify(albums));
+      localStorage.setItem('rockbox_relisten', JSON.stringify(relistenQueue));
       localStorage.setItem('rockbox_archive', JSON.stringify(archive));
       populateFilterDropdowns();
       renderList();
       updateStats();
     }
 
-    function saveAlbum() {
+function saveAlbum() {
       const titleInput = document.getElementById('albumInput');
       const yearInput = document.getElementById('yearInput');
       const durationInput = document.getElementById('durationInput');
@@ -2216,14 +2302,22 @@
 
       if (!title) return;
 
+      const newEntry = { title, year, duration, genre, secondaryGenres, scene, art };
+
       if (editingIndex !== null) {
         if (currentView === 'queue') {
-          albums[editingIndex] = { title, year, duration, genre, secondaryGenres, scene, art };
+          if (currentQueueTab === 'relisten') relistenQueue[editingIndex] = newEntry;
+          else albums[editingIndex] = newEntry;
         } else {
-          archive[editingIndex] = { ...archive[editingIndex], title, year, duration, genre, secondaryGenres, scene, art };
+          archive[editingIndex] = { ...archive[editingIndex], ...newEntry };
         }
       } else {
-        albums.push({ title, year, duration, genre, secondaryGenres, scene, art });
+        // Adds directly to whichever queue tab is currently active
+        if (currentQueueTab === 'relisten' && currentView === 'queue') {
+          relistenQueue.push(newEntry);
+        } else {
+          albums.push(newEntry);
+        }
       }
 
       clearForm();
@@ -2253,7 +2347,12 @@
     }
 
 function getActiveFilteredList() {
-      let sourceList = currentView === 'queue' ? albums : archive;
+      let sourceList;
+      if (currentView === 'queue') {
+        sourceList = (currentQueueTab === 'relisten') ? relistenQueue : albums;
+      } else {
+        sourceList = archive;
+      }
 
       if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
       if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
@@ -2273,10 +2372,11 @@ function getActiveFilteredList() {
       return sourceList;
     }
 
-    function renderList() {
+function renderList() {
       const bodyEl = document.getElementById('screenBody');
       const titleEl = document.getElementById('screenTitle');
       const countEl = document.getElementById('itemCount');
+      const toggleGroup = document.getElementById('queueTypeToggleGroup');
 
       let sourceList = getActiveFilteredList();
 
@@ -2285,11 +2385,12 @@ function getActiveFilteredList() {
       const svgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><rect width='40' height='40' fill='%23334155'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='14' font-weight='bold'>?</text></svg>";
 
       if (currentView === 'queue') {
-        titleEl.innerText = "iClassic Queue";
+        if (toggleGroup) toggleGroup.style.display = 'flex';
+        titleEl.innerText = (currentQueueTab === 'relisten') ? "iClassic Relisten Queue" : "iClassic Queue";
         countEl.innerText = `${sourceList.length} albums`;
 
         if (sourceList.length === 0) {
-          bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">Queue is empty</div>`;
+          bodyEl.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100%; opacity:0.5; font-size:12px; font-weight:bold;">${currentQueueTab === 'relisten' ? 'Relisten queue is empty' : 'Queue is empty'}</div>`;
           return;
         }
 
@@ -2333,6 +2434,7 @@ function getActiveFilteredList() {
         listHtml += '</ul>';
         bodyEl.innerHTML = listHtml;
       } else {
+        if (toggleGroup) toggleGroup.style.display = 'none';
         titleEl.innerText = "Listened Archive";
         countEl.innerText = `${sourceList.length} listened`;
 
@@ -2350,6 +2452,9 @@ function getActiveFilteredList() {
           const dur = item.duration ? `<span class="duration-badge">${item.duration}</span>` : '';
           const descriptorTags = item.descriptors && item.descriptors.length > 0 ? item.descriptors.map(d => `<span class="descriptor-badge">${d}</span>`).join(' ') : '';
           const fmtTag = item.listeningFormat ? `<span class="format-badge">${item.listeningFormat}</span>` : '';
+          
+          // Relisten Redo Icon Badge
+          const redoTag = item.isRelisten ? `<span class="relisten-badge" title="Relisten Entry">🔄 Redo</span>` : '';
 
           listHtml += `
             <li class="list-item-wrapper ${isActive} ${isOpen}">
@@ -2360,6 +2465,7 @@ function getActiveFilteredList() {
                   <span class="item-title">${item.title}</span>
                 </div>
                 <div class="item-right-default">
+                  ${redoTag}
                   ${dur}
                   ${yr}
                   ${starsHtml}
@@ -2434,7 +2540,7 @@ let pendingFinishTarget = null;
       document.getElementById('finishModal').style.display = 'flex';
     }
 
-    function confirmFinishAlbum() {
+function confirmFinishAlbum() {
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
       const formattedDate = new Date(dateISO + 'T00:00:00').toLocaleDateString();
@@ -2447,10 +2553,21 @@ let pendingFinishTarget = null;
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
       if (pendingFinishTarget) {
-        // Find exact match in Queue array and move to Archive
-        const globalIdx = albums.indexOf(pendingFinishTarget);
+        let globalIdx = albums.indexOf(pendingFinishTarget);
+        let isRelistenItem = false;
+
         if (globalIdx !== -1) {
-          const completed = albums.splice(globalIdx, 1)[0];
+          albums.splice(globalIdx, 1);
+        } else {
+          globalIdx = relistenQueue.indexOf(pendingFinishTarget);
+          if (globalIdx !== -1) {
+            relistenQueue.splice(globalIdx, 1);
+            isRelistenItem = true;
+          }
+        }
+
+        if (globalIdx !== -1) {
+          const completed = pendingFinishTarget;
           completed.rating = currentSelectedRating;
           completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
           completed.descriptors = descriptors;
@@ -2458,12 +2575,14 @@ let pendingFinishTarget = null;
           completed.dateFinishedISO = dateISO;
           completed.listeningFormat = formatStr;
           completed.favoriteTrack = favTrack;
+          if (isRelistenItem) {
+            completed.isRelisten = true;
+          }
 
           archive.unshift(completed);
         }
         pendingFinishTarget = null;
       } else if (editingArchiveTarget) {
-        // Update existing item directly in Archive array
         const globalIdx = archive.indexOf(editingArchiveTarget);
         if (globalIdx !== -1) {
           archive[globalIdx].rating = currentSelectedRating;
@@ -2951,18 +3070,35 @@ function editEntry(idx, event) {
 
     function importJson() {
       try {
-        const parsed = JSON.parse(document.getElementById('jsonBox').value);
+        const rawText = document.getElementById('jsonBox').value.trim();
+        if (!rawText) return alert("Please paste JSON data first.");
+        
+        const parsed = JSON.parse(rawText);
+        
         if (parsed.queue && parsed.archive) {
-          albums = parsed.queue; archive = parsed.archive;
-          if (parsed.genres) GENRE_DATA = parsed.genres;
-          if (parsed.scenes) SCENE_DATA = parsed.scenes;
-          if (parsed.descriptors) DESCRIPTOR_POOL = parsed.descriptors;
-        } else if (Array.isArray(parsed)) { 
-          albums = parsed; 
+          albums = parsed.queue;
+          relistenQueue = parsed.relisten || [];
+          archive = parsed.archive;
+          
+          if (parsed.genres) { GENRE_DATA = parsed.genres; localStorage.setItem('sosa_genre_config', JSON.stringify(GENRE_DATA)); }
+          if (parsed.scenes) { SCENE_DATA = parsed.scenes; localStorage.setItem('sosa_scene_config', JSON.stringify(SCENE_DATA)); }
+          if (parsed.descriptors) { DESCRIPTOR_POOL = parsed.descriptors; localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL)); }
+          
+          buildPrimaryGenreMenu();
+          buildSceneMenu();
+          buildSecondaryGenreMenu();
+        } else if (Array.isArray(parsed)) {
+          albums = parsed;
+        } else {
+          return alert("Invalid JSON backup structure.");
         }
+        
         saveAndRender();
         closeBackupModal();
-      } catch (e) { alert('Invalid JSON format.'); }
+        alert("Backup imported successfully!");
+      } catch (e) {
+        alert("Invalid JSON format.");
+      }
     }
 
     buildPrimaryGenreMenu();
