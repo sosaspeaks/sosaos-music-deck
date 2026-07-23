@@ -2448,7 +2448,7 @@ let pendingFinishTarget = null;
 
       if (pendingFinishTarget) {
         // Find exact match in Queue array and move to Archive
-        const globalIdx = albums.findIndex(a => a.title === pendingFinishTarget.title);
+        const globalIdx = albums.indexOf(pendingFinishTarget);
         if (globalIdx !== -1) {
           const completed = albums.splice(globalIdx, 1)[0];
           completed.rating = currentSelectedRating;
@@ -2464,7 +2464,7 @@ let pendingFinishTarget = null;
         pendingFinishTarget = null;
       } else if (editingArchiveTarget) {
         // Update existing item directly in Archive array
-        const globalIdx = archive.findIndex(a => a.title === editingArchiveTarget.title);
+        const globalIdx = archive.indexOf(editingArchiveTarget);
         if (globalIdx !== -1) {
           archive[globalIdx].rating = currentSelectedRating;
           archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
