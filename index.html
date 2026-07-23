@@ -58,46 +58,58 @@
     body.theme-win95 {
       --ipod-bezel-bg: #c0c0c0;
       --ipod-bezel-border: #ffffff;
-      --iclassic-bg: #008080; /* Classic Teal Desktop */
+      --iclassic-bg: #008080;
       --iclassic-text: #ffffff;
-      --iclassic-header: linear-gradient(90deg, #000080 0%, #1084d0 100%); /* Win95 Titlebar */
+      --iclassic-header: linear-gradient(90deg, #000080 0%, #1084d0 100%);
       --iclassic-select: #000080;
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #2b303c;
+      --filter-text: #94a3b8;
       --progress-bg: #808080;
       --progress-fill: #000080;
     }
 
-    /* ⚡ WinAMP 2.x Metallic Theme */
+    /* ⚡ WinAMP 2.x Metallic Theme (Darker Amber selection for star contrast) */
     body.theme-winamp {
       --ipod-bezel-bg: linear-gradient(180deg, #3a3a48 0%, #1a1a24 100%);
       --ipod-bezel-border: #5a5a6e;
       --iclassic-bg: #0f0f14;
-      --iclassic-text: #00ff41; /* Radio green readout */
+      --iclassic-text: #00ff41;
       --iclassic-header: linear-gradient(180deg, #2a2a36 0%, #14141d 100%);
-      --iclassic-select: #ff5500; /* WinAMP orange selection highlight */
+      --iclassic-select: #993300; /* Muted deep amber/burnt orange */
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #14141d;
+      --filter-text: #00ff41;
       --progress-bg: #222230;
       --progress-fill: #00ff41;
     }
 
-    /* 💖 Y2K Cyber Gloss / Hot Myspace Theme */
+    /* 💖 Y2K Cyber Pink Theme */
     body.theme-y2kpink {
       --ipod-bezel-bg: linear-gradient(135deg, #ff77bc 0%, #e02484 50%, #7b0051 100%);
       --ipod-bezel-border: #ffb3de;
       --iclassic-bg: #1a0013;
       --iclassic-text: #00ffff;
       --iclassic-header: linear-gradient(180deg, #ff2a9d 0%, #990055 100%);
-      --iclassic-select: linear-gradient(180deg, #00ffff 0%, #0088cc 100%);
+      --iclassic-select: linear-gradient(180deg, #00cccc 0%, #006699 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #2a0020;
+      --filter-text: #ff77bc;
       --progress-bg: #4a0033;
       --progress-fill: #00ffff;
     }
 
-    /* 🌊 Frutiger Aero / Aqua Web 2.0 Theme */
+    /* 🌊 Frutiger Aero Theme */
     body.theme-aqua {
       --ipod-bezel-bg: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(180,220,255,0.4) 100%);
       --ipod-bezel-border: #ffffff;
       --iclassic-bg: #e6f7ff;
       --iclassic-text: #003366;
       --iclassic-header: linear-gradient(180deg, #70c9ff 0%, #0077c8 50%, #005599 51%, #0088e0 100%);
-      --iclassic-select: linear-gradient(180deg, #33ccff 0%, #0066cc 100%);
+      --iclassic-select: linear-gradient(180deg, #0088cc 0%, #004488 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #1e2b38;
+      --filter-text: #70c9ff;
       --progress-bg: #b3e6ff;
       --progress-fill: linear-gradient(180deg, #00d2ff 0%, #0066cc 100%);
       backdrop-filter: blur(15px);
@@ -590,8 +602,8 @@
       font-family: monospace;
     }
 
-    .filter-bar {
-      background: linear-gradient(180deg, #2b303c 0%, #1e222b 100%);
+  .filter-bar {
+      background: var(--filter-bar-bg, linear-gradient(180deg, #2b303c 0%, #1e222b 100%));
       border-bottom: 1px solid #3d4856;
       padding: 5px 10px;
       display: flex;
@@ -602,10 +614,10 @@
       z-index: 10;
     }
 
-    .filter-bar span {
+    .filter-bar span, .ios-switch-container span {
       font-size: 10px;
       font-weight: 600;
-      color: #94a3b8;
+      color: var(--filter-text, #94a3b8) !important;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -634,8 +646,8 @@
       padding: 0 8px;
       font-size: 11px;
       font-weight: 600;
-      color: #0d1b2a;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+      color: #ffffff; /* Guarantees high-contrast readability on headers */
+      text-shadow: 0 1px 1px rgba(0,0,0,0.6);
     }
     body.theme-cyberpunk .status-bar { color: #00ff66; text-shadow:none; }
 
@@ -707,7 +719,7 @@
 
     .list-item-wrapper.active .list-item-main {
       background: var(--iclassic-select);
-      color: #ffffff;
+      color: var(--iclassic-select-text, #ffffff) !important;
     }
     body.theme-cyberpunk .list-item-wrapper.active .list-item-main { color: #000; }
 
