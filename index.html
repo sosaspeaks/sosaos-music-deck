@@ -2355,20 +2355,20 @@
       });
     }
 
-let albums = [];
-    let relistenQueue = [];
-    let archive = [];
+// Remove 'let' since they are already declared at line 1501
+albums = [];
+relistenQueue = [];
+archive = [];
 
-    // Fail-safe initialization to guarantee UI/Buttons never freeze
+// Fail-safe database load without re-declaring 'let albums'
     async function initDatabase() {
       try {
-        // Check if localforage library loaded properly
         if (typeof localforage !== 'undefined') {
           let storedQueue = await localforage.getItem('rockbox_queue');
           let storedRelisten = await localforage.getItem('rockbox_relisten');
           let storedArchive = await localforage.getItem('rockbox_archive');
 
-          // Automatic One-Time Migration from localStorage if IndexedDB is empty
+          // Migration check from localStorage
           if (!storedQueue && localStorage.getItem('rockbox_queue')) {
             storedQueue = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
             storedRelisten = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
@@ -2383,27 +2383,24 @@ let albums = [];
           relistenQueue = storedRelisten || [];
           archive = storedArchive || [];
         } else {
-          console.warn("localForage not detected. Falling back to localStorage.");
           albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
           relistenQueue = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
           archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         }
       } catch (err) {
-        console.error("Database load error, reading emergency fallbacks:", err);
+        console.error("Database initialization error:", err);
         albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
         relistenQueue = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
         archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
       }
 
-      // Always render list regardless of storage backend
       populateFilterDropdowns();
       renderList();
       updateStats();
     }
 
-    // Call init on page load
     window.addEventListener('DOMContentLoaded', initDatabase);
-
+    
     // High-Capacity Async Save Function
     async function saveAndRender() {
       if (!Array.isArray(albums)) albums = [];
