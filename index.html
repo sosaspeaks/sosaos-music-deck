@@ -2376,30 +2376,30 @@ function saveAlbum() {
       const scene = selectedScene || '';
       const art = artInput.value.trim() || 'https://via.placeholder.com/150/3880c8/ffffff?text=Vinyl';
 
-      if (!title) return;
+      if (!title) return alert("Please enter an album title.");
 
-      const newEntry = { title, year, duration, genre, secondaryGenres, scene, art };
+      const updatedData = { title, year, duration, genre, secondaryGenres, scene, art };
 
-      if (editingIndex !== null) {
-        if (currentView === 'queue') {
-          if (currentQueueTab === 'relisten') relistenQueue[editingIndex] = newEntry;
-          else albums[editingIndex] = newEntry;
+      // 1. SAFE EDIT: Update exact target object directly
+      if (editingAlbumTarget) {
+        Object.assign(editingAlbumTarget, updatedData);
+        editingAlbumTarget = null;
+      } 
+      // 2. SAFE ADD: Push new item into currently active queue
+      else {
+        if (currentView === 'archive') {
+          albums.push(updatedData);
+        } else if (currentQueueTab === 'relisten') {
+          relistenQueue.push(updatedData);
         } else {
-          archive[editingIndex] = { ...archive[editingIndex], ...newEntry };
-        }
-      } else {
-        // Adds directly to whichever queue tab is currently active
-        if (currentQueueTab === 'relisten' && currentView === 'queue') {
-          relistenQueue.push(newEntry);
-        } else {
-          albums.push(newEntry);
+          albums.push(updatedData);
         }
       }
 
       clearForm();
       saveAndRender();
     }
-
+    
     function toggleView() {
       currentView = currentView === 'queue' ? 'archive' : 'queue';
       document.getElementById('viewToggleBtn').innerText = currentView === 'queue' ? 'Archive' : 'Queue';
@@ -3051,16 +3051,18 @@ function confirmFinishAlbum() {
         </div>`;
     }
 
-function editEntry(idx, event) {
+let editingAlbumTarget = null; // Tracks exact object, NOT array index
+
+    function editEntry(idx, event) {
       if (event) event.stopPropagation();
       const sourceList = getActiveFilteredList();
       const item = sourceList[idx];
       if (!item) return;
 
-      const realIndex = (currentView === 'queue' ? albums : archive).findIndex(a => a.title === item.title);
-      editingIndex = realIndex;
+      // Lock in exact memory reference instead of array index position
+      editingAlbumTarget = item;
 
-      document.getElementById('albumInput').value = item.title;
+      document.getElementById('albumInput').value = item.title || '';
       document.getElementById('yearInput').value = item.year || '';
       document.getElementById('durationInput').value = item.duration || '';
       document.getElementById('artInput').value = item.art && item.art.includes('placeholder') ? '' : item.art;
@@ -3079,7 +3081,7 @@ function editEntry(idx, event) {
       document.getElementById('cancelBtn').style.display = 'inline-flex';
 
       const cab = document.getElementById('formCabinet');
-      if (!cab.classList.contains('open')) toggleFormCabinet();
+      if (cab && !cab.classList.contains('open')) toggleFormCabinet();
     }
 
     function deleteEntry(idx, event) {
@@ -3117,25 +3119,29 @@ function editEntry(idx, event) {
     }
 
     function clearForm() {
-      editingIndex = null;
+      editingAlbumTarget = null; // Clear object target
+      
       document.getElementById('albumInput').value = '';
       document.getElementById('yearInput').value = '';
       document.getElementById('durationInput').value = '';
       document.getElementById('artInput').value = '';
 
-      selectedPrimaryGenre = "";
-      updatePrimaryGenreDisplay();
-
-      selectedScene = "";
-      updateSceneDisplay();
-
+      selectedPrimaryGenre = '';
+      selectedScene = '';
       selectedSecondaryGenres.clear();
+
+      updatePrimaryGenreDisplay();
+      updateSceneDisplay();
       buildSecondaryGenreMenu();
       updateSecTagPreview();
 
-      document.getElementById('saveBtn').innerText = '+ Save Album';
-      document.getElementById('cancelBtn').style.display = 'none';
-      closeArtPreview();
+      const saveBtn = document.getElementById('saveBtn');
+      if (saveBtn) {
+        saveBtn.innerText = (currentQueueTab === 'relisten') ? '+ Save to Relisten' : '+ Save Album';
+      }
+      
+      const cancelBtn = document.getElementById('cancelBtn');
+      if (cancelBtn) cancelBtn.style.display = 'none';
     }
 
     function openBackupModal() {
