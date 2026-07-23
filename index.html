@@ -2331,17 +2331,21 @@ function getActiveFilteredList() {
       renderList();
     }
 
-function openFinishModal(index, event = null) {
+let pendingFinishTarget = null;
+    let editingArchiveTarget = null;
+
+    function openFinishModal(index, event = null) {
       if (event) event.stopPropagation();
-      pendingFinishIndex = index;
-      editingArchiveIndex = null;
       
       const sourceList = getActiveFilteredList();
       const album = sourceList[index];
       if (!album) return;
 
+      pendingFinishTarget = album;
+      editingArchiveTarget = null;
+
       document.getElementById('finishModalHeaderTitle').innerText = "Mark Album Completed";
-      document.getElementById('finishTitle').innerText = album.title;
+      document.getElementById('finishTitle').innerText = album.title || '';
       document.getElementById('finishComments').value = '';
       document.getElementById('descriptorInput').value = '';
       document.getElementById('dateListenedInput').value = getTodayISOString();
@@ -2355,15 +2359,16 @@ function openFinishModal(index, event = null) {
 
     function openArchiveEditModal(index, event = null) {
       if (event) event.stopPropagation();
-      editingArchiveIndex = index;
-      pendingFinishIndex = null;
 
       const sourceList = getActiveFilteredList();
       const album = sourceList[index];
       if (!album) return;
 
+      editingArchiveTarget = album;
+      pendingFinishTarget = null;
+
       document.getElementById('finishModalHeaderTitle').innerText = "Edit Archive Entry";
-      document.getElementById('finishTitle').innerText = album.title;
+      document.getElementById('finishTitle').innerText = album.title || '';
       document.getElementById('finishComments').value = album.comments || '';
       document.getElementById('descriptorInput').value = album.descriptors ? album.descriptors.join(', ') : '';
       document.getElementById('dateListenedInput').value = album.dateFinishedISO || getTodayISOString();
@@ -2373,11 +2378,9 @@ function openFinishModal(index, event = null) {
       renderInteractiveStars(currentSelectedRating);
       shufflePresetBar();
 
-      editEntry(index, event);
-
       document.getElementById('finishModal').style.display = 'flex';
     }
-    
+
     function confirmFinishAlbum() {
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
@@ -2386,48 +2389,43 @@ function openFinishModal(index, event = null) {
       const favTrack = document.getElementById('favoriteTrackInput').value.trim();
 
       descriptors.forEach(d => {
-        if (!DESCRIPTOR_POOL.includes(d)) {
-          DESCRIPTOR_POOL.push(d);
-        }
+        if (!DESCRIPTOR_POOL.includes(d)) DESCRIPTOR_POOL.push(d);
       });
       localStorage.setItem('sosa_descriptor_pool', JSON.stringify(DESCRIPTOR_POOL));
 
-      let sourceList = currentView === 'queue' ? albums : archive;
-      if (filterGenreVal) sourceList = sourceList.filter(a => a.genre === filterGenreVal);
-      if (filterSceneVal) sourceList = sourceList.filter(a => a.scene === filterSceneVal);
+      if (pendingFinishTarget) {
+        // Find exact match in Queue array and move to Archive
+        const globalIdx = albums.findIndex(a => a.title === pendingFinishTarget.title);
+        if (globalIdx !== -1) {
+          const completed = albums.splice(globalIdx, 1)[0];
+          completed.rating = currentSelectedRating;
+          completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
+          completed.descriptors = descriptors;
+          completed.dateFinished = formattedDate;
+          completed.dateFinishedISO = dateISO;
+          completed.listeningFormat = formatStr;
+          completed.favoriteTrack = favTrack;
 
-      if (pendingFinishIndex !== null) {
-        const completedTarget = sourceList[pendingFinishIndex];
-        const globalIdx = albums.findIndex(a => a.title === completedTarget.title);
-        const completed = albums.splice(globalIdx, 1)[0];
-        
-        completed.rating = currentSelectedRating;
-        completed.comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        completed.descriptors = descriptors;
-        completed.dateFinished = formattedDate;
-        completed.dateFinishedISO = dateISO;
-        completed.listeningFormat = formatStr;
-        completed.favoriteTrack = favTrack;
-
-        archive.unshift(completed);
-        pendingFinishIndex = null;
-      } else if (editingArchiveIndex !== null) {
-        const editedTarget = sourceList[editingArchiveIndex];
-        const globalIdx = archive.findIndex(a => a.title === editedTarget.title);
-        
-        archive[globalIdx].rating = currentSelectedRating;
-        archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
-        archive[globalIdx].descriptors = descriptors;
-        archive[globalIdx].dateFinished = formattedDate;
-        archive[globalIdx].dateFinishedISO = dateISO;
-        archive[globalIdx].listeningFormat = formatStr;
-        archive[globalIdx].favoriteTrack = favTrack;
-        editingArchiveIndex = null;
+          archive.unshift(completed);
+        }
+        pendingFinishTarget = null;
+      } else if (editingArchiveTarget) {
+        // Update existing item directly in Archive array
+        const globalIdx = archive.findIndex(a => a.title === editingArchiveTarget.title);
+        if (globalIdx !== -1) {
+          archive[globalIdx].rating = currentSelectedRating;
+          archive[globalIdx].comments = document.getElementById('finishComments').value.trim() || 'No notes added.';
+          archive[globalIdx].descriptors = descriptors;
+          archive[globalIdx].dateFinished = formattedDate;
+          archive[globalIdx].dateFinishedISO = dateISO;
+          archive[globalIdx].listeningFormat = formatStr;
+          archive[globalIdx].favoriteTrack = favTrack;
+        }
+        editingArchiveTarget = null;
       }
 
       document.getElementById('finishModal').style.display = 'none';
       saveAndRender();
-      showList();
     }
 
     function openiTunesModal(idx) {
