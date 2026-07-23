@@ -2353,10 +2353,10 @@ function getActiveFilteredList() {
 
           listHtml += `
             <li class="list-item-wrapper ${isActive} ${isOpen}">
-              <div class="list-item-main" onclick="openiTunesModal(${idx})">
+              <div class="list-item-main" onclick="selectItem(${idx})">
                 <div class="item-left">
                   <span class="item-num-col">${idx + 1}</span>
-                  <img class="item-thumb" src="${item.art}" onerror="this.onerror=null; this.src='${svgFallback}';">
+                  <img class="item-thumb" src="${item.art}" style="cursor:pointer;" onclick="event.stopPropagation(); openiTunesModal(${idx})" title="Click art for Info" onerror="this.onerror=null; this.src='${svgFallback}';">
                   <span class="item-title">${item.title}</span>
                 </div>
                 <div class="item-right-default">
