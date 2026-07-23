@@ -1580,11 +1580,31 @@
 
     function toggleQueueType() {
       currentQueueTab = (currentQueueTab === 'main') ? 'relisten' : 'main';
+      
       const switchEl = document.getElementById('queueToggleSwitch');
       if (switchEl) {
         switchEl.classList.toggle('active', currentQueueTab === 'relisten');
       }
+
+      // 1. Force screen view to queue mode if currently looking at Archive
+      currentView = 'queue';
+      const viewBtn = document.getElementById('viewToggleBtn');
+      if (viewBtn) viewBtn.innerText = 'Archive';
+
+      // 2. Reset selection index to prevent out-of-bounds selection errors
       selectedIndex = 0;
+
+      // 3. Clear search bar on switch so you see the full list immediately
+      const searchInput = document.getElementById('listSearchInput');
+      if (searchInput) searchInput.value = '';
+
+      // 4. Update save button label dynamically so you know where new saves land
+      const saveBtn = document.getElementById('saveBtn');
+      if (saveBtn && editingIndex === null) {
+        saveBtn.innerText = (currentQueueTab === 'relisten') ? '+ Save to Relisten' : '+ Save Album';
+      }
+
+      // 5. Re-render instantly
       renderList();
       updateStats();
     }
