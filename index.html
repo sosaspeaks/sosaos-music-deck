@@ -54,6 +54,55 @@
       --progress-fill: #00ff66;
     }
 
+    /* 💾 Windows 95 / Classic PC Theme */
+    body.theme-win95 {
+      --ipod-bezel-bg: #c0c0c0;
+      --ipod-bezel-border: #ffffff;
+      --iclassic-bg: #008080; /* Classic Teal Desktop */
+      --iclassic-text: #ffffff;
+      --iclassic-header: linear-gradient(90deg, #000080 0%, #1084d0 100%); /* Win95 Titlebar */
+      --iclassic-select: #000080;
+      --progress-bg: #808080;
+      --progress-fill: #000080;
+    }
+
+    /* ⚡ WinAMP 2.x Metallic Theme */
+    body.theme-winamp {
+      --ipod-bezel-bg: linear-gradient(180deg, #3a3a48 0%, #1a1a24 100%);
+      --ipod-bezel-border: #5a5a6e;
+      --iclassic-bg: #0f0f14;
+      --iclassic-text: #00ff41; /* Radio green readout */
+      --iclassic-header: linear-gradient(180deg, #2a2a36 0%, #14141d 100%);
+      --iclassic-select: #ff5500; /* WinAMP orange selection highlight */
+      --progress-bg: #222230;
+      --progress-fill: #00ff41;
+    }
+
+    /* 💖 Y2K Cyber Gloss / Hot Myspace Theme */
+    body.theme-y2kpink {
+      --ipod-bezel-bg: linear-gradient(135deg, #ff77bc 0%, #e02484 50%, #7b0051 100%);
+      --ipod-bezel-border: #ffb3de;
+      --iclassic-bg: #1a0013;
+      --iclassic-text: #00ffff;
+      --iclassic-header: linear-gradient(180deg, #ff2a9d 0%, #990055 100%);
+      --iclassic-select: linear-gradient(180deg, #00ffff 0%, #0088cc 100%);
+      --progress-bg: #4a0033;
+      --progress-fill: #00ffff;
+    }
+
+    /* 🌊 Frutiger Aero / Aqua Web 2.0 Theme */
+    body.theme-aqua {
+      --ipod-bezel-bg: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(180,220,255,0.4) 100%);
+      --ipod-bezel-border: #ffffff;
+      --iclassic-bg: #e6f7ff;
+      --iclassic-text: #003366;
+      --iclassic-header: linear-gradient(180deg, #70c9ff 0%, #0077c8 50%, #005599 51%, #0088e0 100%);
+      --iclassic-select: linear-gradient(180deg, #33ccff 0%, #0066cc 100%);
+      --progress-bg: #b3e6ff;
+      --progress-fill: linear-gradient(180deg, #00d2ff 0%, #0066cc 100%);
+      backdrop-filter: blur(15px);
+    }
+
     * {
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -1028,6 +1077,10 @@
         <option value="u2">U2 Special Edition</option>
         <option value="atomic">Atomic Transparent</option>
         <option value="cyberpunk">Game Boy / Cyberpunk</option>
+        <option value="win95">💾 Windows 95</option>
+        <option value="winamp">⚡ WinAMP 2.x</option>
+        <option value="y2kpink">💖 Cyber Pink</option>
+        <option value="aqua">🌊 Frutiger Aqua</option>
       </select>
     </div>
     <div class="corner-badge">
