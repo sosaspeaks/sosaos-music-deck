@@ -2359,55 +2359,49 @@ let albums = [];
     let relistenQueue = [];
     let archive = [];
 
-    // Initialize & Load Database from IndexedDB
+    // Fail-safe initialization to guarantee UI/Buttons never freeze
     async function initDatabase() {
       try {
-        // 1. Check IndexedDB for saved lists
-        let storedQueue = await localforage.getItem('rockbox_queue');
-        let storedRelisten = await localforage.getItem('rockbox_relisten');
-        let storedArchive = await localforage.getItem('rockbox_archive');
+        // Check if localforage library loaded properly
+        if (typeof localforage !== 'undefined') {
+          let storedQueue = await localforage.getItem('rockbox_queue');
+          let storedRelisten = await localforage.getItem('rockbox_relisten');
+          let storedArchive = await localforage.getItem('rockbox_archive');
 
-        // 2. Automatic One-Time Migration from localStorage if IndexedDB is empty
-        if (!storedQueue && localStorage.getItem('rockbox_queue')) {
-          console.log("Migrating legacy localStorage data to IndexedDB...");
-          storedQueue = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
-          storedRelisten = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
-          storedArchive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
+          // Automatic One-Time Migration from localStorage if IndexedDB is empty
+          if (!storedQueue && localStorage.getItem('rockbox_queue')) {
+            storedQueue = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+            storedRelisten = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
+            storedArchive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
 
-          await localforage.setItem('rockbox_queue', storedQueue);
-          await localforage.setItem('rockbox_relisten', storedRelisten);
-          await localforage.setItem('rockbox_archive', storedArchive);
+            await localforage.setItem('rockbox_queue', storedQueue);
+            await localforage.setItem('rockbox_relisten', storedRelisten);
+            await localforage.setItem('rockbox_archive', storedArchive);
+          }
+
+          albums = storedQueue || [];
+          relistenQueue = storedRelisten || [];
+          archive = storedArchive || [];
+        } else {
+          console.warn("localForage not detected. Falling back to localStorage.");
+          albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+          relistenQueue = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
+          archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
         }
-
-        // 3. Set global variables
-        albums = storedQueue || [];
-        relistenQueue = storedRelisten || [];
-        archive = storedArchive || [];
-
-        // 4. Load config pools
-        const savedGenres = await localforage.getItem('sosa_genre_config') || JSON.parse(localStorage.getItem('sosa_genre_config'));
-        if (savedGenres) GENRE_DATA = savedGenres;
-
-        const savedScenes = await localforage.getItem('sosa_scene_config') || JSON.parse(localStorage.getItem('sosa_scene_config'));
-        if (savedScenes) SCENE_DATA = savedScenes;
-
-        const savedDescriptors = await localforage.getItem('sosa_descriptor_pool') || JSON.parse(localStorage.getItem('sosa_descriptor_pool'));
-        if (savedDescriptors) DESCRIPTOR_POOL = savedDescriptors;
-
-        buildPrimaryGenreMenu();
-        buildSceneMenu();
-        buildSecondaryGenreMenu();
-        
-        // Initial Draw
-        populateFilterDropdowns();
-        renderList();
-        updateStats();
       } catch (err) {
-        console.error("IndexedDB Initialization Error:", err);
+        console.error("Database load error, reading emergency fallbacks:", err);
+        albums = JSON.parse(localStorage.getItem('rockbox_queue')) || [];
+        relistenQueue = JSON.parse(localStorage.getItem('rockbox_relisten')) || [];
+        archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
       }
+
+      // Always render list regardless of storage backend
+      populateFilterDropdowns();
+      renderList();
+      updateStats();
     }
 
-    // Run DB init when the DOM loads
+    // Call init on page load
     window.addEventListener('DOMContentLoaded', initDatabase);
 
     // High-Capacity Async Save Function
@@ -2416,12 +2410,22 @@ let albums = [];
       if (!Array.isArray(relistenQueue)) relistenQueue = [];
       if (!Array.isArray(archive)) archive = [];
 
-      try {
-        await localforage.setItem('rockbox_queue', albums);
-        await localforage.setItem('rockbox_relisten', relistenQueue);
-        await localforage.setItem('rockbox_archive', archive);
-      } catch (err) {
-        console.error("IndexedDB Save Error:", err);
+      if (typeof localforage !== 'undefined') {
+        try {
+          await localforage.setItem('rockbox_queue', albums);
+          await localforage.setItem('rockbox_relisten', relistenQueue);
+          await localforage.setItem('rockbox_archive', archive);
+        } catch (err) {
+          console.error("IndexedDB Save Error:", err);
+        }
+      } else {
+        try {
+          localStorage.setItem('rockbox_queue', JSON.stringify(albums));
+          localStorage.setItem('rockbox_relisten', JSON.stringify(relistenQueue));
+          localStorage.setItem('rockbox_archive', JSON.stringify(archive));
+        } catch (err) {
+          console.error("LocalStorage Quota Exceeded:", err);
+        }
       }
 
       populateFilterDropdowns();
