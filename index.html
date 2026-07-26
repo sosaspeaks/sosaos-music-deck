@@ -29,6 +29,11 @@
       --ipod-bezel-border: #666;
       --ipod-backlight-glow: rgba(56, 128, 200, 0.35);
     }
+    
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb, #556677) var(--scrollbar-track, #1a202c);
+    }
 
     /* U2 Special Edition Hardware Variant Definitions */
     body.theme-u2 {
@@ -62,7 +67,7 @@
       --progress-fill: #00ff66;
     }
 
-    /* 💾 Windows 95 / Classic PC Theme */
+    /* Windows 95 Theme */
     body.theme-win95 {
       --ipod-bezel-bg: #c0c0c0;
       --ipod-bezel-border: #ffffff;
@@ -79,7 +84,7 @@
       --progress-fill: #000080;
     }
 
-    /* ⚡ WinAMP 2.x Metallic Theme (Darker Amber selection for star contrast) */
+    /* WinAMP 2.x Metallic Theme */
     body.theme-winamp {
       --ipod-bezel-bg: linear-gradient(180deg, #3a3a48 0%, #1a1a24 100%);
       --ipod-bezel-border: #5a5a6e;
@@ -96,7 +101,7 @@
       --progress-fill: #00ff41;
     }
 
-    /* 💖 Y2K Cyber Pink Theme */
+    /* Cyber Pink Theme */
     body.theme-y2kpink {
       --ipod-bezel-bg: linear-gradient(135deg, #ff77bc 0%, #e02484 50%, #7b0051 100%);
       --ipod-bezel-border: #ffb3de;
@@ -113,7 +118,7 @@
       --progress-fill: #00ffff;
     }
 
-    /* 🌊 Frutiger Aero Theme */
+    /* Frutiger Aero Theme */
     body.theme-aqua {
       --ipod-bezel-bg: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(180,220,255,0.4) 100%);
       --ipod-bezel-border: #ffffff;
@@ -131,6 +136,127 @@
       backdrop-filter: blur(15px);
     }
 
+    /* Windows Vista Aero Theme */
+    body.theme-vista {
+      --ipod-bezel-bg: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.6) 100%);
+      --ipod-bezel-border: rgba(255, 255, 255, 0.6);
+      --iclassic-bg: #0a192f;
+      --iclassic-text: #e6f1ff;
+      --iclassic-header: linear-gradient(180deg, rgba(64,156,255,0.8) 0%, rgba(12,62,122,0.9) 100%);
+      --iclassic-select: linear-gradient(180deg, #38ef7d 0%, #11998e 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #0f2b48;
+      --filter-text: #64ffda;
+      --stats-bar-bg: #0a192f;
+      --stats-bar-text: #64ffda;
+      --scrollbar-track: #050c1a;
+      --scrollbar-thumb: #11998e;
+    }
+
+    /* Synthwave Theme */
+    body.theme-synthwave {
+      --ipod-bezel-bg: linear-gradient(180deg, #2b1055 0%, #7597de 100%);
+      --ipod-bezel-border: #ff007f;
+      --iclassic-bg: #130024;
+      --iclassic-text: #ff71ce;
+      --iclassic-header: linear-gradient(90deg, #ff007f 0%, #7928ca 100%);
+      --iclassic-select: #01cdfe;
+      --iclassic-select-text: #000000;
+      --filter-bar-bg: #240046;
+      --filter-text: #05ffa1;
+      --stats-bar-bg: #130024;
+      --stats-bar-text: #05ffa1;
+      --scrollbar-track: #240046;
+      --scrollbar-thumb: #ff007f;
+    }
+
+    /* Indigo GameCube */
+    body.theme-gamecube {
+      --ipod-bezel-bg: linear-gradient(135deg, #6652b3 0%, #4b389f 100%);
+      --ipod-bezel-border: #2f236b;
+      --iclassic-bg: #1b1638;
+      --iclassic-text: #e0e0ff;
+      --iclassic-header: linear-gradient(180deg, #6652b3 0%, #352675 100%);
+      --iclassic-select: #ff5500; /* Controller B Button Orange */
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #2a2254;
+      --filter-text: #55ff55; /* Controller A Button Green */
+      --stats-bar-bg: #1b1638;
+      --stats-bar-text: #55ff55;
+      --scrollbar-track: #110d24;
+      --scrollbar-thumb: #6652b3;
+    }
+
+    /* Xbox 360 (Blade Dashboard Era) */
+    body.theme-xbox360 {
+      --ipod-bezel-bg: linear-gradient(135deg, #e6e6e6 0%, #b8b8b8 100%);
+      --ipod-bezel-border: #999999;
+      --iclassic-bg: #0b1d0a;
+      --iclassic-text: #ffffff;
+      --iclassic-header: linear-gradient(180deg, #7aba26 0%, #528a12 100%);
+      --iclassic-select: linear-gradient(180deg, #9cd629 0%, #68a018 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #153112;
+      --filter-text: #9cd629;
+      --stats-bar-bg: #0b1d0a;
+      --stats-bar-text: #9cd629;
+      --scrollbar-track: #0e220c;
+      --scrollbar-thumb: #7aba26;
+    }
+
+    /* Clear / Atomic Purple Case */
+    body.theme-atomic-purple {
+      --ipod-bezel-bg: linear-gradient(135deg, rgba(123, 70, 163, 0.75) 0%, rgba(68, 32, 99, 0.85) 100%);
+      --ipod-bezel-border: rgba(210, 180, 240, 0.6);
+      --iclassic-bg: rgba(20, 12, 32, 0.95);
+      --iclassic-text: #e0d0f5;
+      --iclassic-header: linear-gradient(180deg, rgba(160, 90, 220, 0.8) 0%, rgba(90, 40, 130, 0.9) 100%);
+      --iclassic-select: linear-gradient(180deg, #bd68ff 0%, #7020b8 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: rgba(35, 20, 55, 0.9);
+      --filter-text: #d4a0ff;
+      --stats-bar-bg: rgba(20, 12, 32, 0.95);
+      --stats-bar-text: #d4a0ff;
+      --scrollbar-track: #180d28;
+      --scrollbar-thumb: #9d4edd;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Clear Frost Case (Transparent Glacial Case) */
+    body.theme-clear-frost {
+      --ipod-bezel-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(200, 215, 230, 0.4) 100%);
+      --ipod-bezel-border: rgba(255, 255, 255, 0.8);
+      --iclassic-bg: rgba(240, 248, 255, 0.92);
+      --iclassic-text: #1a2a3a;
+      --iclassic-header: linear-gradient(180deg, rgba(180, 215, 245, 0.9) 0%, rgba(120, 175, 220, 0.9) 100%);
+      --iclassic-select: linear-gradient(180deg, #4a90e2 0%, #1c5da6 100%);
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: rgba(210, 230, 248, 0.85);
+      --filter-text: #1c5da6;
+      --stats-bar-bg: rgba(240, 248, 255, 0.92);
+      --stats-bar-text: #1c5da6;
+      --scrollbar-track: #d6e6f5;
+      --scrollbar-thumb: #4a90e2;
+      backdrop-filter: blur(12px);
+    }
+
+    /* VHS Cyberpunk Arcade */
+    body.theme-vhs {
+      --ipod-bezel-bg: linear-gradient(180deg, #111116 0%, #050508 100%);
+      --ipod-bezel-border: #333344;
+      --iclassic-bg: #09090d;
+      --iclassic-text: #ff3366;
+      --iclassic-header: linear-gradient(90deg, #ff0055 0%, #ff9900 100%);
+      --iclassic-select: #ff0055;
+      --iclassic-select-text: #ffffff;
+      --filter-bar-bg: #161622;
+      --filter-text: #00ffcc;
+      --stats-bar-bg: #09090d;
+      --stats-bar-text: #00ffcc;
+      --scrollbar-track: #12121a;
+      --scrollbar-thumb: #ff0055;
+    }
+    
     * {
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -1111,6 +1237,26 @@
       align-items: center;
     }
 
+    /* Theme-Aware Modals & Popups */
+    .modal-content, .rockbox-modal {
+      background: var(--iclassic-bg, #ffffff) !important;
+      color: var(--iclassic-text, #111111) !important;
+      border: 2px solid var(--ipod-bezel-border, #cccccc) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .modal-header {
+      background: var(--iclassic-header, #e0e0e0) !important;
+      color: #ffffff !important;
+      border-bottom: 1px solid var(--ipod-bezel-border, #cccccc) !important;
+    }
+
+    .modal-content button, .modal-content input, .modal-content select, .modal-content textarea {
+      background: var(--filter-bar-bg, #ffffff) !important;
+      color: var(--iclassic-text, #111111) !important;
+      border: 1px solid var(--ipod-bezel-border, #888888) !important;
+    }
+
     .itunes-card {
       background: #ececec;
       border: 2px solid #888;
@@ -1191,19 +1337,31 @@
   <div class="corner-controls-right">
     <div class="corner-badge">
       🎨 Theme: 
-      <select id="hardwareThemeSelect" onchange="applyHardwareProfileTheme(this.value)">
-        <option value="classic">Classic Silver</option>
-        <option value="u2">U2 Special Edition</option>
-        <option value="atomic">Atomic Transparent</option>
-        <option value="cyberpunk">Game Boy / Cyberpunk</option>
-        <option value="win95">💾 Windows 95</option>
-        <option value="winamp">⚡ WinAMP 2.x</option>
-        <option value="y2kpink">💖 Cyber Pink</option>
-        <option value="aqua">🌊 Frutiger Aqua</option>
-      </select>
+      <!-- Custom Non-Native Theme Dropdown -->
+      <div class="custom-multiselect-container" id="themeDropdownContainer">
+        <div class="custom-multiselect-trigger" onclick="toggleThemeDropdown(event)">
+          <span id="themeDisplayLabel">🎨 Theme: Classic</span>
+          <span style="font-size: 8px;">▼</span>
+        </div>
+        <div class="custom-multiselect-dropdown" id="themeDropdownMenu" onclick="event.stopPropagation()">
+          <div class="custom-dropdown-option" onclick="selectTheme('')">iClassic Original</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-vista')">Windows Vista/Aero</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-win95')">Windows 95</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-winamp')"> WinAMP 2.x</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-gameboy')">Game Boy Classic</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-synthwave')">Synthwave '84</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-gamecube')">Indigo GameCube</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-y2kpink')"> Cyber Pink</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-aqua')">Frutiger Aero</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-xbox360')">Xbox 360 Blades</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-atomic-purple')">Atomic Purple Case</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-clear-frost')">Clear Frost Case</div>
+          <div class="custom-dropdown-option" onclick="selectTheme('theme-vhs')">VHS Arcade</div>
+        </div>
+      </div>
     </div>
     <div class="corner-badge">
-      🖼️ Wallpaper
+      Wallpaper
       <input type="file" id="bgFileInput" accept="image/*" onchange="handleBgFileUpload(event)" />
     </div>
   </div>
@@ -1522,13 +1680,79 @@
     let allArtCandidates = [];
     let artBatchIndex = 0;
     let openDrawers = new Set();
+    
+    function toggleThemeDropdown(event) {
+      if (event) event.stopPropagation();
+      const menu = document.getElementById('themeDropdownMenu');
+      if (menu) menu.classList.toggle('open');
+    }
 
+    async function selectTheme(themeClass) {
+      // Remove all theme classes from <body>
+      document.body.className = '';
+      
+      if (themeClass) {
+        document.body.classList.add(themeClass);
+      }
+
+      // Update dropdown label display
+      const labelMap = {
+        '': '🎨 Theme: Classic',
+        'theme-vista': 'Windows Vista',
+        'theme-xbox360': 'Xbox 360',
+        'theme-atomic-purple': 'Atomic Purple',
+        'theme-clear-frost': 'Clear Frost',
+        'theme-vhs': 'VHS Arcade',
+        'theme-win95': 'Windows 95',
+        'theme-winamp': 'WinAMP 2.x',
+        'theme-gameboy': 'Game Boy',
+        'theme-synthwave': 'Synthwave',
+        'theme-gamecube': 'GameCube',
+        'theme-y2kpink': 'Y2K Pink',
+        'theme-aqua': 'Frutiger Aero'
+      };
+
+      const labelEl = document.getElementById('themeDisplayLabel');
+      if (labelEl) labelEl.innerText = labelMap[themeClass] || '🎨 Theme: Classic';
+
+      // Save preference to IndexedDB
+      if (typeof localforage !== 'undefined') {
+        await localforage.setItem('sosa_selected_theme', themeClass);
+      } else {
+        localStorage.setItem('sosa_selected_theme', themeClass);
+      }
+
+      // Close menu
+      const menu = document.getElementById('themeDropdownMenu');
+      if (menu) menu.classList.remove('open');
+    }
+
+    // Close theme dropdown when clicking anywhere outside
+    window.addEventListener('click', () => {
+      const menu = document.getElementById('themeDropdownMenu');
+      if (menu) menu.classList.remove('open');
+    });
+
+    // Load saved theme on initialization
+    async function loadSavedTheme() {
+      let savedTheme = '';
+      if (typeof localforage !== 'undefined') {
+        savedTheme = await localforage.getItem('sosa_selected_theme');
+      } else {
+        savedTheme = localStorage.getItem('sosa_selected_theme');
+      }
+      if (savedTheme !== null) {
+        selectTheme(savedTheme);
+      }
+    }
+
+    // Ensure loadSavedTheme() is called inside your initDatabase() function!
     let DESCRIPTOR_POOL = JSON.parse(localStorage.getItem('sosa_descriptor_pool')) || [
       'atmospheric', 'nocturnal', 'melancholic', 'boisterous', 'aggressive', 
       'hypnotic', 'cold', 'lush', 'raw', 'experimental', 'energetic', 'dark', 
       'ethereal', 'nostalgic', 'rhythmic', 'plunderphonics', 'lo-fi', 'psychedelic'
     ];
-
+  
     let GENRE_DATA = JSON.parse(localStorage.getItem('sosa_genre_config')) || [
       {
         category: "Hip Hop & R&B",
