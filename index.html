@@ -56,6 +56,50 @@
       border-color: var(--iclassic-select, #0077c8) !important;
       transform: scale(1.05);
     }
+    /* 🔘 General Theme-Responsive Buttons (Default Base) */
+    button, 
+    .btn {
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    /* 🖤 Form Cabinet Buttons (Top Inputs: Length, Year, Fetch Art, + Tags) */
+    #formCabinet button,
+    .form-cabinet-btn,
+    .cabinet-input-group button {
+      color: #e0e0e0 !important; /* Keep text crisp and light on dark backgrounds */
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* 🖤 Bottom Control Bar Buttons (Archive button, Deck Action icons) */
+    .deck-actions button,
+    .deck-icon-actions button,
+    #viewToggleBtn {
+      color: #ffffff !important; /* Force high-contrast white text for classic dark buttons */
+    }
+
+    /* 💙 Save Album Button Accent */
+    #saveAlbumBtn,
+    .btn-primary {
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    /* 🏷️ Genre/Scene Chips inside list rows (Preserve tag readability) */
+    .genre-tag, 
+    .scene-tag {
+      color: #111111 !important; /* Keep genre tag text dark/readable on pastel pills */
+    }
+
+    /* Dynamic Accent Hover State for Action Buttons */
+    .deck-icon-actions button:hover,
+    #formCabinet button:hover,
+    #viewToggleBtn:hover {
+      background: var(--iclassic-select, #0077c8) !important;
+      color: #ffffff !important;
+      border-color: var(--iclassic-select, #0077c8) !important;
+    }
 
     /* Lyric & Quote Snippet Card */
     .lyric-card {
@@ -2785,6 +2829,8 @@ archive = [];
         archive = JSON.parse(localStorage.getItem('rockbox_archive')) || [];
       }
 
+      await loadSavedTheme();
+        
       populateFilterDropdowns();
       renderList();
       updateStats();
