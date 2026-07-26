@@ -34,6 +34,69 @@
       scrollbar-width: thin;
       scrollbar-color: var(--scrollbar-thumb, #556677) var(--scrollbar-track, #1a202c);
     }
+    /* 🔘 Square Icon-Only Buttons */
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 1rem;
+      background: var(--filter-bar-bg, #222222);
+      color: var(--iclassic-text, #ffffff);
+      border: 1px solid var(--ipod-bezel-border, #555555);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: var(--iclassic-select, #0077c8) !important;
+      border-color: var(--iclassic-select, #0077c8) !important;
+      transform: scale(1.05);
+    }
+
+    /* Lyric & Quote Snippet Card */
+    .lyric-card {
+      background: var(--filter-bar-bg, rgba(255,255,255,0.05));
+      border-left: 3px solid var(--iclassic-select, #0077c8);
+      padding: 8px 12px;
+      margin: 10px 0;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--iclassic-text, #fff);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Analytics Dashboard Grid */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .analytics-card {
+      background: var(--filter-bar-bg, #1a1a1a);
+      border: 1px solid var(--ipod-bezel-border, #444);
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .analytics-card h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .analytics-card .stat-val {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--filter-text, #64ffda);
+    }
 
     /* U2 Special Edition Hardware Variant Definitions */
     body.theme-u2 {
@@ -1546,9 +1609,11 @@
 
     <div class="rockbox-controls">
       <button class="skeuo-btn" id="viewToggleBtn" onclick="toggleView()">Archive</button>
-      <button class="skeuo-btn skeuo-btn-primary" onclick="spinAndPick()" title="Shuffle Pick">🔀 Shuffle</button>
-      <button class="skeuo-btn" onclick="openConfigModal()">⚙️ Config</button>
-      <button class="skeuo-btn" onclick="openBackupModal()">Backup</button>
+      <button class="icon-btn" onclick="spinAndPick()" title="Shuffle Pick">🔀</button>
+      <button type="button" class="icon-btn" onclick="shuffleRoulette()" title="Spin the Wheel">🎲</button>
+      <button type="button" class="icon-btn" onclick="openAnalyticsModal()" title="Library Analytics">📊</button>
+      <button class="icon-btn" onclick="openConfigModal()">⚙️</button>
+      <button class="icon-btn" onclick="openBackupModal()">📤</button>
     </div>
   </div>
 
@@ -1606,6 +1671,11 @@
           <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;" id="descriptorPresetBar"></div>
         </div>
 
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 4px;">
+        <label for="completeLyricInput">📝 Favorite Lyric / Line (Optional):</label>
+        <input type="text" id="completeLyricInput" placeholder="e.g., 'Passin\' up on sleep, I\'m workin\' double shift...'" />
+        </div>
+
         <div>
           <label style="font-size:10px; font-weight:600; color:#444;">Comments / Notes:</label>
           <textarea id="finishComments" style="width:100%; height:48px; font-size:11px; padding:4px; margin-top:2px; border:1px solid #aaa; border-radius:3px;" placeholder="First impressions..."></textarea>
@@ -1618,6 +1688,35 @@
     </div>
   </div>
 
+<div id="analyticsModal" class="rockbox-modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📊 Library Analytics</h3>
+      <button type="button" onclick="closeAnalyticsModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding: 15px;">
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Queue Backlog</h4>
+          <div class="stat-val" id="statQueueTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Relisten Time</h4>
+          <div class="stat-val" id="statRelistenTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Archived Total</h4>
+          <div class="stat-val" id="statArchiveTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Top Genre</h4>
+          <div class="stat-val" id="statTopGenre">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  
   <!-- iTunes Info Modal -->
   <div id="itunesInfoModal" class="modal-overlay">
     <div class="itunes-card">
@@ -1640,6 +1739,7 @@
           <div id="infoDescriptors" style="display:flex; gap:3px; flex-wrap:wrap; margin-top:4px;"></div>
           <div id="infoStars" style="margin-top:4px;"></div>
           <div id="infoDate" style="font-size:9px; color:#888; margin-top:2px;"></div>
+          <div id="lyricDisplayCard" class="lyric-card" style="display: none;"></div>
           <div id="infoComments" class="itunes-comment-box"></div>
         </div>
       </div>
