@@ -256,6 +256,44 @@
       --scrollbar-track: #12121a;
       --scrollbar-thumb: #ff0055;
     }
+
+    /* Custom Theme Container Pointer & Stacking Fix */
+    #themeDropdownContainer {
+      position: relative;
+      display: inline-block;
+      z-index: 1000; /* High z-index keeps it above screen panels */
+    }
+
+    #themeDropdownContainer .custom-multiselect-trigger {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #themeDropdownMenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 160px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 1001;
+      display: none; /* Controlled by .open class */
+    }
+
+    #themeDropdownMenu.open {
+      display: block !important;
+    }
+
+    .custom-dropdown-option {
+      cursor: pointer;
+      padding: 6px 10px;
+      user-select: none;
+    }
+
+    .custom-dropdown-option:hover {
+      background: var(--iclassic-select, #0077c8);
+      color: var(--iclassic-select-text, #ffffff);
+    }
     
     * {
       box-sizing: border-box;
@@ -1747,6 +1785,7 @@
     }
 
     // Ensure loadSavedTheme() is called inside your initDatabase() function!
+    
     let DESCRIPTOR_POOL = JSON.parse(localStorage.getItem('sosa_descriptor_pool')) || [
       'atmospheric', 'nocturnal', 'melancholic', 'boisterous', 'aggressive', 
       'hypnotic', 'cold', 'lush', 'raw', 'experimental', 'energetic', 'dark', 
