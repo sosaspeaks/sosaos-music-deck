@@ -514,10 +514,10 @@
     body.theme-atomic .ipod-silver-bezel::before { opacity: 1; }
 
     .skeuo-btn {
-      background: linear-gradient(180deg, #748393 0%, #3d4a57 50%, #2b3540 51%, #455463 100%);
-      border: 1px solid #1a222a;
+      background: var(--filter-bar-bg, #222222);
+      border: 1px solid var(--ipod-bezel-border, #555555);
       border-radius: 4px;
-      color: #ffffff;
+      color: var(--iclassic-text, #ffffff);
       font-size: 11px;
       font-weight: 600;
       padding: 5px 10px;
@@ -532,7 +532,9 @@
       flex-shrink: 0;
     }
 
-    .skeuo-btn:hover { background: linear-gradient(180deg, #8898a8 0%, #4a5969 50%, #34414e 51%, #526374 100%); }
+    .skeuo-btn:hover { background: var(--iclassic-select, #0077c8) !important;
+                     color: var(--iclassic-select-text, #ffffff) !important;
+                     border-color: var(--iclassic-select, #0077c8) !important;}
     .skeuo-btn:active { background: linear-gradient(180deg, #232a33 0%, #36424e 100%); box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); transform: translateY(1px); }
 
     .skeuo-btn-primary {
@@ -1293,6 +1295,32 @@
       background: var(--filter-bar-bg, #ffffff) !important;
       color: var(--iclassic-text, #111111) !important;
       border: 1px solid var(--ipod-bezel-border, #888888) !important;
+    }
+
+    /* 📦 High-Specificity Theme-Aware Modals & Popups */
+    body div.modal-content, 
+    body div.rockbox-modal,
+    body div.modal-body {
+      background: var(--iclassic-bg, #000000) !important;
+      color: var(--iclassic-text, #ffffff) !important;
+      border: 2px solid var(--ipod-bezel-border, #444444) !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    body div.modal-header {
+      background: var(--iclassic-header, linear-gradient(180deg, #333 0%, #111 100%)) !important;
+      color: #ffffff !important;
+      border-bottom: 1px solid var(--ipod-bezel-border, #444444) !important;
+    }
+
+    /* Modal Inputs & List Items */
+    body div.modal-content input, 
+    body div.modal-content select, 
+    body div.modal-content textarea,
+    body div.modal-content .archive-item {
+      background: var(--filter-bar-bg, #1a1a1a) !important;
+      color: var(--iclassic-text, #ffffff) !important;
+      border: 1px solid var(--ipod-bezel-border, #555555) !important;
     }
 
     .itunes-card {
