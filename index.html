@@ -623,28 +623,20 @@
 .skeuo-btn {
       background: linear-gradient(180deg, #3a3f4b 0%, #1a1d24 100%) !important;
       border: 1px solid #111317 !important;
-      border-top-color: #525968 !important; /* Metallic top bevel highlight */
+      border-top-color: #525968 !important;
       border-radius: 4px;
-      color: #e2e8f0 !important; /* Crisp silver-white text */
+      color: #e2e8f0 !important;
       font-size: 11px;
       font-weight: 600;
       padding: 5px 10px;
       cursor: pointer;
       text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9) !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.5) !important;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: filter 0.15s ease, transform 0.05s ease;
     }
 
     .skeuo-btn:hover {
       background: linear-gradient(180deg, #484f5e 0%, #242832 100%) !important;
       color: #ffffff !important;
-      border-color: #0077c8 !important;
     }
 
     .skeuo-btn:active {
@@ -654,29 +646,48 @@
     }
 
     /* 💾 Skeuomorphic "+ Save Album" Primary Button */
+/* 🎛️ Theme-Dynamic Skeuomorphic Buttons (Save Album, Fetch Art, Tags, Archive, & Nav Buttons) */
     #saveAlbumBtn,
-    .btn-primary-skeuo {
-      background: linear-gradient(180deg, #2b7fff 0%, #0055b8 100%) !important;
-      border: 1px solid #003a82 !important;
-      border-top-color: #66a3ff !important;
+    .skeuo-btn,
+    .btn-primary-skeuo,
+    #viewToggleBtn,
+    .deck-icon-actions button,
+    .deck-actions button {
+      /* Dynamic theme accent background with a glossy 3D overlay */
+      background-color: var(--iclassic-select, #0077c8) !important;
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(0, 0, 0, 0.25) 100%) !important;
+      border: 1px solid rgba(0, 0, 0, 0.6) !important;
+      border-top-color: rgba(255, 255, 255, 0.5) !important; /* Top bevel highlight */
       border-radius: 4px;
-      color: #ffffff !important;
-      font-weight: 700;
-      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.6) !important;
+      color: var(--iclassic-select-text, #ffffff) !important;
+      font-weight: 600;
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7) !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 5px rgba(0, 0, 0, 0.4) !important;
       cursor: pointer;
-      transition: filter 0.15s ease;
+      transition: filter 0.15s ease, transform 0.05s ease;
     }
 
-    #saveAlbumBtn:hover {
-      background: linear-gradient(180deg, #428eff 0%, #0062d6 100%) !important;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 119, 200, 0.5) !important;
+    /* Vibrant hover effect on active theme color */
+    #saveAlbumBtn:hover,
+    .skeuo-btn:hover,
+    #viewToggleBtn:hover,
+    .deck-icon-actions button:hover,
+    .deck-actions button:hover {
+      filter: brightness(1.15) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.5) !important;
     }
 
-    #saveAlbumBtn:active {
-      background: linear-gradient(180deg, #004494 0%, #0059c4 100%) !important;
+    /* Tactile press effect */
+    #saveAlbumBtn:active,
+    .skeuo-btn:active,
+    #viewToggleBtn:active,
+    .deck-icon-actions button:active,
+    .deck-actions button:active {
+      filter: brightness(0.9) !important;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+      transform: translateY(1px);
     }
+    
     .skeuo-btn-primary {
       background: linear-gradient(180deg, #5c9be0 0%, #2867b2 50%, #1a4f8f 51%, #2b70c4 100%);
       border-color: #0f3360;
