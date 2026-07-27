@@ -1474,6 +1474,100 @@
       border: 1px solid var(--ipod-bezel-border, #555555) !important;
     }
 
+    /* 📟 iPod In-Screen Overlay View (Replaces full-window modal) */
+    #analyticsModal.rockbox-modal {
+      position: absolute !important; /* Stays trapped INSIDE the iPod screen wrapper */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--iclassic-bg, #000000) !important;
+      color: var(--iclassic-text, #ffffff) !important;
+      z-index: 200; /* Floats above list view */
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      border-radius: 4px;
+    }
+
+    #analyticsModal .modal-content {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* iPod Sub-Header Bar */
+    #analyticsModal .modal-header {
+      background: var(--iclassic-header, linear-gradient(180deg, #333 0%, #111 100%)) !important;
+      padding: 4px 8px !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--ipod-bezel-border, #444) !important;
+      flex-shrink: 0;
+    }
+
+    #analyticsModal .modal-header h3 {
+      font-size: 11px !important;
+      margin: 0 !important;
+      font-weight: 700;
+      color: #ffffff !important;
+    }
+
+    #analyticsModal .modal-header button {
+      background: transparent !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-size: 11px !important;
+      cursor: pointer;
+      padding: 2px 6px !important;
+    }
+
+    /* 📊 Analytics Grid for In-Screen View */
+    #analyticsModal .modal-body {
+      padding: 8px !important;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    #analyticsModal .analytics-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important; /* 2x2 compact grid */
+      gap: 6px !important;
+    }
+
+    #analyticsModal .analytics-card {
+      background: var(--filter-bar-bg, rgba(255, 255, 255, 0.05)) !important;
+      border: 1px solid var(--ipod-bezel-border, rgba(255, 255, 255, 0.2)) !important;
+      padding: 6px !important;
+      border-radius: 4px !important;
+      text-align: center !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #analyticsModal .analytics-card h4 {
+      font-size: 9px !important;
+      text-transform: uppercase !important;
+      margin: 0 0 2px 0 !important;
+      opacity: 0.8;
+      letter-spacing: 0.5px;
+    }
+
+    #analyticsModal .analytics-card .stat-val {
+      font-size: 13px !important;
+      font-weight: bold !important;
+      color: var(--filter-text, #64ffda) !important;
+    }
+
     .itunes-card {
       background: #ececec;
       border: 2px solid #888;
@@ -1689,6 +1783,35 @@
         <ul class="rockbox-list" id="albumList"></ul>
       </div>
 
+      <div id="analyticsModal" class="rockbox-modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📊 Library Analytics</h3>
+      <button type="button" onclick="closeAnalyticsModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding: 15px;">
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4>Queue Backlog</h4>
+          <div class="stat-val" id="statQueueTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Relisten Time</h4>
+          <div class="stat-val" id="statRelistenTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Archived Total</h4>
+          <div class="stat-val" id="statArchiveTime">0h 0m</div>
+        </div>
+        <div class="analytics-card">
+          <h4>Top Genre</h4>
+          <div class="stat-val" id="statTopGenre">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       <div class="rockbox-stats-bar" id="statsBar">
         <span id="estTime">Queue: 00:00</span>
         <span id="topGenre">Listened: 0</span>
@@ -1774,35 +1897,6 @@
       </div>
     </div>
   </div>
-
-<div id="analyticsModal" class="rockbox-modal" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>📊 Library Analytics</h3>
-      <button type="button" onclick="closeAnalyticsModal()">✕</button>
-    </div>
-    <div class="modal-body" style="padding: 15px;">
-      <div class="analytics-grid">
-        <div class="analytics-card">
-          <h4>Queue Backlog</h4>
-          <div class="stat-val" id="statQueueTime">0h 0m</div>
-        </div>
-        <div class="analytics-card">
-          <h4>Relisten Time</h4>
-          <div class="stat-val" id="statRelistenTime">0h 0m</div>
-        </div>
-        <div class="analytics-card">
-          <h4>Archived Total</h4>
-          <div class="stat-val" id="statArchiveTime">0h 0m</div>
-        </div>
-        <div class="analytics-card">
-          <h4>Top Genre</h4>
-          <div class="stat-val" id="statTopGenre">-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
   
   <!-- iTunes Info Modal -->
   <div id="itunesInfoModal" class="modal-overlay">
