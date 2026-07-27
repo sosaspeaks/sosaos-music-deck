@@ -2158,6 +2158,52 @@ function scoreToStars(score) {
       return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
     }
 
+// -------------------------------------------------------------
+    // 📊 ANALYTICS HELPER UTILITIES
+    // -------------------------------------------------------------
+    function parseDurationToMinutes(durationStr) {
+      if (!durationStr) return 45; // Default average album length in mins
+      const parts = String(durationStr).split(':').map(Number);
+      if (parts.length === 2) return (parts[0] || 0) + ((parts[1] || 0) / 60);
+      return parseFloat(durationStr) || 45;
+    }
+
+    function formatMinutesToHours(totalMinutes) {
+      if (isNaN(totalMinutes) || totalMinutes <= 0) return '0h 0m';
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = Math.round(totalMinutes % 60);
+      return `${hours}h ${mins}m`;
+    }
+
+    function parseRatingValue(ratingStr) {
+      if (!ratingStr) return 0;
+      const str = String(ratingStr).trim();
+      
+      // Handles fractional inputs like "9/10" or "4.5/5"
+      if (str.includes('/')) {
+        const parts = str.split('/');
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (!isNaN(num) && !isNaN(den) && den > 0) return (num / den) * 10;
+      }
+      
+      const val = parseFloat(str);
+      if (!isNaN(val)) return val <= 5 ? val * 2 : val; // Normalizes 5-star to 10-point scale
+      return 0;
+    }
+
+    function scoreToStars(score) {
+      if (!score || score <= 0) return '☆☆☆☆☆';
+      const stars5 = score > 5 ? score / 2 : score;
+      const full = Math.floor(stars5);
+      const half = (stars5 % 1) >= 0.3 ? 1 : 0;
+      const empty = Math.max(0, 5 - full - half);
+      return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+    }
+
+    // -------------------------------------------------------------
+    // 📊 ANALYTICS MODAL CONTROLLER
+    // -------------------------------------------------------------
     function openAnalyticsModal() {
       const q = Array.isArray(albums) ? albums : [];
       const rq = Array.isArray(relistenQueue) ? relistenQueue : [];
@@ -2165,9 +2211,15 @@ function scoreToStars(score) {
 
       // 1. Time Stats
       const calcTotalMins = (list) => list.reduce((acc, item) => acc + parseDurationToMinutes(item.duration), 0);
-      document.getElementById('statQueueTime').innerText = formatMinutesToHours(calcTotalMins(q));
-      document.getElementById('statRelistenTime').innerText = formatMinutesToHours(calcTotalMins(rq));
-      document.getElementById('statArchiveTime').innerText = formatMinutesToHours(calcTotalMins(arc));
+      
+      const qEl = document.getElementById('statQueueTime');
+      const rEl = document.getElementById('statRelistenTime');
+      const aEl = document.getElementById('statArchiveTime');
+      const gEl = document.getElementById('statTopQueueGenre');
+
+      if (qEl) qEl.innerText = formatMinutesToHours(calcTotalMins(q));
+      if (rEl) rEl.innerText = formatMinutesToHours(calcTotalMins(rq));
+      if (aEl) aEl.innerText = formatMinutesToHours(calcTotalMins(arc));
 
       // 2. Queue Genre Counts
       const queueGenreCounts = {};
@@ -2180,7 +2232,7 @@ function scoreToStars(score) {
       for (const [g, count] of Object.entries(queueGenreCounts)) {
         if (count > maxQCount) { maxQCount = count; topQueueGenre = g; }
       }
-      document.getElementById('statTopQueueGenre').innerText = topQueueGenre;
+      if (gEl) gEl.innerText = topQueueGenre;
 
       // 3. Top Rated Archive Albums (Podium)
       const ratedArchive = [...arc]
@@ -2193,7 +2245,7 @@ function scoreToStars(score) {
         if (ratedArchive.length === 0) {
           podiumEl.innerHTML = '<div style="font-size:10px; opacity:0.6; padding:10px;">No rated archive albums yet!</div>';
         } else {
-          // Render 2nd, 1st, 3rd
+          // Render 2nd, 1st, 3rd slots
           const order = [ratedArchive[1], ratedArchive[0], ratedArchive[2]];
           const classes = ['podium-second', 'podium-first', 'podium-third'];
           const ranks = ['2nd', '1st Place', '3rd'];
@@ -2251,7 +2303,7 @@ function scoreToStars(score) {
 
       // 5. Recommended Queue Albums
       const bestGenre = topGenres.length > 0 ? topGenres[0].genre : topQueueGenre;
-      const recs = q.filter(item => item.genre === bestGenre).slice(0, 3);
+      const recs = q.filter(item => item && item.genre === bestGenre).slice(0, 3);
 
       const recsEl = document.getElementById('queueRecommendations');
       if (recsEl) {
@@ -2296,16 +2348,17 @@ function scoreToStars(score) {
         }
       }
 
-      // Show Modal
+      // Force Modal Display
       const modal = document.getElementById('analyticsModal');
-      if (modal) modal.style.display = 'flex';
+      if (modal) {
+        modal.style.display = 'flex';
+      }
     }
 
     function closeAnalyticsModal() {
       const modal = document.getElementById('analyticsModal');
       if (modal) modal.style.display = 'none';
     }
-    
     let DESCRIPTOR_POOL = JSON.parse(localStorage.getItem('sosa_descriptor_pool')) || [
       'atmospheric', 'nocturnal', 'melancholic', 'boisterous', 'aggressive', 
       'hypnotic', 'cold', 'lush', 'raw', 'experimental', 'energetic', 'dark', 
