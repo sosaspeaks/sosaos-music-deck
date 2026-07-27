@@ -1783,13 +1783,21 @@
         <ul class="rockbox-list" id="albumList"></ul>
       </div>
 
-      <div id="analyticsModal" class="rockbox-modal" style="display: none;">
+<!-- ========================================== -->
+<!-- 📊 In-Screen Deep Library Analytics View   -->
+<!-- ========================================== -->
+<div id="analyticsModal" class="rockbox-modal" style="display: none;">
   <div class="modal-content">
+    
+    <!-- iPod Screen Sub-Header -->
     <div class="modal-header">
-      <h3>📊 Library Analytics</h3>
-      <button type="button" onclick="closeAnalyticsModal()">✕</button>
+      <span>&#x25C9; Deep Library Analytics</span>
+      <button type="button" onclick="closeAnalyticsModal()">&#x2715; Back</button>
     </div>
-    <div class="modal-body" style="padding: 15px;">
+    
+    <div class="modal-body analytics-scroll-body">
+      
+      <!-- Section 1: Quick Backlog & Time Stats Grid -->
       <div class="analytics-grid">
         <div class="analytics-card">
           <h4>Queue Backlog</h4>
@@ -1804,10 +1812,43 @@
           <div class="stat-val" id="statArchiveTime">0h 0m</div>
         </div>
         <div class="analytics-card">
-          <h4>Top Genre</h4>
-          <div class="stat-val" id="statTopGenre">-</div>
+          <h4>Top Queue Genre</h4>
+          <div class="stat-val" id="statTopQueueGenre">-</div>
         </div>
       </div>
+
+      <!-- Section 2: Top Rated Archive Albums (Art-Focused Podium) -->
+      <div class="analytics-section">
+        <div class="section-title">&#x2605; Top Rated Archive Albums</div>
+        <div class="podium-container" id="archivePodium">
+          <!-- Dynamically populated by openAnalyticsModal() JS -->
+        </div>
+      </div>
+
+      <!-- Section 3: Recommended Queue Albums (Based on Top Genre) -->
+      <div class="analytics-section">
+        <div class="section-title">&#x21C4; Recommended From Your Queue</div>
+        <div class="recommendations-list" id="queueRecommendations">
+          <!-- Dynamically populated by openAnalyticsModal() JS -->
+        </div>
+      </div>
+
+      <!-- Section 4: Top 3 Rated Genres -->
+      <div class="analytics-section">
+        <div class="section-title">&#x25C7; Top Rated Genres</div>
+        <div class="genre-rankings" id="topGenresList">
+          <!-- Dynamically populated by openAnalyticsModal() JS -->
+        </div>
+      </div>
+
+      <!-- Section 5: Queue Genre Breakdown -->
+      <div class="analytics-section">
+        <div class="section-title">&#x25EB; Queue Genre Breakdown</div>
+        <div class="genre-breakdown-bars" id="queueGenreBars">
+          <!-- Dynamically populated by openAnalyticsModal() JS -->
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -2107,47 +2148,155 @@
       return `${hours}h ${mins}m`;
     }
 
+function scoreToStars(score) {
+      if (!score || score <= 0) return '☆☆☆☆☆';
+      // Normalize to 5-star scale
+      const stars5 = score > 5 ? score / 2 : score;
+      const full = Math.floor(stars5);
+      const half = (stars5 % 1) >= 0.3 ? 1 : 0;
+      const empty = 5 - full - half;
+      return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+    }
+
     function openAnalyticsModal() {
-      // Ensure queues exist as arrays
       const q = Array.isArray(albums) ? albums : [];
       const rq = Array.isArray(relistenQueue) ? relistenQueue : [];
       const arc = Array.isArray(archive) ? archive : [];
 
+      // 1. Time Stats
       const calcTotalMins = (list) => list.reduce((acc, item) => acc + parseDurationToMinutes(item.duration), 0);
+      document.getElementById('statQueueTime').innerText = formatMinutesToHours(calcTotalMins(q));
+      document.getElementById('statRelistenTime').innerText = formatMinutesToHours(calcTotalMins(rq));
+      document.getElementById('statArchiveTime').innerText = formatMinutesToHours(calcTotalMins(arc));
 
-      const queueMins = calcTotalMins(q);
-      const relistenMins = calcTotalMins(rq);
-      const archiveMins = calcTotalMins(arc);
+      // 2. Queue Genre Counts
+      const queueGenreCounts = {};
+      q.forEach(item => {
+        if (item && item.genre) queueGenreCounts[item.genre] = (queueGenreCounts[item.genre] || 0) + 1;
+      });
 
-      const qEl = document.getElementById('statQueueTime');
-      const rEl = document.getElementById('statRelistenTime');
-      const aEl = document.getElementById('statArchiveTime');
-      const gEl = document.getElementById('statTopGenre');
+      let topQueueGenre = '-';
+      let maxQCount = 0;
+      for (const [g, count] of Object.entries(queueGenreCounts)) {
+        if (count > maxQCount) { maxQCount = count; topQueueGenre = g; }
+      }
+      document.getElementById('statTopQueueGenre').innerText = topQueueGenre;
 
-      if (qEl) qEl.innerText = formatMinutesToHours(queueMins);
-      if (rEl) rEl.innerText = formatMinutesToHours(relistenMins);
-      if (aEl) aEl.innerText = formatMinutesToHours(archiveMins);
+      // 3. Top Rated Archive Albums (Podium)
+      const ratedArchive = [...arc]
+        .map(item => ({ ...item, numericRating: parseRatingValue(item.rating) }))
+        .sort((a, b) => b.numericRating - a.numericRating)
+        .slice(0, 3);
 
-      // Calculate Top Genre across all lists
-      const allItems = [...q, ...rq, ...arc];
-      const genreCounts = {};
-      allItems.forEach(item => {
-        if (item && item.genre) {
-          genreCounts[item.genre] = (genreCounts[item.genre] || 0) + 1;
+      const podiumEl = document.getElementById('archivePodium');
+      if (podiumEl) {
+        if (ratedArchive.length === 0) {
+          podiumEl.innerHTML = '<div style="font-size:10px; opacity:0.6; padding:10px;">No rated archive albums yet!</div>';
+        } else {
+          // Render 2nd, 1st, 3rd
+          const order = [ratedArchive[1], ratedArchive[0], ratedArchive[2]];
+          const classes = ['podium-second', 'podium-first', 'podium-third'];
+          const ranks = ['2nd', '1st Place', '3rd'];
+
+          podiumEl.innerHTML = order.map((item, i) => {
+            if (!item) return '<div class="podium-slot"></div>';
+            const artUrl = item.art || item.cover || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect width="50" height="50" fill="%23222"/></svg>';
+            const stars = scoreToStars(item.numericRating);
+            return `
+              <div class="podium-slot ${classes[i]}">
+                <img class="podium-cover" src="${artUrl}" alt="${item.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\'><rect width=\'50\' height=\'50\' fill=\'%23333\'/></svg>'" />
+                <div class="podium-base">
+                  <div class="podium-title">${item.title}</div>
+                  <div class="podium-stars">${stars}</div>
+                  <div class="podium-rank-tag">${ranks[i]}</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // 4. Genre Average Ratings
+      const genreRatingsMap = {};
+      arc.forEach(item => {
+        const score = parseRatingValue(item.rating);
+        if (item.genre && score > 0) {
+          if (!genreRatingsMap[item.genre]) genreRatingsMap[item.genre] = { total: 0, count: 0 };
+          genreRatingsMap[item.genre].total += score;
+          genreRatingsMap[item.genre].count += 1;
         }
       });
 
-      let topGenre = '-';
-      let maxCount = 0;
-      for (const [g, count] of Object.entries(genreCounts)) {
-        if (count > maxCount) {
-          maxCount = count;
-          topGenre = g;
+      const topGenres = Object.entries(genreRatingsMap)
+        .map(([genre, data]) => ({ genre, avg: data.total / data.count }))
+        .sort((a, b) => b.avg - a.avg)
+        .slice(0, 3);
+
+      const genreListEl = document.getElementById('topGenresList');
+      if (genreListEl) {
+        if (topGenres.length === 0) {
+          genreListEl.innerHTML = '<div style="font-size:9px; opacity:0.6;">Rate archived albums to calculate top genres.</div>';
+        } else {
+          genreListEl.innerHTML = topGenres.map((g, idx) => `
+            <div class="rec-item">
+              <div style="font-weight:bold; font-size:10px; width:15px; color:var(--filter-text);">${idx + 1}.</div>
+              <div class="rec-info">
+                <div class="rec-title">${g.genre}</div>
+                <div class="rec-sub">Avg Score: ${g.avg.toFixed(1)}/10 • ${scoreToStars(g.avg)}</div>
+              </div>
+            </div>
+          `).join('');
         }
       }
-      if (gEl) gEl.innerText = topGenre;
 
-      // Display Modal
+      // 5. Recommended Queue Albums
+      const bestGenre = topGenres.length > 0 ? topGenres[0].genre : topQueueGenre;
+      const recs = q.filter(item => item.genre === bestGenre).slice(0, 3);
+
+      const recsEl = document.getElementById('queueRecommendations');
+      if (recsEl) {
+        if (recs.length === 0) {
+          recsEl.innerHTML = `<div style="font-size:9px; opacity:0.6;">No queue matches for top genre: ${bestGenre}</div>`;
+        } else {
+          recsEl.innerHTML = recs.map(item => {
+            const artUrl = item.art || item.cover || '';
+            return `
+              <div class="rec-item">
+                <img class="rec-art" src="${artUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23222\'/></svg>'" />
+                <div class="rec-info">
+                  <div class="rec-title">${item.title}</div>
+                  <div class="rec-sub">${item.genre || 'Unknown'} ${item.year ? '• ' + item.year : ''}</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // 6. Queue Genre Breakdown Bars
+      const sortedQueueGenres = Object.entries(queueGenreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const barsEl = document.getElementById('queueGenreBars');
+      if (barsEl) {
+        if (sortedQueueGenres.length === 0) {
+          barsEl.innerHTML = '<div style="font-size:9px; opacity:0.6;">Queue is empty.</div>';
+        } else {
+          const maxVal = sortedQueueGenres[0][1];
+          barsEl.innerHTML = sortedQueueGenres.map(([genre, count]) => {
+            const pct = Math.round((count / maxVal) * 100);
+            return `
+              <div class="bar-row">
+                <div class="bar-label">${genre}</div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: ${pct}%;"></div>
+                </div>
+                <div class="bar-count">${count} alb</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Show Modal
       const modal = document.getElementById('analyticsModal');
       if (modal) modal.style.display = 'flex';
     }
