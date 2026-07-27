@@ -1687,7 +1687,6 @@
     <div class="rockbox-controls">
       <button class="skeuo-btn" id="viewToggleBtn" onclick="toggleView()">Archive</button>
       <button class="icon-btn" onclick="spinAndPick()" title="Shuffle Pick">🔀</button>
-      <button type="button" class="icon-btn" onclick="shuffleRoulette()" title="Spin the Wheel">🎲</button>
       <button type="button" class="icon-btn" onclick="openAnalyticsModal()" title="Library Analytics">📊</button>
       <button class="icon-btn" onclick="openConfigModal()">⚙️</button>
       <button class="icon-btn" onclick="openBackupModal()">📤</button>
@@ -1989,7 +1988,69 @@
       }
     }
 
-    // Ensure loadSavedTheme() is called inside your initDatabase() function!
+    function parseDurationToMinutes(durationStr) {
+      if (!durationStr) return 45; // Default average album length in mins
+      const parts = String(durationStr).split(':').map(Number);
+      if (parts.length === 2) return (parts[0] || 0) + ((parts[1] || 0) / 60);
+      return parseFloat(durationStr) || 45;
+    }
+
+    function formatMinutesToHours(totalMinutes) {
+      if (isNaN(totalMinutes) || totalMinutes <= 0) return '0h 0m';
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = Math.round(totalMinutes % 60);
+      return `${hours}h ${mins}m`;
+    }
+
+    function openAnalyticsModal() {
+      // Ensure queues exist as arrays
+      const q = Array.isArray(albums) ? albums : [];
+      const rq = Array.isArray(relistenQueue) ? relistenQueue : [];
+      const arc = Array.isArray(archive) ? archive : [];
+
+      const calcTotalMins = (list) => list.reduce((acc, item) => acc + parseDurationToMinutes(item.duration), 0);
+
+      const queueMins = calcTotalMins(q);
+      const relistenMins = calcTotalMins(rq);
+      const archiveMins = calcTotalMins(arc);
+
+      const qEl = document.getElementById('statQueueTime');
+      const rEl = document.getElementById('statRelistenTime');
+      const aEl = document.getElementById('statArchiveTime');
+      const gEl = document.getElementById('statTopGenre');
+
+      if (qEl) qEl.innerText = formatMinutesToHours(queueMins);
+      if (rEl) rEl.innerText = formatMinutesToHours(relistenMins);
+      if (aEl) aEl.innerText = formatMinutesToHours(archiveMins);
+
+      // Calculate Top Genre across all lists
+      const allItems = [...q, ...rq, ...arc];
+      const genreCounts = {};
+      allItems.forEach(item => {
+        if (item && item.genre) {
+          genreCounts[item.genre] = (genreCounts[item.genre] || 0) + 1;
+        }
+      });
+
+      let topGenre = '-';
+      let maxCount = 0;
+      for (const [g, count] of Object.entries(genreCounts)) {
+        if (count > maxCount) {
+          maxCount = count;
+          topGenre = g;
+        }
+      }
+      if (gEl) gEl.innerText = topGenre;
+
+      // Display Modal
+      const modal = document.getElementById('analyticsModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeAnalyticsModal() {
+      const modal = document.getElementById('analyticsModal');
+      if (modal) modal.style.display = 'none';
+    }
     
     let DESCRIPTOR_POOL = JSON.parse(localStorage.getItem('sosa_descriptor_pool')) || [
       'atmospheric', 'nocturnal', 'melancholic', 'boisterous', 'aggressive', 
