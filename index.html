@@ -64,41 +64,10 @@
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
-    /* 🖤 Form Cabinet Buttons (Top Inputs: Length, Year, Fetch Art, + Tags) */
-    #formCabinet button,
-    .form-cabinet-btn,
-    .cabinet-input-group button {
-      color: #e0e0e0 !important; /* Keep text crisp and light on dark backgrounds */
-      border-color: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    /* 🖤 Bottom Control Bar Buttons (Archive button, Deck Action icons) */
-    .deck-actions button,
-    .deck-icon-actions button,
-    #viewToggleBtn {
-      color: #ffffff !important; /* Force high-contrast white text for classic dark buttons */
-    }
-
-    /* 💙 Save Album Button Accent */
-    #saveAlbumBtn,
-    .btn-primary {
-      color: #ffffff !important;
-      font-weight: 700;
-    }
-
     /* 🏷️ Genre/Scene Chips inside list rows (Preserve tag readability) */
     .genre-tag, 
     .scene-tag {
       color: #111111 !important; /* Keep genre tag text dark/readable on pastel pills */
-    }
-
-    /* Dynamic Accent Hover State for Action Buttons */
-    .deck-icon-actions button:hover,
-    #formCabinet button:hover,
-    #viewToggleBtn:hover {
-      background: var(--iclassic-select, #0077c8) !important;
-      color: #ffffff !important;
-      border-color: var(--iclassic-select, #0077c8) !important;
     }
 
     /* Lyric & Quote Snippet Card */
@@ -620,80 +589,53 @@
     }
     body.theme-atomic .ipod-silver-bezel::before { opacity: 1; }
 
-.skeuo-btn {
-      background: linear-gradient(180deg, #3a3f4b 0%, #1a1d24 100%) !important;
-      border: 1px solid #111317 !important;
-      border-top-color: #525968 !important;
-      border-radius: 4px;
-      color: #e2e8f0 !important;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 5px 10px;
-      cursor: pointer;
-      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9) !important;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    .skeuo-btn:hover {
-      background: linear-gradient(180deg, #484f5e 0%, #242832 100%) !important;
-      color: #ffffff !important;
-    }
-
-    .skeuo-btn:active {
-      background: linear-gradient(180deg, #16181e 0%, #2a2e38 100%) !important;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8) !important;
-      transform: translateY(1px);
-    }
-
-    /* 💾 Skeuomorphic "+ Save Album" Primary Button */
-/* 🎛️ Theme-Dynamic Skeuomorphic Buttons (Save Album, Fetch Art, Tags, Archive, & Nav Buttons) */
+/* 💜 Unified Theme-Dynamic Glossy Buttons (Fetch Art, + Tags, Save, Archive, Dock Icons) */
     #saveAlbumBtn,
+    #formCabinet button,
     .skeuo-btn,
     .btn-primary-skeuo,
     #viewToggleBtn,
     .deck-icon-actions button,
-    .deck-actions button {
-      /* Dynamic theme accent background with a glossy 3D overlay */
+    .deck-actions button,
+    .icon-btn,
+    button.row-btn-archive {
       background-color: var(--iclassic-select, #0077c8) !important;
       background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(0, 0, 0, 0.25) 100%) !important;
       border: 1px solid rgba(0, 0, 0, 0.6) !important;
-      border-top-color: rgba(255, 255, 255, 0.5) !important; /* Top bevel highlight */
+      border-top-color: rgba(255, 255, 255, 0.5) !important; /* Metallic top highlight */
       border-radius: 4px;
       color: var(--iclassic-select-text, #ffffff) !important;
       font-weight: 600;
+      font-size: 11px;
       text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7) !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 5px rgba(0, 0, 0, 0.4) !important;
       cursor: pointer;
       transition: filter 0.15s ease, transform 0.05s ease;
     }
 
-    /* Vibrant hover effect on active theme color */
     #saveAlbumBtn:hover,
+    #formCabinet button:hover,
     .skeuo-btn:hover,
     #viewToggleBtn:hover,
     .deck-icon-actions button:hover,
-    .deck-actions button:hover {
-      filter: brightness(1.15) !important;
+    .deck-actions button:hover,
+    .icon-btn:hover,
+    button.row-btn-archive:hover {
+      filter: brightness(1.18) !important;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.5) !important;
     }
 
-    /* Tactile press effect */
     #saveAlbumBtn:active,
+    #formCabinet button:active,
     .skeuo-btn:active,
     #viewToggleBtn:active,
     .deck-icon-actions button:active,
-    .deck-actions button:active {
+    .deck-actions button:active,
+    .icon-btn:active {
       filter: brightness(0.9) !important;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6) !important;
       transform: translateY(1px);
     }
-    
-    .skeuo-btn-primary {
-      background: linear-gradient(180deg, #5c9be0 0%, #2867b2 50%, #1a4f8f 51%, #2b70c4 100%);
-      border-color: #0f3360;
-    }
-
-    .skeuo-btn-primary:hover { background: linear-gradient(180deg, #6ba8ee 0%, #3475c4 50%, #225ca3 51%, #377cd4 100%); }
 
     .admin-panel {
       width: 100%;
