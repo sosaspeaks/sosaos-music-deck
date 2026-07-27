@@ -1576,6 +1576,49 @@
       padding: 8px;
     }
 
+    /* 🔳 Square Analytics Cards Layout */
+    .analytics-square-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+
+    .analytics-sq-card {
+      background: var(--filter-bar-bg, rgba(255, 255, 255, 0.05)) !important;
+      border: 1px solid var(--ipod-bezel-border, rgba(255, 255, 255, 0.2)) !important;
+      border-radius: 8px !important;
+      padding: 10px 6px !important;
+      aspect-ratio: 1 / 1 !important; /* Forces 1:1 square ratio */
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .sq-emoji {
+      font-size: 20px !important;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+
+    .analytics-sq-card h4 {
+      font-size: 8.5px !important;
+      text-transform: uppercase !important;
+      margin: 0 0 4px 0 !important;
+      opacity: 0.8;
+      letter-spacing: 0.5px;
+    }
+
+    .analytics-sq-card .stat-val {
+      font-size: 13px !important;
+      font-weight: bold !important;
+      color: var(--filter-text, #64ffda) !important;
+      line-height: 1.1;
+      word-break: break-word;
+    }
+
     .section-title {
       font-size: 10px; 
       font-weight: 700; 
@@ -1969,10 +2012,9 @@
 <!-- ========================================== -->
 <!-- 📊 In-Screen Deep Library Analytics View   -->
 <!-- ========================================== -->
+<!-- 📊 In-Screen Deep Library Analytics View -->
 <div id="analyticsModal" class="rockbox-modal" style="display: none;">
   <div class="modal-content">
-    
-    <!-- iPod Screen Sub-Header -->
     <div class="modal-header">
       <span>&#x25C9; Deep Library Analytics</span>
       <button type="button" onclick="closeAnalyticsModal()">&#x2715; Back</button>
@@ -1980,56 +2022,52 @@
     
     <div class="modal-body analytics-scroll-body">
       
-      <!-- Section 1: Quick Backlog & Time Stats Grid -->
-      <div class="analytics-grid">
-        <div class="analytics-card">
+      <!-- Section 1: Square Stat Cards with Emojis -->
+      <div class="analytics-square-grid">
+        <div class="analytics-sq-card">
+          <span class="sq-emoji">⏳</span>
           <h4>Queue Backlog</h4>
           <div class="stat-val" id="statQueueTime">0h 0m</div>
         </div>
-        <div class="analytics-card">
+        <div class="analytics-sq-card">
+          <span class="sq-emoji">🔄</span>
           <h4>Relisten Time</h4>
           <div class="stat-val" id="statRelistenTime">0h 0m</div>
         </div>
-        <div class="analytics-card">
+        <div class="analytics-sq-card">
+          <span class="sq-emoji">📁</span>
           <h4>Archived Total</h4>
           <div class="stat-val" id="statArchiveTime">0h 0m</div>
         </div>
-        <div class="analytics-card">
-          <h4>Top Queue Genre</h4>
+        <div class="analytics-sq-card">
+          <span class="sq-emoji">🔥</span>
+          <h4>Top Genre</h4>
           <div class="stat-val" id="statTopQueueGenre">-</div>
         </div>
       </div>
 
-      <!-- Section 2: Top Rated Archive Albums (Art-Focused Podium) -->
+      <!-- Section 2: Top Rated Archive Albums (Podium) -->
       <div class="analytics-section">
         <div class="section-title">&#x2605; Top Rated Archive Albums</div>
-        <div class="podium-container" id="archivePodium">
-          <!-- Dynamically populated by openAnalyticsModal() JS -->
-        </div>
+        <div class="podium-container" id="archivePodium"></div>
       </div>
 
-      <!-- Section 3: Recommended Queue Albums (Based on Top Genre) -->
+      <!-- Section 3: Expanded 3-Album Recommendations -->
       <div class="analytics-section">
-        <div class="section-title">&#x21C4; Recommended From Your Queue</div>
-        <div class="recommendations-list" id="queueRecommendations">
-          <!-- Dynamically populated by openAnalyticsModal() JS -->
-        </div>
+        <div class="section-title">&#x21C4; Recommended From Your Queue (Top 3)</div>
+        <div class="recommendations-list" id="queueRecommendations"></div>
       </div>
 
       <!-- Section 4: Top 3 Rated Genres -->
       <div class="analytics-section">
         <div class="section-title">&#x25C7; Top Rated Genres</div>
-        <div class="genre-rankings" id="topGenresList">
-          <!-- Dynamically populated by openAnalyticsModal() JS -->
-        </div>
+        <div class="genre-rankings" id="topGenresList"></div>
       </div>
 
       <!-- Section 5: Queue Genre Breakdown -->
       <div class="analytics-section">
         <div class="section-title">&#x25EB; Queue Genre Breakdown</div>
-        <div class="genre-breakdown-bars" id="queueGenreBars">
-          <!-- Dynamically populated by openAnalyticsModal() JS -->
-        </div>
+        <div class="genre-breakdown-bars" id="queueGenreBars"></div>
       </div>
 
     </div>
@@ -2485,29 +2523,41 @@ function scoreToStars(score) {
       }
 
       // 5. Recommended Queue Albums
+      // 5. Recommended Queue Albums (Guarantees up to 3 Recs)
       const bestGenre = topGenres.length > 0 ? topGenres[0].genre : topQueueGenre;
-      const recs = q.filter(item => item && item.genre === bestGenre).slice(0, 3);
+      
+      // First try matching top genre
+      let recs = q.filter(item => item && item.genre === bestGenre);
+
+      // Fallback: If less than 3 match top genre, pad with remaining queue albums
+      if (recs.length < 3) {
+        const remaining = q.filter(item => item && !recs.includes(item));
+        recs = recs.concat(remaining);
+      }
+
+      // Limit to 3 items
+      recs = recs.slice(0, 3);
 
       const recsEl = document.getElementById('queueRecommendations');
       if (recsEl) {
         if (recs.length === 0) {
-          recsEl.innerHTML = `<div style="font-size:9px; opacity:0.6;">No queue matches for top genre: ${bestGenre}</div>`;
+          recsEl.innerHTML = `<div style="font-size:9px; opacity:0.6; padding:4px;">No queue albums available.</div>`;
         } else {
-          recsEl.innerHTML = recs.map(item => {
+          recsEl.innerHTML = recs.map((item, idx) => {
             const artUrl = item.art || item.cover || '';
             return `
               <div class="rec-item">
+                <div style="font-size:10px; font-weight:bold; color:var(--filter-text,#64ffda); width:12px;">${idx + 1}</div>
                 <img class="rec-art" src="${artUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23222\'/></svg>'" />
                 <div class="rec-info">
                   <div class="rec-title">${item.title}</div>
-                  <div class="rec-sub">${item.genre || 'Unknown'} ${item.year ? '• ' + item.year : ''}</div>
+                  <div class="rec-sub">${item.genre || 'Unknown'} ${item.year ? '• ' + item.year : ''} ${item.duration ? '• ' + item.duration : ''}</div>
                 </div>
               </div>
             `;
           }).join('');
         }
       }
-
       // 6. Queue Genre Breakdown Bars
       const sortedQueueGenres = Object.entries(queueGenreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
       const barsEl = document.getElementById('queueGenreBars');
