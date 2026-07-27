@@ -620,30 +620,63 @@
     }
     body.theme-atomic .ipod-silver-bezel::before { opacity: 1; }
 
-    .skeuo-btn {
-      background: var(--filter-bar-bg, #222222);
-      border: 1px solid var(--ipod-bezel-border, #555555);
+.skeuo-btn {
+      background: linear-gradient(180deg, #3a3f4b 0%, #1a1d24 100%) !important;
+      border: 1px solid #111317 !important;
+      border-top-color: #525968 !important; /* Metallic top bevel highlight */
       border-radius: 4px;
-      color: var(--iclassic-text, #ffffff);
+      color: #e2e8f0 !important; /* Crisp silver-white text */
       font-size: 11px;
       font-weight: 600;
       padding: 5px 10px;
       cursor: pointer;
-      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.4);
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.5) !important;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
       white-space: nowrap;
       flex-shrink: 0;
+      transition: filter 0.15s ease, transform 0.05s ease;
     }
 
-    .skeuo-btn:hover { background: var(--iclassic-select, #0077c8) !important;
-                     color: var(--iclassic-select-text, #ffffff) !important;
-                     border-color: var(--iclassic-select, #0077c8) !important;}
-    .skeuo-btn:active { background: linear-gradient(180deg, #232a33 0%, #36424e 100%); box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); transform: translateY(1px); }
+    .skeuo-btn:hover {
+      background: linear-gradient(180deg, #484f5e 0%, #242832 100%) !important;
+      color: #ffffff !important;
+      border-color: #0077c8 !important;
+    }
 
+    .skeuo-btn:active {
+      background: linear-gradient(180deg, #16181e 0%, #2a2e38 100%) !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+      transform: translateY(1px);
+    }
+
+    /* 💾 Skeuomorphic "+ Save Album" Primary Button */
+    #saveAlbumBtn,
+    .btn-primary-skeuo {
+      background: linear-gradient(180deg, #2b7fff 0%, #0055b8 100%) !important;
+      border: 1px solid #003a82 !important;
+      border-top-color: #66a3ff !important;
+      border-radius: 4px;
+      color: #ffffff !important;
+      font-weight: 700;
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.6) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 5px rgba(0, 0, 0, 0.4) !important;
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+
+    #saveAlbumBtn:hover {
+      background: linear-gradient(180deg, #428eff 0%, #0062d6 100%) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 119, 200, 0.5) !important;
+    }
+
+    #saveAlbumBtn:active {
+      background: linear-gradient(180deg, #004494 0%, #0059c4 100%) !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+    }
     .skeuo-btn-primary {
       background: linear-gradient(180deg, #5c9be0 0%, #2867b2 50%, #1a4f8f 51%, #2b70c4 100%);
       border-color: #0f3360;
