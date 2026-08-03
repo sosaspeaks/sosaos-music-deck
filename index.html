@@ -3768,13 +3768,13 @@ let pendingFinishTarget = null;
 
       document.getElementById('finishModal').style.display = 'flex';
     }
-
 function confirmFinishAlbum() {
       const descriptors = document.getElementById('descriptorInput').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
       const dateISO = document.getElementById('dateListenedInput').value || getTodayISOString();
       const formattedDate = new Date(dateISO + 'T00:00:00').toLocaleDateString();
       const formatStr = document.getElementById('listeningFormatInput').value;
       const favTrack = document.getElementById('favoriteTrackInput').value.trim();
+      const lyricVal = document.getElementById('completeLyricInput')?.value.trim() || '';
 
       descriptors.forEach(d => {
         if (!DESCRIPTOR_POOL.includes(d)) DESCRIPTOR_POOL.push(d);
@@ -3804,6 +3804,8 @@ function confirmFinishAlbum() {
           completed.dateFinishedISO = dateISO;
           completed.listeningFormat = formatStr;
           completed.favoriteTrack = favTrack;
+          completed.favoriteLyric = lyricVal; // 📝 Save favorite lyric!
+
           if (isRelistenItem) {
             completed.isRelisten = true;
           }
@@ -3821,9 +3823,14 @@ function confirmFinishAlbum() {
           archive[globalIdx].dateFinishedISO = dateISO;
           archive[globalIdx].listeningFormat = formatStr;
           archive[globalIdx].favoriteTrack = favTrack;
+          archive[globalIdx].favoriteLyric = lyricVal; // 📝 Save favorite lyric on edit!
         }
         editingArchiveTarget = null;
       }
+
+      // Reset form input
+      const lyricInput = document.getElementById('completeLyricInput');
+      if (lyricInput) lyricInput.value = '';
 
       document.getElementById('finishModal').style.display = 'none';
       saveAndRender();
@@ -3855,7 +3862,7 @@ function confirmFinishAlbum() {
       let artist = parts.length > 1 ? parts[0].trim() : 'Unknown Artist';
       let albumName = parts.length > 1 ? parts.slice(1).join('-').trim() : item.title;
 
-      // 2. Safe DOM assignments (prevents null element crashes)
+      // 2. Safe DOM assignments
       const artEl = document.getElementById('infoArt');
       if (artEl) artEl.src = item.art || '';
 
@@ -3939,10 +3946,29 @@ function confirmFinishAlbum() {
       const commentsEl = document.getElementById('infoComments');
       if (commentsEl) commentsEl.innerText = `"${item.comments || 'No notes added.'}"`;
 
-      document.getElementById('itunesInfoModal').style.display = 'flex';
+      // 📝 3. Corrected Favorite Lyric Card Handling
+      const lyricCard = document.getElementById('lyricDisplayCard');
+      const lyricText = item.favoriteLyric || item.lyric || item.favoriteLine || item.completeLyricInput || '';
+
+      if (lyricCard) {
+        if (lyricText && lyricText.trim() !== '') {
+          const trimmed = lyricText.trim();
+          const formattedLyric = trimmed.startsWith('"') ? trimmed : `"${trimmed}"`;
+          lyricCard.innerText = formattedLyric;
+          lyricCard.style.display = 'block';
+        } else {
+          lyricCard.style.display = 'none';
+        }
+      }
+
+      const modal = document.getElementById('itunesInfoModal');
+      if (modal) modal.style.display = 'flex';
     }
 
-    function closeiTunesModal() { document.getElementById('itunesInfoModal').style.display = 'none'; }
+    function closeiTunesModal() { 
+      const modal = document.getElementById('itunesInfoModal');
+      if (modal) modal.style.display = 'none'; 
+    }
 
     /* System Configurator Logic */
     function openConfigModal() {
